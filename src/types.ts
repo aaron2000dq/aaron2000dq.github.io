@@ -59,6 +59,7 @@ export type StoryProgress = {
 export type PositionSample = LatLng & {
   accuracy: number;
   timestamp: number;
+  heading?: number;
 };
 
 export type RouteMatch = {

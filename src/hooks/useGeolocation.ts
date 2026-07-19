@@ -36,6 +36,7 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp,
+          heading: Number.isFinite(position.coords.heading) ? Number(position.coords.heading) : undefined,
         };
         samples.current = [...samples.current, next].slice(-5);
         setSample(medianSample(samples.current));

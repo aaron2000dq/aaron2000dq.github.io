@@ -9,6 +9,7 @@ import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
 import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from "@/src/lib/storage";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
+import { useDeviceHeading } from "@/src/hooks/useDeviceHeading";
 import type { CapturedPhoto, ExplorationZone, MatchResult, PositionSample, StoryProgress } from "@/src/types";
 
 const giftNames = {
@@ -80,6 +81,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     hydrated && progress.phase === "map" && progress.zoneStarted,
     zone.maxLocationAccuracyM,
   );
+  const deviceHeading = useDeviceHeading();
   const position = mockPosition ?? location.sample;
   const routeMatch = useMemo(
     () =>
@@ -280,6 +282,11 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     );
   }
 
+  function startExploration() {
+    void deviceHeading.request();
+    setProgress((current) => ({ ...current, zoneStarted: true }));
+  }
+
   function beginCompassHold() {
     compassTimer.current = window.setTimeout(() => {
       setGmPinOpen(true);
@@ -387,7 +394,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           <motion.section className="exploration-screen" key={`${zone.id}-${checkpoint.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <header className="topbar"><div><span>THE EXPLORATION ATLAS</span><b>{zone.title}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已解锁" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
-              <MapCanvas zone={zone} checkpoint={checkpoint} routeProgress={arrived ? 1 : routeMatch.progress} locationReliable={!progress.zoneStarted || locationReliable || arrived} arrived={arrived} completedIds={progress.completedCheckpointIds}/>
+              <MapCanvas zone={zone} checkpoint={checkpoint} routeProgress={arrived ? 1 : routeMatch.progress} locationReliable={!progress.zoneStarted || locationReliable || arrived} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0}/>
               <aside className="quest-card">
                 <div className="quest-number">{String(giftOrder[checkpoint.giftType]).padStart(2, "0")}</div>
                 <span className="eyebrow">CURRENT COORDINATE</span>
@@ -398,7 +405,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                 {checkpoint.giftType === "love" ? (
                   <button className="primary-button" onClick={() => completeCheckpoint()}>打开最后一封信</button>
                 ) : !progress.zoneStarted ? (
-                  <button className="primary-button" onClick={() => setProgress((current) => ({ ...current, zoneStarted: true }))}>停车完毕，开始探索</button>
+                  <button className="primary-button" onClick={startExploration}>停车完毕，开始探索</button>
                 ) : arrived ? (
                   <button className="primary-button" onClick={() => setCameraOpen(true)}>开启照片复刻</button>
                 ) : (

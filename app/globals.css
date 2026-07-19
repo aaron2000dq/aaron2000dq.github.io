@@ -153,26 +153,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .map-scale { fill: none; stroke: #3c281b; stroke-width: 1.2; opacity: .72; }
 .map-scale text { fill: #3c281b; stroke: none; font-size: 6px; }
 .route-path { fill: none; stroke: #2a1b12; stroke-width: 1.45; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .58; filter: drop-shadow(0 0 1px #2a140b); }
-.footstep { fill: #21150e; opacity: 0; transition: opacity .5s; filter: url(#inkGlow); }
-.footstep.visible { opacity: .92; }
-.parking-mark circle { fill: #d8bd83; stroke: #3d2a1d; stroke-width: 3; }
-.parking-mark path { fill: #3d2a1d; }
-.checkpoint-mark path { fill: #c9a96c; stroke: #3d2a1d; stroke-width: 4; }
-.checkpoint-mark text { text-anchor: middle; font-size: 22px; fill: #3d2a1d; font-weight: 700; }
-.checkpoint-mark.arrived { filter: url(#inkGlow); }
-.checkpoint-mark.arrived path { fill: #7b3930; }
-.checkpoint-mark.arrived text { fill: #f0d9aa; }
-.you-marker text { text-anchor: middle; font-size: 9px; fill: #ead4a5; font-weight: 700; letter-spacing: .15em; }
-.ink-pool { fill: #302016; opacity: .5; filter: blur(4px); }
-.ink-core { fill: #20140e; }
-.marker-ribbon { fill: #3a281c; }
-.you-marker.in-fog { opacity: .55; filter: blur(1px); }
-.you-marker.at-destination { opacity: 0; transition: opacity .45s ease; }
+.footstep { fill: #21150e; opacity: 0; transition: opacity .55s ease; filter: drop-shadow(0 .5px .6px #e1bd78); }
+.footstep.visible { opacity: .68; }
+.atlas-point { pointer-events: none; }
+.atlas-point .point-glow { fill: #9d4b2e; opacity: .22; transform-box: fill-box; transform-origin: center; animation: atlasPointBreath 1.8s ease-in-out infinite; }
+.atlas-point .point-ring { fill: #dfc17e; stroke: #2a1a12; stroke-width: 1.7; filter: drop-shadow(0 0 3px #f1c96d); }
+.atlas-point .point-core { fill: #321b12; }
+.goal-point .point-glow { fill: #bd7139; animation-delay: -.9s; }
+.goal-point.arrived .point-ring { fill: #7d382c; stroke: #f0d293; }
+.goal-point.arrived .point-core { fill: #f0d293; }
+.goal-tag rect { fill: #382319e8; stroke: #d8ba79; stroke-width: .8; }
+.goal-tag text { fill: #f1d79e; font-size: 6.2px; font-weight: 700; letter-spacing: .12em; text-anchor: middle; }
+.you-heading-arrow { transform-origin: 0 0; transition: transform .18s linear; }
+.you-heading-arrow path { fill: #73372b; stroke: #ead299; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 3px #1a0f0a99); }
+.you-marker.in-fog { opacity: .6; filter: blur(.6px); }
 .map-cartouche path { fill: #c8a66ac9; stroke: #4b3020; stroke-width: 1.3; }
 .map-title { font-size: 10.5px; font-weight: 700; fill: #2f1e14; letter-spacing: .14em; text-transform: uppercase; }
 .map-subtitle { fill: #583a27; font-size: 6.5px; letter-spacing: .05em; }
-.parking-label, .checkpoint-label { fill: #3d281b; font-size: 9px; paint-order: stroke; stroke: #d2ae72; stroke-width: 2.4; stroke-opacity: .8; }
-.checkpoint-label { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; }
 .wax-dot circle { fill: #6e302c; }.wax-dot path { fill: none; stroke: #ead29d; stroke-width: 2; }
 .map-tools { position: absolute; z-index: 5; right: 20px; top: 20px; display: flex; flex-direction: column; }
 .map-illustration-loading { position: absolute; z-index: 4; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: #40291b; background: radial-gradient(circle, #d7b77aee, #a8784be8); letter-spacing: .08em; }
@@ -241,6 +238,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes drift { from { transform: translate(-18%, -5%) scale(1); } to { transform: translate(18%, 7%) scale(1.25); } }
 @keyframes fogPulse { from { opacity: .6; } to { opacity: .9; } }
+@keyframes atlasPointBreath { 0%, 100% { opacity: .12; transform: scale(.72); } 50% { opacity: .58; transform: scale(1.75); } }
 @keyframes introRoomDarken { 0% { background-color: transparent; } 45%, 100% { background-color: #29170f; } }
 @keyframes introGridRecede { to { opacity: .05; transform: scale(1.08); } }
 @keyframes waxBreak { 0% { transform: scale(1); box-shadow: 0 5px 10px #3c211399; } 36% { transform: scale(1.24) rotate(-5deg); box-shadow: 0 0 35px #d4aa62; } 70% { transform: scale(.95) rotate(4deg); opacity: 1; } 100% { transform: scale(1.55) rotate(9deg); opacity: 0; } }

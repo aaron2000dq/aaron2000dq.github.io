@@ -95,6 +95,7 @@ export function medianSample(samples: PositionSample[]): PositionSample | null {
     longitude: sortedLng[middle].longitude,
     accuracy: sortedAccuracy[middle].accuracy,
     timestamp: Math.max(...samples.map((item) => item.timestamp)),
+    heading: [...samples].reverse().find((item) => Number.isFinite(item.heading))?.heading,
   };
 }
 

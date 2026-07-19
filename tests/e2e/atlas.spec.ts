@@ -44,6 +44,40 @@ test("automatically arrives after two accurate nearby location samples", async (
   await page.waitForTimeout(100);
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.getByText("精度 ±16m")).toBeVisible();
+  await expect(page.locator(".footstep.visible").first()).toBeVisible();
+  await expect(page.locator(".you-marker")).toBeVisible();
+});
+
+test("uses two breathing dots and rotates the current-position arrow", async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!("DeviceOrientationEvent" in window)) {
+      Object.defineProperty(window, "DeviceOrientationEvent", {
+        configurable: true,
+        value: class DeviceOrientationEvent extends Event {},
+      });
+    }
+  });
+  await page.goto("/?mode=fulltest&run=e2e-point-markers");
+  await page.getByRole("button", { name: "开启地图" }).click();
+
+  await expect(page.locator(".goal-point")).toBeVisible();
+  await expect(page.locator(".goal-tag")).toContainText("GOAL");
+  await expect(page.locator(".you-marker")).toBeVisible();
+  await expect(page.locator(".atlas-point .point-glow")).toHaveCount(2);
+  await expect(page.locator(".parking-mark, .checkpoint-mark")).toHaveCount(0);
+  await expect(page.locator(".you-marker text")).toHaveCount(0);
+  expect(
+    await page.locator(".point-glow").first().evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("atlasPointBreath");
+
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await page.evaluate(() => {
+    const event = new Event("deviceorientation");
+    Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
+    window.dispatchEvent(event);
+  });
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "123");
+  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(123)");
 });
 
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {

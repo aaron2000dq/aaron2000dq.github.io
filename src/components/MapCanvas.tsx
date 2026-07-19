@@ -11,6 +11,7 @@ type Props = {
   locationReliable: boolean;
   arrived: boolean;
   completedIds: string[];
+  heading?: number;
 };
 
 const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> = {
@@ -229,6 +230,7 @@ export function MapCanvas({
   locationReliable,
   arrived,
   completedIds,
+  heading = 0,
 }: Props) {
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
   const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
@@ -239,6 +241,7 @@ export function MapCanvas({
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [footsteps, setFootsteps] = useState<Array<{ x: number; y: number; angle: number }>>([]);
+  const [walkedProgress, setWalkedProgress] = useState(0);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({
     distance: 0,
@@ -251,11 +254,11 @@ export function MapCanvas({
     const path = pathRef.current;
     if (!path) return;
     const length = path.getTotalLength();
-    const point = path.getPointAtLength(length * Math.max(0.02, routeProgress));
+    const point = path.getPointAtLength(length * Math.max(0, routeProgress));
     setMarker({ x: point.x, y: point.y });
     setFootsteps(
-      Array.from({ length: 13 }, (_, index) => {
-        const at = length * (index / 12);
+      Array.from({ length: 17 }, (_, index) => {
+        const at = length * (index / 16);
         const routePoint = path.getPointAtLength(at);
         const before = path.getPointAtLength(Math.max(0, at - 2));
         const after = path.getPointAtLength(Math.min(length, at + 2));
@@ -266,7 +269,13 @@ export function MapCanvas({
         };
       }),
     );
+    setWalkedProgress((current) => Math.max(current, routeProgress));
   }, [routeProgress, zone.id]);
+
+  useEffect(() => {
+    setWalkedProgress(0);
+    setMarker(zone.parkingMapPoint);
+  }, [zone.id, zone.parkingMapPoint.x, zone.parkingMapPoint.y]);
 
   function pointerCenter() {
     const values = [...pointers.current.values()];
@@ -375,26 +384,32 @@ export function MapCanvas({
           <g className="legacy-blueprint"><DistrictBlueprint kind={zone.mapKind} /></g>
           <path ref={pathRef} className="route-path" d={zone.svgPath} />
           {footsteps.map((point, index) => {
-            const progress = index / 12;
-            const visible = progress <= Math.max(0.08, routeProgress + 0.08);
+            const progress = index / 16;
+            const visible = walkedProgress > 0.035 && progress < walkedProgress - 0.018;
             return (
               <g
                 key={index}
                 className={`footstep ${visible ? "visible" : ""}`}
-                transform={`translate(${point.x} ${point.y}) rotate(${point.angle}) translate(${index % 2 ? 5 : -5} 0)`}
+                transform={`translate(${point.x} ${point.y}) rotate(${point.angle}) translate(${index % 2 ? 3.4 : -3.4} 0)`}
               >
-                <ellipse cy="-5" rx="3.8" ry="7.6" />
-                <ellipse cy="6" rx="2.6" ry="4.6" />
+                <ellipse cy="-3.2" rx="2.15" ry="4.4" />
+                <ellipse cy="3.4" rx="1.35" ry="2.45" />
               </g>
             );
           })}
-          <g transform={`translate(${zone.parkingMapPoint.x} ${zone.parkingMapPoint.y})`} className="parking-mark">
-            <circle r="23" />
-            <path d="M-7 10V-11h10q10 0 10 8T3 5H-2v5z" />
-          </g>
-          <g transform={`translate(${checkpoint.mapPoint.x} ${checkpoint.mapPoint.y})`} className={`checkpoint-mark ${arrived ? "arrived" : ""}`}>
-            <path d="M0-32 28-16 28 17 0 33-28 17-28-16z" />
-            <text y="8">{{ scent: 1, motion: 2, sound: 3, sparkle: 4, taste: 5, love: 6 }[checkpoint.giftType]}</text>
+          <g
+            transform={`translate(${checkpoint.mapPoint.x} ${checkpoint.mapPoint.y})`}
+            className={`atlas-point goal-point ${arrived ? "arrived" : ""}`}
+            role="img"
+            aria-label={`目的地 ${checkpoint.label}`}
+          >
+            <circle r="9" className="point-glow" />
+            <circle r="6" className="point-ring" />
+            <circle r="3.4" className="point-core" />
+            <g className="goal-tag" transform="translate(0 -18)">
+              <rect x="-16" y="-7" width="32" height="14" rx="7" />
+              <text y="3.2">GOAL</text>
+            </g>
           </g>
           {completedIds.map((id, index) => (
             <g key={id} transform={`translate(${675 + index * 24} 445)`} className="wax-dot">
@@ -405,25 +420,23 @@ export function MapCanvas({
             initial={false}
             animate={{ x: marker.x, y: marker.y }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            className={`you-marker ${locationReliable ? "" : "in-fog"} ${arrived ? "at-destination" : ""}`}
+            className={`atlas-point you-marker ${locationReliable ? "" : "in-fog"}`}
+            data-heading={Math.round(((heading % 360) + 360) % 360)}
+            role="img"
+            aria-label="当前位置"
           >
-            <circle r="21" className="ink-pool" />
-            <circle r="6" className="ink-core" />
-            <path d="M-34 32h68l-8 16h-52z" className="marker-ribbon" />
-            <text y="44">YOU</text>
+            <g className="you-heading-arrow" transform={`rotate(${heading})`}>
+              <path d="M0-25 10-9 3-11 0-8-3-11-10-9Z" />
+            </g>
+            <circle r="9" className="point-glow" />
+            <circle r="6" className="point-ring" />
+            <circle r="3.4" className="point-core" />
           </motion.g>
           <g className="map-cartouche" transform="translate(42 34)">
             <path d="M0 0h330l-14 34H0l10-17z" />
             <text x="20" y="16" className="map-title">{zone.title}</text>
             <text x="20" y="29" className="map-subtitle">{zone.subtitle}</text>
           </g>
-          <text
-            x={checkpoint.mapPoint.x + (checkpoint.mapPoint.x > 650 ? -42 : 42)}
-            y={checkpoint.mapPoint.y + 46}
-            textAnchor={checkpoint.mapPoint.x > 650 ? "end" : "start"}
-            className="checkpoint-label"
-          >{checkpoint.label}</text>
-          <text x={zone.parkingMapPoint.x - 28} y={zone.parkingMapPoint.y + 50} className="parking-label">{zone.parkingLabel}</text>
         </svg>
       </motion.div>
       {illustratedMap && loadedAsset !== illustratedMap && failedAsset !== illustratedMap && (
