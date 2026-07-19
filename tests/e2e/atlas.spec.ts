@@ -48,6 +48,9 @@ test("automatically arrives after two accurate nearby location samples", async (
   await context.setGeolocation({ latitude: 30.254158, longitude: 120.21097, accuracy: 14 });
   await page.waitForTimeout(100);
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
+  await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
+  await expect(page.getByText("坐标已回应")).toBeVisible();
+  await expect(page.locator(".goal-arrival-ripple")).toHaveCount(2);
   await expect(page.getByText("精度 ±14m")).toBeVisible();
   await expect(page.locator(".footstep.visible").first()).toBeVisible();
   await expect(page.locator(".you-marker")).toBeVisible();
@@ -298,6 +301,10 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await uploadInput.setInputFiles("public/references/scent.svg");
   const startedAt = Date.now();
   await page.getByRole("button", { name: "开始匹配" }).click();
+  await expect(page.locator("[data-celebration='photo']")).toBeVisible();
+  await expect(page.locator(".confetti-cannon")).toHaveCount(2);
+  await expect(page.locator(".confetti-piece")).toHaveCount(52);
+  await expect(page.getByText("画面与记忆重合")).toBeVisible();
   await expect(page.getByText("SCENT FOUND")).toBeVisible();
   expect(Date.now() - startedAt).toBeLessThan(4_000);
   await expect(page.getByText(/照片匹配度 \d+%/)).toBeVisible();

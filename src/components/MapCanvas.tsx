@@ -353,7 +353,7 @@ export function MapCanvas({
         data-zoom={zoom.toFixed(2)}
         data-pan={`${Math.round(pan.x)},${Math.round(pan.y)}`}
         animate={{ scale: zoom, x: pan.x, y: pan.y }}
-        transition={{ duration: 1.1, ease: "easeInOut" }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         onPointerDown={beginGesture}
         onPointerMove={moveGesture}
         onPointerUp={endGesture}
@@ -409,6 +409,13 @@ export function MapCanvas({
             role="img"
             aria-label={`目的地 ${checkpoint.label}`}
           >
+            {arrived && (
+              <g className="goal-arrival-burst" aria-hidden="true">
+                <circle r="8" className="goal-arrival-ripple ripple-one" />
+                <circle r="8" className="goal-arrival-ripple ripple-two" />
+                <path d="M0-25V-16M17.7-17.7l-6.4 6.4M25 0H16M17.7 17.7l-6.4-6.4M0 25V16M-17.7 17.7l6.4-6.4M-25 0h9M-17.7-17.7l6.4 6.4" />
+              </g>
+            )}
             <circle r="9" className="point-glow" />
             <circle r="6" className="point-ring" />
             <circle r="3.4" className="point-core" />
@@ -425,7 +432,7 @@ export function MapCanvas({
           <motion.g
             initial={false}
             animate={{ x: marker.x, y: marker.y }}
-            transition={{ duration: 0.9, ease: "easeOut" }}
+            transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
             className={`atlas-point you-marker ${locationReliable ? "" : "in-fog"}`}
             data-heading={Math.round(((heading % 360) + 360) % 360)}
             data-map-x={marker.x.toFixed(1)}

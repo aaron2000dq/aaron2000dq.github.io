@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CameraChallenge } from "./CameraChallenge";
+import { CelebrationLayer, type CelebrationKind } from "./CelebrationLayer";
 import { GmPanel } from "./GmPanel";
 import { MapCanvas } from "./MapCanvas";
 import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
@@ -66,6 +67,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const [insideStreak, setInsideStreak] = useState(0);
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
   const [photos, setPhotos] = useState<CapturedPhoto[]>([]);
+  const [celebration, setCelebration] = useState<{ id: number; kind: CelebrationKind; label: string } | null>(null);
   const [deviceStatus, setDeviceStatus] = useState({
     label: "正在检查设备",
     location: false,
@@ -74,6 +76,9 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   });
   const compassTimer = useRef<number | null>(null);
   const introTimer = useRef<number | null>(null);
+  const celebrationTimer = useRef<number | null>(null);
+  const unlockTimer = useRef<number | null>(null);
+  const celebratedArrivals = useRef(new Set<string>());
 
   const zone = storyZones.find((item) => item.id === progress.activeZoneId) ?? storyZones[0];
   const checkpoint =
@@ -95,6 +100,16 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const arrived = progress.arrivedCheckpointIds.includes(checkpoint.id);
   const locationReliable = Boolean(position && position.accuracy <= zone.maxLocationAccuracyM);
 
+  const triggerCelebration = useCallback((kind: CelebrationKind, label: string) => {
+    if (celebrationTimer.current) window.clearTimeout(celebrationTimer.current);
+    setCelebration({ id: Date.now(), kind, label });
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    celebrationTimer.current = window.setTimeout(
+      () => setCelebration(null),
+      reducedMotion ? 420 : kind === "photo" ? 2400 : 1750,
+    );
+  }, []);
+
   useEffect(() => {
     setQuestExpanded(arrived);
   }, [checkpoint.id, arrived]);
@@ -104,7 +119,9 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       const checkpointExists = storyZones.some((item) =>
         item.checkpoints.some((candidate) => candidate.id === saved.activeCheckpointId),
       );
-      setProgress(checkpointExists ? saved : structuredClone(storyInitialProgress));
+      const restoredProgress = checkpointExists ? saved : structuredClone(storyInitialProgress);
+      celebratedArrivals.current = new Set(restoredProgress.arrivedCheckpointIds);
+      setProgress(restoredProgress);
       setPhotos(savedPhotos);
       setHydrated(true);
     });
@@ -113,6 +130,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   useEffect(
     () => () => {
       if (introTimer.current) window.clearTimeout(introTimer.current);
+      if (celebrationTimer.current) window.clearTimeout(celebrationTimer.current);
+      if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
     },
     [],
   );
@@ -160,6 +179,12 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     }));
   }, [insideStreak, arrived, checkpoint.id]);
 
+  useEffect(() => {
+    if (!hydrated || !arrived || celebratedArrivals.current.has(checkpoint.id)) return;
+    celebratedArrivals.current.add(checkpoint.id);
+    triggerCelebration("arrival", checkpoint.label);
+  }, [arrived, checkpoint.id, checkpoint.label, hydrated, triggerCelebration]);
+
   const completeCheckpoint = useCallback(
     async (dataUrl?: string, result?: MatchResult) => {
       const completed = [...new Set([...progress.completedCheckpointIds, checkpoint.id])];
@@ -183,9 +208,16 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         capturedPhotoIds: photoId ? [...current.capturedPhotoIds, photoId] : current.capturedPhotoIds,
       }));
       setCameraOpen(false);
-      setUnlockOpen(true);
+      if (dataUrl && result) {
+        triggerCelebration("photo", checkpoint.label);
+        if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        unlockTimer.current = window.setTimeout(() => setUnlockOpen(true), reducedMotion ? 120 : 620);
+      } else {
+        setUnlockOpen(true);
+      }
     },
-    [checkpoint.id, progress.completedCheckpointIds, storageNamespace],
+    [checkpoint.id, checkpoint.label, progress.completedCheckpointIds, storageNamespace, triggerCelebration],
   );
 
   function recordAttempt(result: MatchResult) {
@@ -290,6 +322,12 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     await resetProgress(keepPhotos, storageNamespace, storyInitialProgress);
     if (!keepPhotos) setPhotos([]);
     setProgress(structuredClone(storyInitialProgress));
+    celebratedArrivals.current.clear();
+    if (celebrationTimer.current) window.clearTimeout(celebrationTimer.current);
+    if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+    setCelebration(null);
+    setUnlockOpen(false);
+    setCameraOpen(false);
     setIntroOpening(false);
     setMockPosition(null);
     setGmOpen(false);
@@ -375,6 +413,10 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         onPointerCancel={endCompassHold}
         onContextMenu={(event) => event.preventDefault()}
       ><span>N</span><i/><svg className="compass-hold-progress" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" pathLength="1"/></svg></button>
+
+      <AnimatePresence>
+        {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {progress.phase === "intro" && (
