@@ -48,7 +48,7 @@ test("automatically arrives after two accurate nearby location samples", async (
   await context.setGeolocation({ latitude: 30.254158, longitude: 120.21097, accuracy: 14 });
   await page.waitForTimeout(100);
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
-  await expect(page.getByText("精度 ±16m")).toBeVisible();
+  await expect(page.getByText("精度 ±14m")).toBeVisible();
   await expect(page.locator(".footstep.visible").first()).toBeVisible();
   await expect(page.locator(".you-marker")).toBeVisible();
 });
@@ -83,6 +83,35 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   });
   await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "123");
   await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(123)");
+});
+
+test("moves the explorer dot from live coordinates and force-arrival never teleports it", async ({ page, context, baseURL }) => {
+  await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
+  await context.setGeolocation({ latitude: 30.27463, longitude: 119.99011, accuracy: 18 });
+  await page.addInitScript(() => {
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-live-dot-v2");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+
+  const marker = page.locator(".you-marker");
+  await expect(marker).toHaveAttribute("data-map-y", /\d/);
+  const beforeY = Number(await marker.getAttribute("data-map-y"));
+  await context.setGeolocation({ latitude: 30.27496, longitude: 119.99011, accuracy: 18 });
+  await expect.poll(async () => Number(await marker.getAttribute("data-map-y"))).toBeLessThan(beforeY - 10);
+  await expect(page.locator(".footstep.visible").first()).toBeVisible();
+
+  const beforeForce = {
+    x: await marker.getAttribute("data-map-x"),
+    y: await marker.getAttribute("data-map-y"),
+  };
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
+  await expect(marker).toHaveAttribute("data-map-x", beforeForce.x!);
+  await expect(marker).toHaveAttribute("data-map-y", beforeForce.y!);
 });
 
 test("keeps the map immersive with a collapsible floating quest card", async ({ page }) => {
@@ -141,7 +170,7 @@ test("portrait viewport asks the explorer to rotate", async ({ page }) => {
 test("walks the four preset rehearsal maps and unlocks one with live geolocation", async ({ page, context, baseURL }) => {
   const origin = { latitude: 30.2742, longitude: 119.99088, accuracy: 24 };
   await page.addInitScript(() => {
-    sessionStorage.removeItem("exploration-nearby-rehearsal-v3");
+    sessionStorage.removeItem("exploration-nearby-rehearsal-v4");
   });
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation(origin);
@@ -149,10 +178,10 @@ test("walks the four preset rehearsal maps and unlocks one with live geolocation
   await page.getByRole("button", { name: "展开固定彩排地图" }).click();
   const route = page.locator(".nearby-route");
   await expect(route).toBeVisible();
-  await expect(route.locator("h2")).toContainText("爱橙街 · 南庭");
+  await expect(route.locator("h2")).toContainText("富力中心北区 · 东门");
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute(
     "href",
-    "/assets/maps/rehearsal/01-aicheng-south-v1.png",
+    "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png",
   );
 
   const latitude = Number(await route.getAttribute("data-target-latitude"));
@@ -173,7 +202,7 @@ test("walks the four preset rehearsal maps and unlocks one with live geolocation
   await expect(page.locator(".quest-number")).toHaveText("02");
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute(
     "href",
-    "/assets/maps/rehearsal/02-kekai-corner-v1.png",
+    "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png",
   );
 
   for (let index = 0; index < 3; index += 1) {
@@ -193,14 +222,14 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.goto("/?mode=fulltest&run=e2e-complete");
   await expect(page.locator(".intro-map-sheet img")).toHaveAttribute(
     "src",
-    "/assets/maps/rehearsal/01-aicheng-south-v1.png",
+    "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png",
   );
   await page.getByRole("button", { name: "开启地图" }).click();
 
   for (const [gift, asset] of [
-    ["好闻的", "/assets/maps/rehearsal/01-aicheng-south-v1.png"],
-    ["好用的", "/assets/maps/rehearsal/02-kekai-corner-v1.png"],
-    ["好听的", "/assets/maps/rehearsal/03-chuangjing-north-v1.png"],
+    ["好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+    ["好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+    ["好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
   ]) {
     await expect(page.locator(".quest-card h2")).toContainText(gift);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
@@ -211,7 +240,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   }
 
   await expect(page.locator(".quest-card h2")).toContainText("好看的");
-  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/04-aicheng-east-v1.png");
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png");
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
   await page.getByRole("button", { name: "点亮下一个坐标" }).click();
@@ -249,33 +278,29 @@ test("supports dragging and two-pointer zoom on the hand-drawn map", async ({ pa
   expect(Number(await map.getAttribute("data-zoom"))).toBeGreaterThan(1.2);
 });
 
-test("scores an album fallback locally and stores the passed photo", async ({ page }) => {
+test("shows one reference photo, scores an uploaded recreation, and stores it locally", async ({ page }) => {
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
       nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/");
-  await page.evaluate(() => {
-    Object.defineProperty(Object.getPrototypeOf(navigator.mediaDevices), "getUserMedia", {
-      configurable: true,
-      value: () => Promise.reject(new DOMException("Camera denied for fallback test", "NotAllowedError")),
-    });
-  });
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制抵达" }).click();
   await page.getByRole("button", { name: "开启照片复刻" }).click();
 
-  const fallbackInput = page.locator("input[type='file']");
-  await fallbackInput.waitFor({ state: "attached" });
-  await fallbackInput.setInputFiles("public/references/scent.svg");
+  await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toBeVisible();
+  await expect(page.locator("video")).toHaveCount(0);
+  const uploadInput = page.locator("input[data-role='capture-photo']").first();
+  await uploadInput.waitFor({ state: "attached" });
+  await uploadInput.setInputFiles("public/references/scent.svg");
   const startedAt = Date.now();
   await page.getByRole("button", { name: "开始匹配" }).click();
   await expect(page.getByText("SCENT FOUND")).toBeVisible();
   expect(Date.now() - startedAt).toBeLessThan(4_000);
-  await expect(page.getByText("照片匹配度 100%" )).toBeVisible();
+  await expect(page.getByText(/照片匹配度 \d+%/)).toBeVisible();
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {

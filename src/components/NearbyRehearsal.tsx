@@ -6,7 +6,7 @@ import { rehearsalZones } from "@/src/config/rehearsal";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
 
-const SESSION_KEY = "exploration-nearby-rehearsal-v3";
+const SESSION_KEY = "exploration-nearby-rehearsal-v4";
 
 type NearbySession = {
   started: boolean;
@@ -100,7 +100,7 @@ export function NearbyRehearsal() {
           <div className="sealed-letter nearby-letter">
             <span className="eyebrow">FIXED REHEARSAL ROUTE</span>
             <h1>Nearby<em>固定路线彩排</em></h1>
-            <p>四枚坐标已经预先绘制：爱橙街南庭、科凯路西街角、创景路北塔、爱橙街东桥。</p>
+            <p>四枚坐标集中在同一栋建筑周边：富力中心北区东门、南门、西门、北门。</p>
             <blockquote>每一张地图都以真实街区截图为地理底稿，并按正式版的钢笔建筑鸟瞰与古旧羊皮纸风格重新绘制。路线不会随机变化。</blockquote>
             <button className="wax-button" onClick={beginRehearsal}>
               <span>FR</span><b>展开固定彩排地图</b>
@@ -140,7 +140,7 @@ export function NearbyRehearsal() {
           <MapCanvas
             zone={zone}
             checkpoint={checkpoint}
-            routeProgress={arrived ? 1 : routeMatch.progress}
+            position={location.sample}
             locationReliable={arrived || !location.sample || location.sample.accuracy <= 120}
             arrived={arrived}
             completedIds={completedIds}

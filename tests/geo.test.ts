@@ -4,7 +4,11 @@ import {
   isInsideCheckpoint,
   matchPositionToRoute,
   medianSample,
+  projectLocationToBounds,
+  projectPositionToMap,
+  smoothPositionSample,
 } from "../src/lib/geo";
+import { rehearsalZones } from "../src/config/rehearsal";
 
 describe("geographic matching", () => {
   const route = [
@@ -43,5 +47,37 @@ describe("geographic matching", () => {
   it("allows a bounded accuracy cushion for geofences", () => {
     expect(isInsideCheckpoint(165, 80, 150)).toBe(true);
     expect(isInsideCheckpoint(260, 80, 150)).toBe(false);
+  });
+
+  it("projects live coordinates in two dimensions instead of snapping to route progress", () => {
+    const zone = rehearsalZones[0];
+    const checkpoint = zone.checkpoints[0];
+    const first = projectPositionToMap(
+      { latitude: 30.2748, longitude: 119.9904 },
+      zone,
+      checkpoint,
+    );
+    const second = projectPositionToMap(
+      { latitude: 30.2750, longitude: 119.9904 },
+      zone,
+      checkpoint,
+    );
+    expect(Math.abs(second.y - first.y)).toBeGreaterThan(10);
+    expect(Math.abs(second.x - first.x)).toBeLessThan(1);
+  });
+
+  it("keeps the four-gate map aligned to its real OSM bounds", () => {
+    const zone = rehearsalZones[0];
+    const point = projectLocationToBounds(zone.checkpoints[0].location, zone.mapBounds!);
+    expect(point.x).toBeCloseTo(zone.checkpoints[0].mapPoint.x, -1);
+    expect(point.y).toBeCloseTo(zone.checkpoints[0].mapPoint.y, -1);
+  });
+
+  it("responds immediately to meaningful movement without a five-sample freeze", () => {
+    const previous = { latitude: 30.275, longitude: 119.99, accuracy: 35, timestamp: 1 };
+    const next = { latitude: 30.2752, longitude: 119.99, accuracy: 35, timestamp: 2 };
+    const smoothed = smoothPositionSample(previous, next);
+    expect(smoothed.latitude).toBeGreaterThan(30.27515);
+    expect(smoothed.timestamp).toBe(2);
   });
 });

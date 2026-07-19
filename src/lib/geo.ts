@@ -1,4 +1,11 @@
-import type { LatLng, PositionSample, RouteMatch } from "@/src/types";
+import type {
+  Checkpoint,
+  ExplorationZone,
+  LatLng,
+  MapBounds,
+  PositionSample,
+  RouteMatch,
+} from "@/src/types";
 
 const EARTH_RADIUS_M = 6_371_000;
 
@@ -19,6 +26,77 @@ function toMeters(point: LatLng, origin: LatLng) {
   return {
     x: (point.longitude - origin.longitude) * lngScale,
     y: (point.latitude - origin.latitude) * latScale,
+  };
+}
+
+function mercatorLatitude(latitude: number) {
+  const radians = (Math.max(-85.0511, Math.min(85.0511, latitude)) * Math.PI) / 180;
+  return Math.log(Math.tan(Math.PI / 4 + radians / 2));
+}
+
+export function projectLocationToBounds(
+  point: LatLng,
+  bounds: MapBounds,
+  width = 800,
+  height = 500,
+) {
+  const x = ((point.longitude - bounds.west) / (bounds.east - bounds.west)) * width;
+  const north = mercatorLatitude(bounds.north);
+  const south = mercatorLatitude(bounds.south);
+  const y = ((north - mercatorLatitude(point.latitude)) / (north - south)) * height;
+  return {
+    x: Math.max(10, Math.min(width - 10, x)),
+    y: Math.max(10, Math.min(height - 10, y)),
+  };
+}
+
+/**
+ * Maps a live coordinate directly onto the illustrated page. It deliberately
+ * never snaps to the route: walking beside the suggested line must still move
+ * the explorer dot in two dimensions.
+ */
+export function projectPositionToMap(
+  point: LatLng,
+  zone: ExplorationZone,
+  checkpoint: Checkpoint,
+) {
+  if (zone.mapBounds) return projectLocationToBounds(point, zone.mapBounds);
+
+  const originGeo = zone.routeGeo[0] ?? zone.center;
+  const destinationGeo = checkpoint.location;
+  const live = toMeters(point, originGeo);
+  const destination = toMeters(destinationGeo, originGeo);
+  // Convert north-positive geographic metres into screen coordinates.
+  const geoX = destination.x;
+  const geoY = -destination.y;
+  const liveX = live.x;
+  const liveY = -live.y;
+  const mapX = checkpoint.mapPoint.x - zone.parkingMapPoint.x;
+  const mapY = checkpoint.mapPoint.y - zone.parkingMapPoint.y;
+  const denominator = geoX * geoX + geoY * geoY;
+  if (!denominator) return zone.parkingMapPoint;
+  const real = (mapX * geoX + mapY * geoY) / denominator;
+  const imaginary = (mapY * geoX - mapX * geoY) / denominator;
+  return {
+    x: Math.max(10, Math.min(790, zone.parkingMapPoint.x + real * liveX - imaginary * liveY)),
+    y: Math.max(10, Math.min(490, zone.parkingMapPoint.y + imaginary * liveX + real * liveY)),
+  };
+}
+
+export function smoothPositionSample(
+  previous: PositionSample | null,
+  next: PositionSample,
+): PositionSample {
+  if (!previous || next.timestamp <= previous.timestamp) return next;
+  const movedM = haversineDistance(previous, next);
+  const meaningfulMoveM = Math.max(2.5, Math.min(10, next.accuracy * 0.12));
+  const alpha = movedM >= meaningfulMoveM ? 0.78 : 0.48;
+  return {
+    latitude: previous.latitude + (next.latitude - previous.latitude) * alpha,
+    longitude: previous.longitude + (next.longitude - previous.longitude) * alpha,
+    accuracy: next.accuracy,
+    timestamp: next.timestamp,
+    heading: Number.isFinite(next.heading) ? next.heading : previous.heading,
   };
 }
 

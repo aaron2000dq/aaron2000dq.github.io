@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { medianSample } from "@/src/lib/geo";
+import { smoothPositionSample } from "@/src/lib/geo";
 import type { PositionSample } from "@/src/types";
 
 type LocationStatus = "idle" | "requesting" | "active" | "imprecise" | "denied" | "unavailable";
@@ -10,7 +10,7 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
   const [status, setStatus] = useState<LocationStatus>("idle");
   const [sample, setSample] = useState<PositionSample | null>(null);
   const [error, setError] = useState("");
-  const samples = useRef<PositionSample[]>([]);
+  const sampleRef = useRef<PositionSample | null>(null);
   const watchId = useRef<number | null>(null);
 
   const stop = useCallback(() => {
@@ -27,6 +27,8 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
       return;
     }
     stop();
+    sampleRef.current = null;
+    setSample(null);
     setStatus("requesting");
     setError("");
     watchId.current = navigator.geolocation.watchPosition(
@@ -38,8 +40,9 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           timestamp: position.timestamp,
           heading: Number.isFinite(position.coords.heading) ? Number(position.coords.heading) : undefined,
         };
-        samples.current = [...samples.current, next].slice(-5);
-        setSample(medianSample(samples.current));
+        const smoothed = smoothPositionSample(sampleRef.current, next);
+        sampleRef.current = smoothed;
+        setSample(smoothed);
         setStatus(next.accuracy <= maxAccuracy ? "active" : "imprecise");
       },
       (locationError) => {
@@ -50,7 +53,7 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
             : "暂时无法获得位置，墨点会停留在云雾里。",
         );
       },
-      { enableHighAccuracy: true, maximumAge: 5_000, timeout: 18_000 },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 25_000 },
     );
   }, [maxAccuracy, stop]);
 
@@ -59,7 +62,8 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
     else {
       stop();
       setStatus("idle");
-      samples.current = [];
+      sampleRef.current = null;
+      setSample(null);
     }
     return stop;
   }, [enabled, start, stop]);

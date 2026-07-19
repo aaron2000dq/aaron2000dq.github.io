@@ -3,6 +3,13 @@ export type LatLng = {
   longitude: number;
 };
 
+export type MapBounds = {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+};
+
 export type GiftType =
   | "scent"
   | "motion"
@@ -41,6 +48,7 @@ export type ExplorationZone = {
   maxLocationAccuracyM: number;
   accent: string;
   mapKind: "arcade" | "garden" | "vinyl" | "city";
+  mapBounds?: MapBounds;
   illustratedMapAsset?: string;
   checkpoints: Checkpoint[];
 };

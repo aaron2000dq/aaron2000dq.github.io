@@ -193,3 +193,20 @@ export async function resizeCapture(source: HTMLCanvasElement) {
   canvas.getContext("2d")?.drawImage(source, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL("image/jpeg", 0.85);
 }
+
+export async function resizePhotoFile(file: File) {
+  const source = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error ?? new Error("Photo read failed"));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(file);
+  });
+  const image = await loadImage(source);
+  const max = 2048;
+  const scale = Math.min(1, max / Math.max(image.naturalWidth, image.naturalHeight));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.85);
+}

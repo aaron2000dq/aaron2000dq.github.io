@@ -224,19 +224,25 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .fog-content p { opacity: .7; margin-bottom: 30px; }
 .spinning-compass { font-size: 76px; animation: spin 7s linear infinite; }
 
-.camera-modal { position: fixed; inset: 0; z-index: 200; background: #160f0c; color: #ead7ac; display: grid; grid-template-rows: 72px minmax(0, 1fr) 92px; padding: max(8px, env(safe-area-inset-top)) 18px max(8px, env(safe-area-inset-bottom)); }
+.camera-modal { position: fixed; inset: 0; z-index: 200; background: #160f0c; color: #ead7ac; display: grid; grid-template-rows: 72px minmax(0, 1fr) 84px; padding: max(8px, env(safe-area-inset-top)) 18px max(8px, env(safe-area-inset-bottom)); }
 .camera-header { display: grid; grid-template-columns: 150px 1fr 100px; align-items: center; gap: 12px; }
 .camera-header button { color: #ead7ac; }.camera-header > div:nth-child(2) { text-align: center; display: flex; flex-direction: column; }.camera-header span { font-size: 9px; letter-spacing: .2em; }.camera-header strong { font-size: 14px; margin-top: 5px; }.attempt-mark { font-size: 12px; text-align: right; }
-.camera-frame { position: relative; max-width: 1100px; width: 100%; min-height: 0; margin: auto; overflow: hidden; background: #080605; border: 1px solid #7c603b; }
-.camera-frame video, .camera-frame > img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.camera-frame .hidden { display: none; }
-.reference-overlay { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; filter: sepia(1) contrast(1.25); }
-.captured-preview { position: absolute; inset: 0; }
-.camera-grid { position: absolute; inset: 0; pointer-events: none; }
-.camera-grid::before, .camera-grid::after { content: ""; position: absolute; background: #f2dfb742; }.camera-grid::before { inset: 33.33% 0 auto; height: 1px; box-shadow: 0 calc((100% - 1px) / 2) #f2dfb742; }.camera-grid::after { inset: 0 auto 0 33.33%; width: 1px; box-shadow: calc((100vw - 36px) / 3) 0 #f2dfb742; }
-.camera-notice { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; background: #1d1512; }.camera-notice input { display: none; }
-.camera-controls { display: flex; justify-content: center; align-items: center; gap: 24px; }.camera-controls label { display: flex; flex-direction: column; font-size: 10px; gap: 6px; }.camera-controls > span { font-size: 11px; opacity: .7; }
-.shutter { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #e8d4a8; padding: 6px; background: transparent; }.shutter span { display: block; width: 100%; height: 100%; border-radius: 50%; background: #e8d4a8; }
+.photo-comparison { position: relative; width: min(1180px, 96vw); min-height: 0; margin: auto; display: grid; grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr); align-items: stretch; }
+.photo-panel { min-width: 0; min-height: 0; padding: 12px; display: grid; grid-template-rows: 46px minmax(0, 1fr) 42px; background: linear-gradient(145deg, #2b1e17, #110c09); border: 1px solid #80603a; box-shadow: inset 0 0 45px #0008; }
+.photo-panel header { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #735638; padding-bottom: 9px; }
+.photo-panel header > span { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid #9d7a49; border-radius: 50%; font: 700 11px Georgia, serif; }
+.photo-panel header div { display: flex; flex-direction: column; gap: 3px; }.photo-panel header b { font-size: 14px; }.photo-panel header small { font-size: 9px; letter-spacing: .12em; opacity: .6; }
+.photo-stage { position: relative; min-height: 0; margin: 10px 0; overflow: hidden; display: grid; place-items: center; background: #070504; border: 1px solid #513a28; }
+.photo-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 45px #000c; }
+.photo-stage img { width: 100%; height: 100%; min-height: 0; object-fit: contain; display: block; }
+.empty-photo-stage { background: radial-gradient(circle, #37261b, #0b0705 70%); }
+.upload-dropzone { position: absolute; inset: 8%; z-index: 2; border: 1px dashed #a78350; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; cursor: pointer; }
+.upload-dropzone i { width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid #b99560; border-radius: 50%; font: normal 34px/1 Georgia, serif; }.upload-dropzone b { font-size: 16px; }.upload-dropzone span { font-size: 9px; letter-spacing: .08em; opacity: .58; }
+.photo-file-button { width: 100%; min-height: 38px; display: grid !important; place-items: center; cursor: pointer; }
+.photo-file-button input, .upload-dropzone input { display: none; }
+.reference-pending { position: absolute; z-index: 2; inset: auto 14px 14px; padding: 8px 12px; color: #f0d49e; background: #21150ee6; border: 1px solid #977043; text-align: center; font-size: 10px; line-height: 1.5; }
+.comparison-seal { display: grid; place-items: center; align-self: center; width: 54px; height: 54px; color: #e1bd79; font: 30px Georgia, serif; }
+.camera-controls { display: flex; justify-content: center; align-items: center; gap: 24px; }.camera-controls > span { max-width: 540px; font-size: 11px; opacity: .7; }.upload-controls .primary-button { min-width: 190px; }
 .score-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 310px; text-align: center; padding: 20px; background: #d7bb83ed; color: var(--ink); border: 3px double #4b3322; box-shadow: 0 18px 50px #000; }.score-card b { display: block; font-size: 64px; line-height: 1; }.score-card > span { letter-spacing: .18em; font-size: 10px; }.score-card p { font-size: 13px; }.score-card small { opacity: .65; }.score-card.passed { background: #e1c78d; }
 .magic-interference { position: fixed; bottom: 5px; left: 0; right: 0; text-align: center; font-size: 10px; color: #d9bd86; }
 

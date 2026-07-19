@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import type { Checkpoint, ExplorationZone } from "@/src/types";
+import { projectPositionToMap } from "@/src/lib/geo";
+import type { Checkpoint, ExplorationZone, PositionSample } from "@/src/types";
 
 type Props = {
   zone: ExplorationZone;
   checkpoint: Checkpoint;
-  routeProgress: number;
+  position: PositionSample | null;
   locationReliable: boolean;
   arrived: boolean;
   completedIds: string[];
@@ -227,7 +228,7 @@ function DistrictBlueprint({ kind }: { kind: ExplorationZone["mapKind"] }) {
 export function MapCanvas({
   zone,
   checkpoint,
-  routeProgress,
+  position,
   locationReliable,
   arrived,
   completedIds,
@@ -238,12 +239,11 @@ export function MapCanvas({
   const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
   const hasIllustratedBase = Boolean(illustratedMap && failedAsset !== illustratedMap);
-  const pathRef = useRef<SVGPathElement>(null);
   const [marker, setMarker] = useState(zone.parkingMapPoint);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [footsteps, setFootsteps] = useState<Array<{ x: number; y: number; angle: number }>>([]);
-  const [walkedProgress, setWalkedProgress] = useState(0);
+  const [footsteps, setFootsteps] = useState<Array<{ x: number; y: number; angle: number; side: number }>>([]);
+  const lastTrailPoint = useRef(zone.parkingMapPoint);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({
     distance: 0,
@@ -253,31 +253,37 @@ export function MapCanvas({
   });
 
   useEffect(() => {
-    const path = pathRef.current;
-    if (!path) return;
-    const length = path.getTotalLength();
-    const point = path.getPointAtLength(length * Math.max(0, routeProgress));
-    setMarker({ x: point.x, y: point.y });
-    setFootsteps(
-      Array.from({ length: 17 }, (_, index) => {
-        const at = length * (index / 16);
-        const routePoint = path.getPointAtLength(at);
-        const before = path.getPointAtLength(Math.max(0, at - 2));
-        const after = path.getPointAtLength(Math.min(length, at + 2));
+    if (!position) return;
+    const next = projectPositionToMap(position, zone, checkpoint);
+    setMarker(next);
+    const previous = lastTrailPoint.current;
+    const dx = next.x - previous.x;
+    const dy = next.y - previous.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 7) return;
+    const angle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+    const count = Math.min(8, Math.max(1, Math.floor(distance / 10)));
+    setFootsteps((current) => {
+      const added = Array.from({ length: count }, (_, index) => {
+        const ratio = (index + 1) / (count + 1);
         return {
-          x: routePoint.x,
-          y: routePoint.y,
-          angle: (Math.atan2(after.y - before.y, after.x - before.x) * 180) / Math.PI + 90,
+          x: previous.x + dx * ratio,
+          y: previous.y + dy * ratio,
+          angle,
+          side: current.length + index,
         };
-      }),
-    );
-    setWalkedProgress((current) => Math.max(current, routeProgress));
-  }, [routeProgress, zone.id]);
+      });
+      return [...current, ...added].slice(-44);
+    });
+    lastTrailPoint.current = next;
+  }, [position?.timestamp, zone, checkpoint]);
 
   useEffect(() => {
-    setWalkedProgress(0);
-    setMarker(zone.parkingMapPoint);
-  }, [zone.id, zone.parkingMapPoint.x, zone.parkingMapPoint.y]);
+    setFootsteps([]);
+    const start = position ? projectPositionToMap(position, zone, checkpoint) : zone.parkingMapPoint;
+    setMarker(start);
+    lastTrailPoint.current = start;
+  }, [zone.id, checkpoint.id, zone.parkingMapPoint.x, zone.parkingMapPoint.y]);
 
   function pointerCenter() {
     const values = [...pointers.current.values()];
@@ -346,7 +352,7 @@ export function MapCanvas({
         aria-label="可拖拽和双指缩放的探索地图"
         data-zoom={zoom.toFixed(2)}
         data-pan={`${Math.round(pan.x)},${Math.round(pan.y)}`}
-        animate={{ scale: arrived ? 1.08 : zoom, x: arrived ? -18 : pan.x, y: arrived ? 8 : pan.y }}
+        animate={{ scale: zoom, x: pan.x, y: pan.y }}
         transition={{ duration: 1.1, ease: "easeInOut" }}
         onPointerDown={beginGesture}
         onPointerMove={moveGesture}
@@ -384,15 +390,13 @@ export function MapCanvas({
           )}
           <AtlasFurniture />
           <g className="legacy-blueprint"><DistrictBlueprint kind={zone.mapKind} /></g>
-          <path ref={pathRef} className="route-path" d={zone.svgPath} />
+          <path className="route-path" d={zone.svgPath} />
           {footsteps.map((point, index) => {
-            const progress = index / 16;
-            const visible = walkedProgress > 0.035 && progress < walkedProgress - 0.018;
             return (
               <g
                 key={index}
-                className={`footstep ${visible ? "visible" : ""}`}
-                transform={`translate(${point.x} ${point.y}) rotate(${point.angle}) translate(${index % 2 ? 3.4 : -3.4} 0)`}
+                className="footstep visible"
+                transform={`translate(${point.x} ${point.y}) rotate(${point.angle}) translate(${point.side % 2 ? 3.4 : -3.4} 0)`}
               >
                 <ellipse cy="-3.2" rx="2.15" ry="4.4" />
                 <ellipse cy="3.4" rx="1.35" ry="2.45" />
@@ -424,6 +428,8 @@ export function MapCanvas({
             transition={{ duration: 0.9, ease: "easeOut" }}
             className={`atlas-point you-marker ${locationReliable ? "" : "in-fog"}`}
             data-heading={Math.round(((heading % 360) + 360) % 360)}
+            data-map-x={marker.x.toFixed(1)}
+            data-map-y={marker.y.toFixed(1)}
             role="img"
             aria-label="当前位置"
           >

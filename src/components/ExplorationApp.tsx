@@ -93,7 +93,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     [position, zone, checkpoint.location],
   );
   const arrived = progress.arrivedCheckpointIds.includes(checkpoint.id);
-  const locationReliable = Boolean(position && position.accuracy <= zone.maxLocationAccuracyM && routeMatch.distanceFromRouteM < 220);
+  const locationReliable = Boolean(position && position.accuracy <= zone.maxLocationAccuracyM);
 
   useEffect(() => {
     setQuestExpanded(arrived);
@@ -125,7 +125,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       ...current,
       label: isIPad ? "iPad 已识别" : "桌面彩排模式",
       location: "geolocation" in navigator,
-      camera: Boolean(navigator.mediaDevices?.getUserMedia),
+      camera: "FileReader" in window,
     }));
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.ready
@@ -201,14 +201,24 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
   function continueAfterUnlock() {
     setUnlockOpen(false);
+    setMockPosition(null);
+    setInsideStreak(0);
     const checkpointIndex = zone.checkpoints.findIndex((item) => item.id === checkpoint.id);
     const nextInZone = zone.checkpoints[checkpointIndex + 1];
     if (nextInZone) {
+      const alreadyAtNext = Boolean(
+        position &&
+          isInsideCheckpoint(
+            matchPositionToRoute(position, zone.routeGeo, nextInZone.location).distanceToCheckpointM,
+            position.accuracy,
+            nextInZone.unlockRadiusM,
+          ),
+      );
       setProgress((current) => ({
         ...current,
         activeCheckpointId: nextInZone.id,
         arrivedCheckpointIds:
-          nextInZone.giftType === "love"
+          nextInZone.giftType === "love" || alreadyAtNext
             ? [...new Set([...current.arrivedCheckpointIds, nextInZone.id])]
             : current.arrivedCheckpointIds,
       }));
@@ -226,6 +236,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const nextZone = storyZones[zone.order];
     if (!nextZone) return;
     setMockPosition(null);
+    setInsideStreak(0);
     setProgress((current) => ({
       ...current,
       phase: "map",
@@ -236,6 +247,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   }
 
   function forceArrive() {
+    setMockPosition(null);
+    setInsideStreak(0);
     setProgress((current) => ({
       ...current,
       arrivedCheckpointIds: [...new Set([...current.arrivedCheckpointIds, checkpoint.id])],
@@ -244,6 +257,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   }
 
   async function forcePass() {
+    setMockPosition(null);
+    setInsideStreak(0);
     setGmOpen(false);
     await completeCheckpoint(undefined, {
       score: 100,
@@ -258,6 +273,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const all = storyZones.flatMap((item) => item.checkpoints.map((cp) => ({ zone: item, cp })));
     const index = all.findIndex((item) => item.cp.id === checkpoint.id);
     const previous = all[Math.max(0, index - 1)];
+    setMockPosition(null);
+    setInsideStreak(0);
     setProgress((current) => ({
       ...current,
       phase: "map",
@@ -290,6 +307,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
   function startExploration() {
     void deviceHeading.request();
+    setMockPosition(null);
+    setInsideStreak(0);
     setProgress((current) => ({ ...current, zoneStarted: true }));
   }
 
@@ -395,7 +414,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
               <div className="device-readiness" aria-label="设备就绪状态">
                 <span className="ready">{deviceStatus.label}</span>
                 <span className={deviceStatus.location ? "ready" : "warning"}>{deviceStatus.location ? "定位可用" : "定位需暗门兜底"}</span>
-                <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "相机可用" : "可从相册选图"}</span>
+                <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "相册上传可用" : "照片读取不可用"}</span>
                 <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "离线地图已缓存" : "正在缓存离线地图"}</span>
               </div>
               <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas}><span>EA<i/></span><b>{introOpening ? "地图正在显影…" : "开启地图"}</b></button>
@@ -415,7 +434,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           <motion.section className="exploration-screen" key={`${zone.id}-${checkpoint.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <header className="topbar"><div><span>THE EXPLORATION ATLAS</span><b>{zone.title}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已解锁" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
-              <MapCanvas zone={zone} checkpoint={checkpoint} routeProgress={arrived ? 1 : routeMatch.progress} locationReliable={!progress.zoneStarted || locationReliable || arrived} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
+              <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
               <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
                 <button
                   className="quest-panel-toggle"

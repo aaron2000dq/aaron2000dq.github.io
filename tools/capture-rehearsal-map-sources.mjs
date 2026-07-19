@@ -4,7 +4,6 @@ import path from "node:path";
 
 const SIZE = 1254;
 const TILE_SIZE = 256;
-const ZOOM = 17;
 const outputDir = path.resolve("artifacts/rehearsal-map-sources");
 
 const maps = [
@@ -12,10 +11,15 @@ const maps = [
   { id: "02-kekai-corner", center: { latitude: 30.273452, longitude: 119.989613 } },
   { id: "03-chuangjing-north", center: { latitude: 30.275758, longitude: 119.991716 } },
   { id: "04-aicheng-east", center: { latitude: 30.274442, longitude: 119.993348 } },
+  {
+    id: "05-fuli-north-four-gates",
+    center: { latitude: 30.27548, longitude: 119.9901 },
+    zoom: 18,
+  },
 ];
 
-function mercator(point) {
-  const scale = TILE_SIZE * 2 ** ZOOM;
+function mercator(point, zoom) {
+  const scale = TILE_SIZE * 2 ** zoom;
   const latitude = Math.max(-85.0511, Math.min(85.0511, point.latitude));
   return {
     x: ((point.longitude + 180) / 360) * scale,
@@ -30,7 +34,8 @@ const browser = await webkit.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: SIZE, height: SIZE } });
 
 for (const map of maps) {
-  const center = mercator(map.center);
+  const zoom = map.zoom ?? 17;
+  const center = mercator(map.center, zoom);
   const topLeft = { x: center.x - SIZE / 2, y: center.y - SIZE / 2 };
   const tiles = [];
   const minX = Math.floor(topLeft.x / TILE_SIZE);
@@ -40,7 +45,7 @@ for (const map of maps) {
   for (let y = minY; y <= maxY; y += 1) {
     for (let x = minX; x <= maxX; x += 1) {
       tiles.push({
-        url: `https://tile.openstreetmap.org/${ZOOM}/${x}/${y}.png`,
+        url: `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`,
         x: x * TILE_SIZE - topLeft.x,
         y: y * TILE_SIZE - topLeft.y,
       });
