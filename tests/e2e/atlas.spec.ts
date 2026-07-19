@@ -80,6 +80,37 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(123)");
 });
 
+test("keeps the map immersive with a collapsible floating quest card", async ({ page }) => {
+  await page.addInitScript(() => {
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 5_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-immersive-map");
+  await page.getByRole("button", { name: "开启地图" }).click();
+
+  const map = page.locator(".map-stage");
+  const card = page.locator(".floating-quest-card");
+  await expect(card).toHaveClass(/is-collapsed/);
+  await expect(page.locator(".quest-clue")).toHaveCount(0);
+  expect(await map.evaluate((element) => getComputedStyle(element).position)).toBe("relative");
+  expect(await card.evaluate((element) => getComputedStyle(element).position)).toBe("absolute");
+  const [mapBox, viewport] = await Promise.all([map.boundingBox(), page.evaluate(() => innerWidth)]);
+  expect(mapBox!.width / viewport).toBeGreaterThan(0.98);
+
+  await page.getByRole("button", { name: "查看线索" }).click();
+  await expect(card).toHaveClass(/is-expanded/);
+  await expect(page.locator(".quest-clue")).toBeVisible();
+  await map.click({ position: { x: 110, y: 260 } });
+  await expect(card).toHaveClass(/is-collapsed/);
+
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
+  await expect(card).toHaveClass(/is-expanded/);
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
+});
+
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.25414, longitude: 120.21094, accuracy: 18 });

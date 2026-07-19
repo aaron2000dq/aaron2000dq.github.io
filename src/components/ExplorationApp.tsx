@@ -57,6 +57,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [gmPinOpen, setGmPinOpen] = useState(false);
   const [gmOpen, setGmOpen] = useState(false);
+  const [questExpanded, setQuestExpanded] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
   const [surveyMode, setSurveyMode] = useState(false);
@@ -92,6 +93,10 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   );
   const arrived = progress.arrivedCheckpointIds.includes(checkpoint.id);
   const locationReliable = Boolean(position && position.accuracy <= zone.maxLocationAccuracyM && routeMatch.distanceFromRouteM < 220);
+
+  useEffect(() => {
+    setQuestExpanded(arrived);
+  }, [checkpoint.id, arrived]);
 
   useEffect(() => {
     Promise.all([loadProgress(storageNamespace, storyInitialProgress), getPhotos(storageNamespace)]).then(([saved, savedPhotos]) => {
@@ -394,14 +399,20 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           <motion.section className="exploration-screen" key={`${zone.id}-${checkpoint.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <header className="topbar"><div><span>THE EXPLORATION ATLAS</span><b>{zone.title}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已解锁" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
-              <MapCanvas zone={zone} checkpoint={checkpoint} routeProgress={arrived ? 1 : routeMatch.progress} locationReliable={!progress.zoneStarted || locationReliable || arrived} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0}/>
-              <aside className="quest-card">
+              <MapCanvas zone={zone} checkpoint={checkpoint} routeProgress={arrived ? 1 : routeMatch.progress} locationReliable={!progress.zoneStarted || locationReliable || arrived} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
+              <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
+                <button
+                  className="quest-panel-toggle"
+                  type="button"
+                  aria-expanded={questExpanded}
+                  onClick={() => setQuestExpanded((current) => !current)}
+                >{questExpanded ? "收起" : "查看线索"}</button>
                 <div className="quest-number">{String(giftOrder[checkpoint.giftType]).padStart(2, "0")}</div>
                 <span className="eyebrow">CURRENT COORDINATE</span>
                 <h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>
-                <p>{checkpoint.clue}</p>
+                {questExpanded && <p className="quest-clue">{checkpoint.clue}</p>}
                 <div className="distance-row"><span>{arrived ? "已经抵达" : formatDistance(routeMatch.distanceToCheckpointM)}</span><small>{position ? `精度 ±${Math.round(position.accuracy)}m` : "Wi‑Fi iPad 粗定位"}</small></div>
-                {location.error && !arrived && <div className="location-warning">{location.error}<button onClick={location.retry}>重试</button></div>}
+                {questExpanded && location.error && !arrived && <div className="location-warning">{location.error}<button onClick={location.retry}>重试</button></div>}
                 {checkpoint.giftType === "love" ? (
                   <button className="primary-button" onClick={() => completeCheckpoint()}>打开最后一封信</button>
                 ) : !progress.zoneStarted ? (
@@ -409,7 +420,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                 ) : arrived ? (
                   <button className="primary-button" onClick={() => setCameraOpen(true)}>开启照片复刻</button>
                 ) : (
-                  <><button className="secondary-button" onClick={location.retry}>重新定位</button><p className="tiny-note">定位连续两次进入约 {checkpoint.unlockRadiusM} 米范围后，照片任务会自动出现。</p></>
+                  <><button className="secondary-button" onClick={location.retry}>重新定位</button>{questExpanded && <p className="tiny-note">定位连续两次进入约 {checkpoint.unlockRadiusM} 米范围后，照片任务会自动出现。</p>}</>
                 )}
               </aside>
             </div>

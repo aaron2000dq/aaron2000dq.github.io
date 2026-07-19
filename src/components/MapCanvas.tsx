@@ -12,6 +12,7 @@ type Props = {
   arrived: boolean;
   completedIds: string[];
   heading?: number;
+  onMapFocus?: () => void;
 };
 
 const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> = {
@@ -231,6 +232,7 @@ export function MapCanvas({
   arrived,
   completedIds,
   heading = 0,
+  onMapFocus,
 }: Props) {
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
   const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
@@ -334,7 +336,7 @@ export function MapCanvas({
   }
 
   return (
-    <div className="map-stage" aria-label={`${zone.title} 活点地图`}>
+    <div className="map-stage" aria-label={`${zone.title} 活点地图`} onClick={onMapFocus}>
       <div className="map-tools" aria-label="地图缩放">
         <button onClick={() => setZoom((value) => Math.min(1.18, value + 0.08))}>＋</button>
         <button onClick={() => setZoom((value) => Math.max(0.92, value - 0.08))}>−</button>

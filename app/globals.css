@@ -101,8 +101,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .intro-opening-copy small { letter-spacing: .17em; opacity: .72; }
 .intro-screen.is-opening .intro-opening-copy { animation: introCopyAppear .8s ease forwards 2.05s; }
 
-.exploration-screen { min-height: 100dvh; background: radial-gradient(ellipse at 48% 44%, #4a3021 0 35%, #21140e 80%), repeating-linear-gradient(91deg, #3b2619 0 4px, #2c1c13 5px 10px); padding: max(12px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); }
-.topbar { height: 57px; display: flex; align-items: center; justify-content: space-between; color: #ddc79a; border-bottom: 1px solid #81613d; padding: 0 74px 10px 5px; }
+.exploration-screen { position: relative; min-height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 48% 44%, #4a3021 0 35%, #21140e 80%), repeating-linear-gradient(91deg, #3b2619 0 4px, #2c1c13 5px 10px); padding: 0; }
+.topbar { position: absolute; z-index: 20; top: max(14px, env(safe-area-inset-top)); left: max(18px, env(safe-area-inset-left)); right: max(18px, env(safe-area-inset-right)); height: 54px; display: flex; align-items: center; justify-content: space-between; color: #ead6a9; border: 1px solid #8b6842; padding: 0 18px; background: linear-gradient(90deg, #241710ed, #352319d4 64%, #241710ed); box-shadow: 0 8px 28px #150b0799, inset 0 0 24px #a1743a1a; backdrop-filter: blur(9px); }
 .topbar > div:first-child { display: flex; flex-direction: column; }
 .topbar span { font-size: 9px; letter-spacing: .18em; }
 .topbar b { font-size: 18px; }
@@ -110,8 +110,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .chapter-dots i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #b99863; }
 .chapter-dots i.active { background: #d9bb7c; box-shadow: 0 0 12px #e8bd68; }
 .status-chip { font-size: 11px; border: 1px solid #81613d; border-radius: 999px; padding: 7px 12px; }
-.map-layout { height: calc(100dvh - 81px); display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; padding-top: 12px; }
-.map-stage { position: relative; min-width: 0; overflow: hidden; background-color: #c49a5e; background-image: linear-gradient(145deg, #dfc995d9 0%, #c39b63cf 52%, #9a6a42d9 100%), url('/assets/parchment-atlas-bg.png'); background-size: 100% 100%; background-position: center; background-blend-mode: normal, multiply; border: 1px solid #8a6038; box-shadow: inset 0 0 90px #3f2415a6, inset 0 0 0 9px #c7a26742, 0 18px 40px #0d0806; clip-path: polygon(.7% 0, 20% .8%, 43% 0, 69% .7%, 99.5% 0, 99% 23%, 100% 47%, 99.2% 72%, 100% 99.5%, 72% 99%, 49% 100%, 20% 99.2%, 0 100%, .8% 72%, 0 42%); }
+.map-layout { position: absolute; inset: 0; height: 100dvh; display: block; padding: 0; }
+.map-stage { position: relative; width: 100%; height: 100%; min-width: 0; overflow: hidden; background-color: #c49a5e; background-image: linear-gradient(145deg, #dfc995d9 0%, #c39b63cf 52%, #9a6a42d9 100%), url('/assets/parchment-atlas-bg.png'); background-size: 100% 100%; background-position: center; background-blend-mode: normal, multiply; border: 0; box-shadow: inset 0 0 110px #3f2415b5, inset 0 0 0 10px #c7a26730; clip-path: none; }
 .map-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .17; background: linear-gradient(90deg, transparent 49.8%, #55351e 50%, transparent 50.2%), linear-gradient(transparent 49.8%, #55351e 50%, transparent 50.2%); mix-blend-mode: multiply; }
 .real-map-stage > svg { width: 100%; height: 100%; display: block; }
 .real-tile-layer { opacity: .82; }
@@ -171,18 +171,29 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .map-title { font-size: 10.5px; font-weight: 700; fill: #2f1e14; letter-spacing: .14em; text-transform: uppercase; }
 .map-subtitle { fill: #583a27; font-size: 6.5px; letter-spacing: .05em; }
 .wax-dot circle { fill: #6e302c; }.wax-dot path { fill: none; stroke: #ead29d; stroke-width: 2; }
-.map-tools { position: absolute; z-index: 5; right: 20px; top: 20px; display: flex; flex-direction: column; }
+.exploration-screen .map-cartouche { opacity: 0; }
+.map-tools { position: absolute; z-index: 15; left: max(20px, env(safe-area-inset-left)); top: max(82px, calc(env(safe-area-inset-top) + 72px)); display: flex; flex-direction: column; box-shadow: 0 6px 18px #2b180e66; }
 .map-illustration-loading { position: absolute; z-index: 4; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: #40291b; background: radial-gradient(circle, #d7b77aee, #a8784be8); letter-spacing: .08em; }
 .map-illustration-loading .ink-loader { width: 42px; height: 42px; }
 .map-illustration-fallback { position: absolute; z-index: 4; left: 50%; bottom: 18px; transform: translateX(-50%); padding: 7px 12px; background: #2d2018db; color: #ead6a7; font-size: 10px; }
 .map-tools button { width: 34px; height: 34px; border: 1px solid #61452f; background: #ddc28ad9; }
 .map-fog-local { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 30% 50%, transparent 0 20%, #e7d4af77 45%, #e7d4afcc 78%); animation: fogPulse 5s ease-in-out infinite alternate; }
-.quest-card { position: relative; background-color: #c6a36b; background-image: radial-gradient(circle at 34% 18%, #eed8a6 0%, #d2af72 47%, #a87649 100%), repeating-radial-gradient(circle at 20% 30%, #4a2d1812 0 1px, transparent 1px 5px); border: 1px solid #8d633b; padding: 30px 25px 23px; box-shadow: inset 0 0 52px #5c351d80, 0 14px 32px #0d0806; overflow: auto; }
+.quest-card { position: absolute; z-index: 16; top: max(82px, calc(env(safe-area-inset-top) + 72px)); right: max(22px, env(safe-area-inset-right)); width: 292px; max-height: calc(100dvh - 174px); background-color: #c6a36bea; background-image: radial-gradient(circle at 34% 18%, #eed8a6f2 0%, #d2af72ef 47%, #a87649ed 100%), repeating-radial-gradient(circle at 20% 30%, #4a2d1812 0 1px, transparent 1px 5px); border: 1px solid #8d633b; padding: 28px 24px 22px; box-shadow: inset 0 0 52px #5c351d80, 0 16px 42px #0d0806b3; overflow: auto; backdrop-filter: blur(9px); transition: width .28s ease, padding .28s ease, box-shadow .28s ease; }
 .quest-card::before { content: ""; position: absolute; inset: 8px; border: 1px solid #7c5738; pointer-events: none; }
+.quest-card.is-collapsed { width: 248px; padding: 50px 20px 18px; box-shadow: inset 0 0 38px #5c351d70, 0 12px 30px #0d08068f; }
+.quest-panel-toggle { position: absolute; z-index: 2; top: 14px; right: 14px; padding: 5px 8px; border: 1px solid #765334; background: #e5cb94a6; color: #392418; font-family: inherit; font-size: 9px; letter-spacing: .08em; }
 .quest-number { position: absolute; top: 13px; right: 20px; font-size: 50px; line-height: 1; color: #80583755; }
+.floating-quest-card .quest-number { top: 42px; right: 20px; font-size: 38px; }
+.quest-card.is-collapsed > .eyebrow { display: none; }
+.floating-quest-card.is-collapsed .quest-number { top: 15px; left: 20px; right: auto; font-size: 24px; color: #68452e99; }
 .quest-card h2 { margin: 18px 0 16px; font-size: 28px; }
 .quest-card h2 small { display: block; margin-top: 3px; font-size: 13px; font-weight: 400; letter-spacing: .08em; }
 .quest-card > p { font-size: 14px; line-height: 1.75; }
+.quest-card.is-collapsed h2 { margin: 0 0 10px; font-size: 22px; }
+.quest-card.is-collapsed h2 small { font-size: 11px; }
+.quest-card.is-collapsed .distance-row { margin: 10px 0 12px; padding: 9px 0; }
+.quest-card.is-collapsed .distance-row span { font-size: 15px; }
+.quest-card.is-collapsed .distance-row small { max-width: 85px; text-align: right; }
 .distance-row { margin: 20px 0; padding: 13px 0; border-block: 1px solid #765334; display: flex; justify-content: space-between; align-items: end; }
 .distance-row span { font-size: 18px; font-weight: 700; }.distance-row small { font-size: 10px; }
 .quest-card .primary-button, .quest-card .secondary-button { width: 100%; }
@@ -256,8 +267,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
   .rotate-notice { display: grid; }
 }
 @media (max-height: 650px) {
-  .map-layout { grid-template-columns: minmax(0, 1fr) 280px; }
-  .quest-card { padding-top: 24px; }
+  .quest-card { top: 76px; max-height: calc(100dvh - 150px); padding-top: 24px; }
   .quest-card h2 { margin: 11px 0; }
   .quest-card > p { line-height: 1.55; }
   .distance-row { margin: 12px 0; }
