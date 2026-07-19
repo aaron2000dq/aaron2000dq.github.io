@@ -22,7 +22,12 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
 
   const compass = page.getByRole("button", { name: "指南针" });
   await compass.dispatchEvent("pointerdown");
-  await page.waitForTimeout(5_100);
+  await expect(compass).toHaveClass(/is-holding/);
+  expect(
+    await compass.locator(".compass-hold-progress circle").evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("compassHoldProgress");
+  await compass.dispatchEvent("pointermove", { pointerId: 1, clientX: -20, clientY: -20 });
+  await page.waitForTimeout(3_100);
   await compass.dispatchEvent("pointerup");
   await expect(page.getByRole("heading", { name: "输入制图人口令" })).toBeVisible();
   await page.locator("input[inputmode='numeric']").fill("1104");
@@ -84,7 +89,7 @@ test("keeps the map immersive with a collapsible floating quest card", async ({ 
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
-      nativeTimeout(handler, timeout === 5_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/?mode=fulltest&run=e2e-immersive-map");
   await page.getByRole("button", { name: "开启地图" }).click();
@@ -183,7 +188,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
-      nativeTimeout(handler, timeout === 5_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/?mode=fulltest&run=e2e-complete");
   await expect(page.locator(".intro-map-sheet img")).toHaveAttribute(
@@ -248,7 +253,7 @@ test("scores an album fallback locally and stores the passed photo", async ({ pa
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
-      nativeTimeout(handler, timeout === 5_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/");
   await page.evaluate(() => {

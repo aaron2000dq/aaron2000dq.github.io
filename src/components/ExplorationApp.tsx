@@ -57,6 +57,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [gmPinOpen, setGmPinOpen] = useState(false);
   const [gmOpen, setGmOpen] = useState(false);
+  const [compassHolding, setCompassHolding] = useState(false);
   const [questExpanded, setQuestExpanded] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -292,17 +293,31 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     setProgress((current) => ({ ...current, zoneStarted: true }));
   }
 
-  function beginCompassHold() {
+  function beginCompassHold(event: React.PointerEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    if (compassTimer.current) window.clearTimeout(compassTimer.current);
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Safari may reject capture for a synthetic event; the hold timer still works.
+    }
+    setCompassHolding(true);
     compassTimer.current = window.setTimeout(() => {
+      compassTimer.current = null;
+      setCompassHolding(false);
       setGmPinOpen(true);
       setPin("");
       setPinError(false);
-    }, 5000);
+    }, 3000);
   }
 
-  function endCompassHold() {
+  function endCompassHold(event?: React.PointerEvent<HTMLButtonElement>) {
     if (compassTimer.current) window.clearTimeout(compassTimer.current);
     compassTimer.current = null;
+    setCompassHolding(false);
+    if (event?.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   }
 
   function submitPin(event: React.FormEvent) {
@@ -334,12 +349,13 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     <main className="atlas-shell">
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
       <button
-        className="compass-secret"
+        className={`compass-secret ${compassHolding ? "is-holding" : ""}`}
         aria-label="指南针"
         onPointerDown={beginCompassHold}
         onPointerUp={endCompassHold}
-        onPointerLeave={endCompassHold}
-      ><span>N</span><i/></button>
+        onPointerCancel={endCompassHold}
+        onContextMenu={(event) => event.preventDefault()}
+      ><span>N</span><i/><svg className="compass-hold-progress" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" pathLength="1"/></svg></button>
 
       <AnimatePresence mode="wait">
         {progress.phase === "intro" && (

@@ -20,11 +20,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .atlas-shell::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: multiply; background: radial-gradient(ellipse at 8% 18%, #2b170d55 0 2%, transparent 11%), radial-gradient(ellipse at 83% 76%, #2b170d33 0 3%, transparent 14%), linear-gradient(102deg, transparent 0 48%, #3d25141c 51%, transparent 54%); }
 .rotate-notice { display: none; position: fixed; inset: 0; z-index: 300; place-content: center; text-align: center; color: var(--ink); background: var(--paper-light); padding: 40px; }
 .rotate-icon { font-size: 58px; }
-.compass-secret { position: fixed; z-index: 250; right: max(18px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); width: 58px; height: 58px; border: 1px solid #d8bd86; border-radius: 50%; background: #2d2018e8; color: #ead6a7; box-shadow: 0 8px 30px #130a06; }
+.compass-secret { position: fixed; z-index: 250; right: max(18px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); width: 58px; height: 58px; border: 1px solid #d8bd86; border-radius: 50%; background: #2d2018e8; color: #ead6a7; box-shadow: 0 8px 30px #130a06; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .compass-secret::before, .compass-secret::after { content: ""; position: absolute; inset: 8px 27px; background: #a98150; transform: rotate(45deg); }
 .compass-secret::after { transform: rotate(-45deg); }
 .compass-secret span { position: absolute; top: 5px; left: 0; right: 0; font-size: 9px; z-index: 2; }
 .compass-secret i { position: absolute; inset: 23px; border-radius: 50%; background: #d5b06c; z-index: 3; }
+.compass-hold-progress { position: absolute; z-index: 5; inset: -4px; width: 64px; height: 64px; pointer-events: none; transform: rotate(-90deg); }
+.compass-hold-progress circle { fill: none; stroke: #f0ce82; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 4px #e9bc64); }
+.compass-secret.is-holding { transform: scale(1.05); box-shadow: 0 8px 30px #130a06, 0 0 24px #d8ae5d8f; }
+.compass-secret.is-holding .compass-hold-progress circle { animation: compassHoldProgress 3s linear forwards; }
 
 .primary-button, .secondary-button, .text-button, .wax-button { border: 0; cursor: pointer; }
 .primary-button { padding: 13px 20px; background: var(--ink); color: #f1dfb3; border: 1px solid #6f5032; box-shadow: inset 0 0 0 2px #21160f, 0 6px 16px #3b241b3d; letter-spacing: .06em; }
@@ -250,6 +254,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 @keyframes drift { from { transform: translate(-18%, -5%) scale(1); } to { transform: translate(18%, 7%) scale(1.25); } }
 @keyframes fogPulse { from { opacity: .6; } to { opacity: .9; } }
 @keyframes atlasPointBreath { 0%, 100% { opacity: .12; transform: scale(.72); } 50% { opacity: .58; transform: scale(1.75); } }
+@keyframes compassHoldProgress { to { stroke-dashoffset: 0; } }
 @keyframes introRoomDarken { 0% { background-color: transparent; } 45%, 100% { background-color: #29170f; } }
 @keyframes introGridRecede { to { opacity: .05; transform: scale(1.08); } }
 @keyframes waxBreak { 0% { transform: scale(1); box-shadow: 0 5px 10px #3c211399; } 36% { transform: scale(1.24) rotate(-5deg); box-shadow: 0 0 35px #d4aa62; } 70% { transform: scale(.95) rotate(4deg); opacity: 1; } 100% { transform: scale(1.55) rotate(9deg); opacity: 0; } }
