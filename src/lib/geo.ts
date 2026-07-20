@@ -100,6 +100,24 @@ export function smoothPositionSample(
   };
 }
 
+/**
+ * A coarse sample is useful for telling the explorer why tracking is paused,
+ * but it must never move the ink dot. Keep the last reliable coordinate while
+ * copying only freshness/accuracy metadata from the rejected reading.
+ */
+export function holdLastReliablePosition(
+  previous: PositionSample | null,
+  rejected: PositionSample,
+): PositionSample | null {
+  if (!previous) return null;
+  return {
+    ...previous,
+    accuracy: rejected.accuracy,
+    timestamp: rejected.timestamp,
+    heading: Number.isFinite(rejected.heading) ? rejected.heading : previous.heading,
+  };
+}
+
 function segmentProjection(
   point: { x: number; y: number },
   a: { x: number; y: number },
@@ -181,7 +199,14 @@ export function isInsideCheckpoint(
   distanceM: number,
   accuracyM: number,
   radiusM: number,
+  maxAccuracyM = 200,
 ) {
+  if (
+    !Number.isFinite(distanceM) ||
+    !Number.isFinite(accuracyM) ||
+    accuracyM < 0 ||
+    accuracyM > maxAccuracyM
+  ) return false;
   const accuracyAllowance = Math.min(80, Math.max(0, accuracyM * 0.35));
   return distanceM <= radiusM + accuracyAllowance;
 }

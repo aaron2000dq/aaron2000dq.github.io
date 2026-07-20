@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   haversineDistance,
+  holdLastReliablePosition,
   isInsideCheckpoint,
   matchPositionToRoute,
   medianSample,
@@ -47,6 +48,23 @@ describe("geographic matching", () => {
   it("allows a bounded accuracy cushion for geofences", () => {
     expect(isInsideCheckpoint(165, 80, 150)).toBe(true);
     expect(isInsideCheckpoint(260, 80, 150)).toBe(false);
+    expect(isInsideCheckpoint(0, 500, 150, 200)).toBe(false);
+    expect(isInsideCheckpoint(0, Number.NaN, 150, 200)).toBe(false);
+  });
+
+  it("freezes at the last reliable coordinate when a coarse sample arrives", () => {
+    const previous = { latitude: 30.275, longitude: 119.99, accuracy: 24, timestamp: 1 };
+    const held = holdLastReliablePosition(previous, {
+      latitude: 30.28,
+      longitude: 120.01,
+      accuracy: 500,
+      timestamp: 2,
+    });
+    expect(held?.latitude).toBe(previous.latitude);
+    expect(held?.longitude).toBe(previous.longitude);
+    expect(held?.accuracy).toBe(500);
+    expect(held?.timestamp).toBe(2);
+    expect(holdLastReliablePosition(null, { ...previous, accuracy: 500 })).toBeNull();
   });
 
   it("projects live coordinates in two dimensions instead of snapping to route progress", () => {

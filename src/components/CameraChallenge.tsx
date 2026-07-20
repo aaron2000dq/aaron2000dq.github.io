@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { Checkpoint, MatchResult } from "@/src/types";
-import { resizePhotoFile, scorePhoto } from "@/src/lib/photoMatch";
+import { resizePhotoFile, scorePhoto, warmPhotoMatcher } from "@/src/lib/photoMatch";
 import { getReference, saveReference } from "@/src/lib/storage";
 
 type Props = {
@@ -31,8 +31,15 @@ export function CameraChallenge({
   const [result, setResult] = useState<MatchResult | null>(null);
   const [scoring, setScoring] = useState(false);
   const [loadingPhoto, setLoadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+  const active = useRef(true);
+
+  useEffect(() => () => {
+    active.current = false;
+  }, []);
 
   useEffect(() => {
+    void warmPhotoMatcher();
     let active = true;
     getReference(checkpoint.id, storageNamespace).then((saved) => {
       if (!active || !saved) return;
@@ -47,37 +54,49 @@ export function CameraChallenge({
   async function chooseCapture(file?: File) {
     if (!file) return;
     setLoadingPhoto(true);
+    setPhotoError("");
     try {
-      setCapture(await resizePhotoFile(file));
+      const resized = await resizePhotoFile(file);
+      if (!active.current) return;
+      setCapture(resized);
       setResult(null);
+    } catch {
+      if (active.current) setPhotoError("这张照片无法读取，请换一张 JPG、PNG 或系统照片。");
     } finally {
-      setLoadingPhoto(false);
+      if (active.current) setLoadingPhoto(false);
     }
   }
 
   async function chooseReference(file?: File) {
     if (!file) return;
     setLoadingPhoto(true);
+    setPhotoError("");
     try {
       const dataUrl = await resizePhotoFile(file);
       await saveReference(checkpoint.id, dataUrl, storageNamespace);
+      if (!active.current) return;
       setReference(dataUrl);
       setHasCustomReference(true);
       setResult(null);
+    } catch {
+      if (active.current) setPhotoError("参考照片无法读取，请更换文件后再试。");
     } finally {
-      setLoadingPhoto(false);
+      if (active.current) setLoadingPhoto(false);
     }
   }
 
   async function evaluate() {
     if (!capture) return;
     setScoring(true);
+    setPhotoError("");
     try {
       const match = await scorePhoto(reference, capture, checkpoint.matchMode);
+      if (!active.current) return;
       setResult(match);
       onAttempt(match);
       if (match.score >= checkpoint.passScore) onPass(capture, match);
     } catch {
+      if (!active.current) return;
       const fallback: MatchResult = {
         score: 58,
         sceneScore: 58,
@@ -88,8 +107,13 @@ export function CameraChallenge({
       setResult(fallback);
       onAttempt(fallback);
     } finally {
-      setScoring(false);
+      if (active.current) setScoring(false);
     }
+  }
+
+  function closeChallenge() {
+    active.current = false;
+    onClose();
   }
 
   const temporaryReference = !hasCustomReference && checkpoint.referenceImage.endsWith(".svg");
@@ -97,7 +121,7 @@ export function CameraChallenge({
   return (
     <motion.div className="camera-modal upload-challenge" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="camera-header">
-        <button className="text-button" onClick={onClose}>返回地图</button>
+        <button className="text-button" onClick={closeChallenge}>返回地图</button>
         <div>
           <span>PHOTO RE-CREATION</span>
           <strong>参考左侧照片，上传你复刻完成的照片</strong>
@@ -158,6 +182,7 @@ export function CameraChallenge({
           {scoring ? "正在计算匹配度…" : "开始匹配"}
         </button>
       </div>
+      {photoError && <p className="photo-error" role="alert">{photoError}</p>}
       {attempt >= 3 && <p className="magic-interference">魔法受到干扰，请让制图人长按罗盘进行校准。</p>}
     </motion.div>
   );

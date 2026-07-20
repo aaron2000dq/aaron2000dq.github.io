@@ -5,6 +5,28 @@ import { initialProgress } from "@/src/config/story";
 const DB_NAME = "exploration-atlas";
 const DB_VERSION = 1;
 
+function isStoryProgress(value: unknown): value is StoryProgress {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<StoryProgress>;
+  return (
+    typeof candidate.activeZoneId === "string" &&
+    typeof candidate.activeCheckpointId === "string" &&
+    Array.isArray(candidate.completedCheckpointIds) &&
+    candidate.completedCheckpointIds.every((id) => typeof id === "string") &&
+    Boolean(candidate.photoAttempts) &&
+    typeof candidate.photoAttempts === "object" &&
+    Object.values(candidate.photoAttempts ?? {}).every(
+      (attempts) => Number.isInteger(attempts) && Number(attempts) >= 0,
+    ) &&
+    Array.isArray(candidate.capturedPhotoIds) &&
+    candidate.capturedPhotoIds.every((id) => typeof id === "string") &&
+    ["intro", "map", "fog", "finale"].includes(String(candidate.phase)) &&
+    typeof candidate.zoneStarted === "boolean" &&
+    Array.isArray(candidate.arrivedCheckpointIds) &&
+    candidate.arrivedCheckpointIds.every((id) => typeof id === "string")
+  );
+}
+
 function databaseName(namespace = "formal") {
   if (namespace === "formal") return DB_NAME;
   const safeNamespace = namespace.toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 48);
@@ -30,7 +52,8 @@ export async function loadProgress(
 ): Promise<StoryProgress> {
   try {
     const db = await getDb(namespace);
-    return (await db.get("state", "progress")) ?? structuredClone(fallbackProgress);
+    const saved = await db.get("state", "progress");
+    return isStoryProgress(saved) ? saved : structuredClone(fallbackProgress);
   } catch {
     return structuredClone(fallbackProgress);
   }
@@ -61,7 +84,15 @@ export async function savePhoto(photo: CapturedPhoto, namespace = "formal") {
 
 export async function getPhotos(namespace = "formal"): Promise<CapturedPhoto[]> {
   const db = await getDb(namespace);
-  const photos = await db.getAll("photos");
+  const photos = (await db.getAll("photos")).filter(
+    (photo): photo is CapturedPhoto =>
+      Boolean(photo) &&
+      typeof photo.id === "string" &&
+      typeof photo.checkpointId === "string" &&
+      typeof photo.dataUrl === "string" &&
+      Number.isFinite(photo.score) &&
+      Number.isFinite(photo.createdAt),
+  );
   return photos.sort((a, b) => a.createdAt - b.createdAt);
 }
 

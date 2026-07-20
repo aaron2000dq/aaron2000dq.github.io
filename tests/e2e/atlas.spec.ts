@@ -56,6 +56,39 @@ test("automatically arrives after two accurate nearby location samples", async (
   await expect(page.locator(".you-marker")).toBeVisible();
 });
 
+test("freezes the dot and resets arrival streak for coarse location samples", async ({ page, context, baseURL }) => {
+  const parking = { latitude: 30.27463, longitude: 119.99011, accuracy: 18 };
+  const target = { latitude: 30.27532, longitude: 119.99109, accuracy: 18 };
+  await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
+  await context.setGeolocation(parking);
+  await page.goto("/?mode=fulltest&run=e2e-coarse-location-gate");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+
+  const marker = page.locator(".you-marker");
+  await expect(marker).toHaveAttribute("data-map-x", /\d/);
+  const before = {
+    x: await marker.getAttribute("data-map-x"),
+    y: await marker.getAttribute("data-map-y"),
+  };
+
+  await context.setGeolocation({ ...target, accuracy: 500 });
+  await expect(page.getByText("墨点已冻结")).toBeVisible();
+  await expect(marker).toHaveAttribute("data-map-x", before.x!);
+  await expect(marker).toHaveAttribute("data-map-y", before.y!);
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toHaveCount(0);
+
+  await context.setGeolocation(target);
+  await page.waitForTimeout(120);
+  await context.setGeolocation({ ...target, accuracy: 500 });
+  await expect(page.getByText("墨点已冻结")).toBeVisible();
+  await context.setGeolocation({ ...target, latitude: target.latitude + 0.000001 });
+  await page.waitForTimeout(120);
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toHaveCount(0);
+  await context.setGeolocation({ ...target, latitude: target.latitude + 0.000002 });
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
+});
+
 test("uses two breathing dots and rotates the current-position arrow", async ({ page }) => {
   await page.addInitScript(() => {
     if (!("DeviceOrientationEvent" in window)) {
@@ -161,6 +194,52 @@ test("restores the current unlocked checkpoint after a refresh", async ({ page, 
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await page.reload();
   await expect(page.locator(".topbar b")).toHaveText("Qianjiang · Scent District");
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
+});
+
+test("recovers safely from corrupted local progress", async ({ page }) => {
+  await page.goto("/?mode=fulltest&run=e2e-corrupt-progress");
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("exploration-atlas-fulltest-e2e-corrupt-progress");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("state", "readwrite");
+        transaction.objectStore("state").put({ phase: "map", zoneStarted: "broken" }, "progress");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      };
+    });
+  });
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "开启地图" })).toBeVisible();
+});
+
+test("location denial never blocks the cartographer fallback", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        watchPosition: (_success: PositionCallback, error?: PositionErrorCallback) => {
+          window.setTimeout(() => error?.({ code: 1, message: "denied", PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 }), 0);
+          return 1;
+        },
+        clearWatch: () => undefined,
+      },
+    });
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-location-denied");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await page.getByRole("button", { name: "查看线索" }).click();
+  await expect(page.getByText("定位权限没有开启")).toBeVisible();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
@@ -321,6 +400,48 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
     });
   });
   expect(photoCount).toBe(1);
+});
+
+test("reports an unreadable photo without trapping the explorer", async ({ page }) => {
+  await page.addInitScript(() => {
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-invalid-photo");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
+  await page.getByRole("button", { name: "开启照片复刻" }).click();
+  const uploadInput = page.locator("input[data-role='capture-photo']").first();
+  await uploadInput.setInputFiles("package.json");
+  await expect(page.getByRole("alert")).toContainText("这张照片无法读取");
+  await expect(page.getByRole("button", { name: "开始匹配" })).toBeDisabled();
+  await page.getByRole("button", { name: "返回地图" }).click();
+  await expect(page.locator(".map-stage")).toBeVisible();
+});
+
+test("falls back to scene matching when the pose model cannot load", async ({ page }) => {
+  await page.route("**/models/pose_landmarker_lite.task", (route) => route.abort());
+  await page.addInitScript(() => {
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-no-pose-model");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
+  await page.getByRole("button", { name: "开启照片复刻" }).click();
+  const uploadInput = page.locator("input[data-role='capture-photo']").first();
+  await uploadInput.setInputFiles("public/references/scent.svg");
+  const startedAt = Date.now();
+  await page.getByRole("button", { name: "开始匹配" }).click();
+  await expect(page.getByText("SCENT FOUND")).toBeVisible();
+  expect(Date.now() - startedAt).toBeLessThan(4_000);
+  await expect(page.getByText(/场景匹配模式/)).toBeVisible();
 });
 
 test("stores the complete atlas and local vision model for offline use", async ({ page, context }) => {

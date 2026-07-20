@@ -19,7 +19,13 @@ function loadNearbySession(): NearbySession {
     const saved = sessionStorage.getItem(SESSION_KEY);
     if (!saved) return { started: false, activeIndex: 0, completedIds: [] };
     const parsed = JSON.parse(saved) as NearbySession;
-    if (!Number.isInteger(parsed.activeIndex) || !Array.isArray(parsed.completedIds)) {
+    if (
+      typeof parsed.started !== "boolean" ||
+      !Number.isInteger(parsed.activeIndex) ||
+      parsed.activeIndex < 0 ||
+      parsed.activeIndex > rehearsalZones.length ||
+      !Array.isArray(parsed.completedIds)
+    ) {
       throw new Error("invalid rehearsal session");
     }
     return parsed;
@@ -35,10 +41,9 @@ export function NearbyRehearsal() {
   const [completedIds, setCompletedIds] = useState(initialSession.completedIds);
   const [insideStreak, setInsideStreak] = useState(0);
   const [forcedArrival, setForcedArrival] = useState(false);
-  const location = useGeolocation(started, 120);
-
   const zone = rehearsalZones[activeIndex];
   const checkpoint = zone?.checkpoints[0];
+  const location = useGeolocation(started, zone?.maxLocationAccuracyM ?? 90);
   const routeMatch = useMemo(() => {
     if (!zone || !checkpoint || !location.sample) {
       return {
@@ -50,6 +55,9 @@ export function NearbyRehearsal() {
     return matchPositionToRoute(location.sample, zone.routeGeo, checkpoint.location);
   }, [zone, checkpoint, location.sample]);
   const arrived = Boolean(checkpoint && (forcedArrival || completedIds.includes(checkpoint.id)));
+  const locationReliable = Boolean(
+    location.sample && location.sample.accuracy <= (zone?.maxLocationAccuracyM ?? 120),
+  );
 
   useEffect(() => {
     sessionStorage.setItem(
@@ -59,7 +67,7 @@ export function NearbyRehearsal() {
   }, [started, activeIndex, completedIds]);
 
   useEffect(() => {
-    if (!checkpoint || !location.sample || arrived) {
+    if (!checkpoint || !location.sample || !locationReliable || arrived) {
       setInsideStreak(0);
       return;
     }
@@ -67,9 +75,10 @@ export function NearbyRehearsal() {
       routeMatch.distanceToCheckpointM,
       location.sample.accuracy,
       checkpoint.unlockRadiusM,
+      zone.maxLocationAccuracyM,
     );
     setInsideStreak((value) => (inside ? value + 1 : 0));
-  }, [checkpoint, location.sample?.timestamp, arrived, routeMatch.distanceToCheckpointM]);
+  }, [checkpoint, location.sample?.timestamp, locationReliable, arrived, routeMatch.distanceToCheckpointM, zone?.maxLocationAccuracyM]);
 
   useEffect(() => {
     if (!checkpoint || insideStreak < 2 || arrived) return;
@@ -141,7 +150,7 @@ export function NearbyRehearsal() {
             zone={zone}
             checkpoint={checkpoint}
             position={location.sample}
-            locationReliable={arrived || !location.sample || location.sample.accuracy <= 120}
+            locationReliable={arrived || !location.sample || locationReliable}
             arrived={arrived}
             completedIds={completedIds}
           />
@@ -155,7 +164,7 @@ export function NearbyRehearsal() {
             <h2>{checkpoint.label}<small>附近固定地点 {activeIndex + 1}/4</small></h2>
             <p>{checkpoint.clue}</p>
             <div className="distance-row">
-              <span>{arrived ? "已经抵达" : formatDistance(routeMatch.distanceToCheckpointM)}</span>
+              <span>{arrived ? "已经抵达" : location.sample && !locationReliable ? "墨点已冻结" : formatDistance(routeMatch.distanceToCheckpointM)}</span>
               <small>{location.sample ? `精度 ±${Math.round(location.sample.accuracy)}m` : "等待定位"}</small>
             </div>
             <p className="nearby-coordinate">{checkpoint.location.latitude.toFixed(6)}, {checkpoint.location.longitude.toFixed(6)}</p>

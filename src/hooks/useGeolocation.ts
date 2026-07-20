@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { smoothPositionSample } from "@/src/lib/geo";
+import { holdLastReliablePosition, smoothPositionSample } from "@/src/lib/geo";
 import type { PositionSample } from "@/src/types";
 
 type LocationStatus = "idle" | "requesting" | "active" | "imprecise" | "denied" | "unavailable";
@@ -40,10 +40,17 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           timestamp: position.timestamp,
           heading: Number.isFinite(position.coords.heading) ? Number(position.coords.heading) : undefined,
         };
+        if (!Number.isFinite(next.accuracy) || next.accuracy < 0 || next.accuracy > maxAccuracy) {
+          setSample(holdLastReliablePosition(sampleRef.current, next));
+          setStatus("imprecise");
+          setError(`当前定位精度约 ±${Math.round(next.accuracy)} 米，墨点已冻结，等待更准确的位置。`);
+          return;
+        }
         const smoothed = smoothPositionSample(sampleRef.current, next);
         sampleRef.current = smoothed;
         setSample(smoothed);
-        setStatus(next.accuracy <= maxAccuracy ? "active" : "imprecise");
+        setStatus("active");
+        setError("");
       },
       (locationError) => {
         setStatus(locationError.code === 1 ? "denied" : "unavailable");

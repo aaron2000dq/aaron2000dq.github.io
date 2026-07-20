@@ -1,16 +1,41 @@
 import type { MatchMode, MatchResult } from "@/src/types";
+import type { PoseLandmarker } from "@mediapipe/tasks-vision";
 
 const ANALYSIS_WIDTH = 256;
 const ANALYSIS_HEIGHT = 192;
+const IMAGE_LOAD_TIMEOUT_MS = 1_500;
+const SCENE_TIMEOUT_MS = 2_000;
+const POSE_BUDGET_MS = 1_350;
 
-let posePromise: Promise<unknown> | null = null;
+let posePromise: Promise<PoseLandmarker> | null = null;
+
+function settleWithin<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value: T) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve(value);
+    };
+    const timer = window.setTimeout(() => finish(fallback), timeoutMs);
+    promise.then(finish).catch(() => finish(fallback));
+  });
+}
 
 async function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.crossOrigin = "anonymous";
-    image.onload = () => resolve(image);
-    image.onerror = reject;
+    const timer = window.setTimeout(() => reject(new Error("Photo load timeout")), IMAGE_LOAD_TIMEOUT_MS);
+    image.onload = () => {
+      window.clearTimeout(timer);
+      resolve(image);
+    };
+    image.onerror = (error) => {
+      window.clearTimeout(timer);
+      reject(error);
+    };
     image.src = src;
   });
 }
@@ -50,7 +75,7 @@ async function sceneScore(reference: HTMLImageElement, capture: HTMLImageElement
     const timer = window.setTimeout(() => {
       worker.terminate();
       reject(new Error("Photo worker timeout"));
-    }, 6000);
+    }, SCENE_TIMEOUT_MS);
     worker.onmessage = (event) => {
       window.clearTimeout(timer);
       worker.terminate();
@@ -72,7 +97,7 @@ async function sceneScore(reference: HTMLImageElement, capture: HTMLImageElement
 
 async function getPoseLandmarker() {
   if (!posePromise) {
-    posePromise = (async () => {
+    const loading = (async (): Promise<PoseLandmarker> => {
       const { FilesetResolver, PoseLandmarker } = await import("@mediapipe/tasks-vision");
       const vision = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
       return PoseLandmarker.createFromOptions(vision, {
@@ -83,10 +108,23 @@ async function getPoseLandmarker() {
         minPosePresenceConfidence: 0.45,
       });
     })();
+    posePromise = loading.catch((error) => {
+      // A transient cache/network failure must not poison every later attempt.
+      posePromise = null;
+      throw error;
+    });
   }
-  return posePromise as Promise<{
-    detect(image: CanvasImageSource): { landmarks?: Array<Array<{ x: number; y: number; visibility?: number }>> };
-  }>;
+  return posePromise;
+}
+
+/** Start WASM/model initialization before the explorer opens a photo task. */
+export async function warmPhotoMatcher() {
+  try {
+    await getPoseLandmarker();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const POSE_POINTS = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28];
@@ -157,7 +195,9 @@ export async function scorePhoto(
   ]);
   const [scene, pose] = await Promise.all([
     sceneScore(reference, capture),
-    mode === "pose-scene" ? poseScore(reference, capture) : Promise.resolve(null),
+    mode === "pose-scene"
+      ? settleWithin(poseScore(reference, capture), POSE_BUDGET_MS, null)
+      : Promise.resolve(null),
   ]);
 
   const sceneWeight = mode === "scene-only" || pose === null ? 0.8 : 0.55;

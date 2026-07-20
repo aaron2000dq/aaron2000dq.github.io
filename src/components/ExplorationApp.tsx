@@ -9,6 +9,7 @@ import { MapCanvas } from "./MapCanvas";
 import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
 import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from "@/src/lib/storage";
+import { warmPhotoMatcher } from "@/src/lib/photoMatch";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { useDeviceHeading } from "@/src/hooks/useDeviceHeading";
 import type { CapturedPhoto, ExplorationZone, MatchResult, PositionSample, StoryProgress } from "@/src/types";
@@ -159,7 +160,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   }, [hydrated, progress, storageNamespace]);
 
   useEffect(() => {
-    if (!position || arrived || !progress.zoneStarted || progress.phase !== "map") {
+    if (!position || !locationReliable || arrived || !progress.zoneStarted || progress.phase !== "map") {
       setInsideStreak(0);
       return;
     }
@@ -167,9 +168,10 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       routeMatch.distanceToCheckpointM,
       position.accuracy,
       checkpoint.unlockRadiusM,
+      zone.maxLocationAccuracyM,
     );
     setInsideStreak((value) => (inside ? value + 1 : 0));
-  }, [position?.timestamp, arrived, progress.zoneStarted, progress.phase, routeMatch.distanceToCheckpointM, checkpoint]);
+  }, [position?.timestamp, locationReliable, arrived, progress.zoneStarted, progress.phase, routeMatch.distanceToCheckpointM, checkpoint, zone.maxLocationAccuracyM]);
 
   useEffect(() => {
     if (insideStreak < 2 || arrived) return;
@@ -187,7 +189,6 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
   const completeCheckpoint = useCallback(
     async (dataUrl?: string, result?: MatchResult) => {
-      const completed = [...new Set([...progress.completedCheckpointIds, checkpoint.id])];
       let photoId: string | undefined;
       if (dataUrl) {
         photoId = `${checkpoint.id}-${Date.now()}`;
@@ -198,13 +199,13 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           score: result?.score ?? 100,
           createdAt: Date.now(),
         };
-        await savePhoto(photo, storageNamespace);
+        await savePhoto(photo, storageNamespace).catch(() => undefined);
         setPhotos((current) => [...current.filter((item) => item.id !== photo.id), photo]);
       }
       setLastResult(result ?? null);
       setProgress((current) => ({
         ...current,
-        completedCheckpointIds: completed,
+        completedCheckpointIds: [...new Set([...current.completedCheckpointIds, checkpoint.id])],
         capturedPhotoIds: photoId ? [...current.capturedPhotoIds, photoId] : current.capturedPhotoIds,
       }));
       setCameraOpen(false);
@@ -217,7 +218,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         setUnlockOpen(true);
       }
     },
-    [checkpoint.id, checkpoint.label, progress.completedCheckpointIds, storageNamespace, triggerCelebration],
+    [checkpoint.id, checkpoint.label, storageNamespace, triggerCelebration],
   );
 
   function recordAttempt(result: MatchResult) {
@@ -244,6 +245,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             matchPositionToRoute(position, zone.routeGeo, nextInZone.location).distanceToCheckpointM,
             position.accuracy,
             nextInZone.unlockRadiusM,
+            zone.maxLocationAccuracyM,
           ),
       );
       setProgress((current) => ({
@@ -342,6 +344,12 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       reducedMotion ? 250 : 3400,
     );
   }
+
+  useEffect(() => {
+    if (!hydrated || progress.phase !== "map") return;
+    const timer = window.setTimeout(() => void warmPhotoMatcher(), 350);
+    return () => window.clearTimeout(timer);
+  }, [hydrated, progress.phase]);
 
   function startExploration() {
     void deviceHeading.request();
@@ -488,7 +496,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                 <span className="eyebrow">CURRENT COORDINATE</span>
                 <h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>
                 {questExpanded && <p className="quest-clue">{checkpoint.clue}</p>}
-                <div className="distance-row"><span>{arrived ? "已经抵达" : formatDistance(routeMatch.distanceToCheckpointM)}</span><small>{position ? `精度 ±${Math.round(position.accuracy)}m` : "Wi‑Fi iPad 粗定位"}</small></div>
+                <div className="distance-row"><span>{arrived ? "已经抵达" : position && !locationReliable ? "墨点已冻结" : formatDistance(routeMatch.distanceToCheckpointM)}</span><small>{position ? `精度 ±${Math.round(position.accuracy)}m` : "Wi‑Fi iPad 粗定位"}</small></div>
                 {questExpanded && location.error && !arrived && <div className="location-warning">{location.error}<button onClick={location.retry}>重试</button></div>}
                 {checkpoint.giftType === "love" ? (
                   <button className="primary-button" onClick={() => completeCheckpoint()}>打开最后一封信</button>
@@ -519,7 +527,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {unlockOpen && (
           <motion.div className="unlock-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.section className="unlock-card" initial={{ scale: 0.7, rotate: -3 }} animate={{ scale: 1, rotate: 0 }}>
-              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>{checkpoint.giftType.toUpperCase()} FOUND</span><h2>{giftNames[checkpoint.giftType]}</h2><p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "完成探索" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "点亮下一个坐标" : "返回载具"}</button>
+              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>{checkpoint.giftType.toUpperCase()} FOUND</span><h2>{giftNames[checkpoint.giftType]}</h2><p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "完成探索" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "点亮下一个坐标" : "返回载具"}</button>
             </motion.section>
           </motion.div>
         )}
