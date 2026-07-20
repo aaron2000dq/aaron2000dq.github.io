@@ -108,6 +108,31 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .intro-screen.is-opening .intro-opening-copy { animation: introCopyAppear .8s ease forwards 2.05s; }
 
 .exploration-screen { position: relative; min-height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 48% 44%, #4a3021 0 35%, #21140e 80%), repeating-linear-gradient(91deg, #3b2619 0 4px, #2c1c13 5px 10px); padding: 0; }
+.magic-atmosphere { position: fixed; z-index: 11; inset: 0; overflow: hidden; pointer-events: none; color: #e2bd73; }
+.magic-atmosphere[data-gift="sound"] { color: #d1c289; }
+.magic-atmosphere[data-gift="sparkle"] { color: #ecd18b; }
+.magic-atmosphere[data-gift="love"] { color: #e2a798; }
+.ambient-motes { position: absolute; inset: 0; }
+.ambient-motes i { position: absolute; left: var(--mote-x); top: var(--mote-y); width: 4px; height: 4px; border-radius: 50%; opacity: 0; background: #f4d58b; box-shadow: 0 0 7px 2px #e8b85b9c, 0 0 19px 5px #c883364d; transform: scale(var(--mote-scale)); animation: magicMoteFloat var(--mote-duration) ease-in-out var(--mote-delay) infinite; will-change: transform, opacity; }
+.magic-atmosphere[data-phase="intro"] .ambient-motes i { background: #ad6d37; box-shadow: 0 0 7px 2px #c88745a6, 0 0 20px 5px #7f4c284f; }
+.rune-dial { position: absolute; width: 142px; height: 142px; fill: none; stroke: currentColor; stroke-width: .8; opacity: .14; filter: drop-shadow(0 0 5px #e7b65b66); animation: runeDialTurn 42s linear infinite; }
+.rune-dial-left { left: -42px; bottom: 38px; }
+.rune-dial-right { right: -48px; top: 104px; animation-direction: reverse; animation-duration: 57s; }
+.rune-marks { stroke-dasharray: 2 4; }
+.magic-atmosphere[data-phase="map"] .rune-dial-right { right: 285px; top: auto; bottom: -55px; opacity: .1; }
+.enchanted-quill { position: absolute; right: 3.8%; bottom: 10%; width: 62px; height: 86px; opacity: .6; transform: rotate(12deg); filter: drop-shadow(0 4px 4px #160c07a6) drop-shadow(0 0 7px #e2b75b72); animation: quillHover 5.4s ease-in-out infinite; }
+.enchanted-quill svg { width: 100%; height: 100%; overflow: visible; }
+.quill-feather { fill: #2c1a11; stroke: #e1bf79; stroke-width: 1; }
+.quill-spine, .quill-barbs { fill: none; stroke: #e4c17c; stroke-width: 1.2; }
+.quill-ink-line { position: absolute; left: -74px; bottom: -9px; width: 90px; height: 18px; border-bottom: 1px solid currentColor; border-radius: 50%; transform: rotate(-5deg) scaleX(0); transform-origin: right; opacity: .56; animation: quillWrite 5.4s ease-in-out infinite; }
+.magic-atmosphere[data-phase="map"] .enchanted-quill { right: auto; left: 6.5%; bottom: 6%; width: 43px; opacity: .36; }
+.courier-owl { position: absolute; left: -16%; top: 9%; width: 82px; opacity: 0; filter: drop-shadow(0 3px 3px #140b0799) drop-shadow(0 0 6px #ddb36582); animation: courierOwlCross 20s ease-in-out .9s infinite; }
+.magic-atmosphere[data-phase="map"] .courier-owl { display: none; }
+.magic-edge { position: absolute; left: 8%; right: 8%; height: 1px; opacity: .28; background: linear-gradient(90deg, transparent, currentColor 16%, transparent 28%, currentColor 50%, transparent 72%, currentColor 84%, transparent); }
+.magic-edge::before, .magic-edge::after { content: "✦"; position: absolute; top: -7px; font-size: 11px; text-shadow: 0 0 8px currentColor; }
+.magic-edge::before { left: 14%; }.magic-edge::after { right: 14%; }
+.magic-edge-top { top: 11px; }.magic-edge-bottom { bottom: 10px; transform: rotate(180deg); }
+.magic-atmosphere[data-phase="map"] .magic-edge-top { top: 72px; opacity: .12; }
 .topbar { position: absolute; z-index: 20; top: max(14px, env(safe-area-inset-top)); left: max(18px, env(safe-area-inset-left)); right: max(18px, env(safe-area-inset-right)); height: 54px; display: flex; align-items: center; justify-content: space-between; color: #ead6a9; border: 1px solid #8b6842; padding: 0 18px; background: linear-gradient(90deg, #241710f5, #352319e8 64%, #241710f5); box-shadow: 0 8px 28px #150b0799, inset 0 0 24px #a1743a1a; -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
 .topbar > div:first-child { display: flex; flex-direction: column; }
 .topbar span { font-size: 9px; letter-spacing: .18em; }
@@ -116,6 +141,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .chapter-dots i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #b99863; }
 .chapter-dots i.active { background: #d9bb7c; box-shadow: 0 0 12px #e8bd68; }
 .status-chip { font-size: 11px; border: 1px solid #81613d; border-radius: 999px; padding: 7px 12px; }
+.status-chip::before { content: "✦"; display: inline-block; margin-right: 7px; color: #e4bd6c; text-shadow: 0 0 7px #e9b750; animation: statusStar 2.6s ease-in-out infinite; }
 .map-layout { position: absolute; inset: 0; height: 100dvh; display: block; padding: 0; }
 .map-stage { position: relative; width: 100%; height: 100%; min-width: 0; overflow: hidden; background-color: #c49a5e; background-image: linear-gradient(145deg, #dfc995d9 0%, #c39b63cf 52%, #9a6a42d9 100%), url('/assets/parchment-atlas-bg.png'); background-size: 100% 100%; background-position: center; background-blend-mode: normal, multiply; border: 0; box-shadow: inset 0 0 110px #3f2415b5, inset 0 0 0 10px #c7a26730; clip-path: none; }
 .map-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .17; background: linear-gradient(90deg, transparent 49.8%, #55351e 50%, transparent 50.2%), linear-gradient(transparent 49.8%, #55351e 50%, transparent 50.2%); mix-blend-mode: multiply; }
@@ -132,6 +158,45 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .map-camera { width: 100%; height: 100%; transform-origin: center; touch-action: none; cursor: grab; will-change: transform; transform: translateZ(0); contain: layout paint; }
 .map-camera:active { cursor: grabbing; }
 .map-camera svg { width: 100%; height: 100%; display: block; }
+.map-magic-overlay { position: absolute; z-index: 5; inset: 0; overflow: hidden; pointer-events: none; color: #25170f; mix-blend-mode: multiply; }
+.chapter-relic { position: absolute; left: 7.2%; bottom: 9.5%; width: clamp(74px, 8.5vw, 118px); color: #2b1a11; opacity: .48; filter: drop-shadow(0 1px 0 #e9c784) drop-shadow(0 7px 8px #3c24164d); transform: rotate(-4deg); }
+.chapter-relic svg { width: 100%; overflow: visible; }
+.chapter-relic path, .chapter-relic circle { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.chapter-relic > span { display: block; margin-top: -8px; padding-top: 5px; border-top: 1px solid currentColor; font: 700 clamp(5px, .55vw, 8px)/1.2 Georgia, serif; letter-spacing: .16em; text-align: center; }
+.chapter-relic .relic-fill, .chapter-relic .gem-core, .chapter-relic .letter-heart { fill: #9a5131; fill-opacity: .46; }
+.relic-vapor { stroke-dasharray: 6 6; animation: relicVapor 3.4s ease-in-out infinite; }
+.vapor-two { animation-delay: -1.5s; }
+.relic-wheel { transform-origin: 60px 62px; animation: relicWheelTurn 18s linear infinite; }
+.relic-wing { transform-box: fill-box; transform-origin: center; animation: relicWingBeat 1.3s ease-in-out infinite alternate; }
+.relic-record { transform-origin: 57px 61px; animation: relicRecordTurn 11s linear infinite; }
+.relic-record .record-arm, .relic-record .floating-note { animation: relicCounterTurn 11s linear infinite; transform-origin: 57px 61px; }
+.gem-ray { stroke-dasharray: 8 7; animation: relicGemRay 3.2s ease-in-out infinite; }
+.letter-heart { transform-box: fill-box; transform-origin: center; animation: relicHeartBeat 2.4s ease-in-out infinite; }
+.map-magic-overlay[data-gift="sound"] .chapter-relic { left: auto; right: 7%; bottom: 8%; }
+.map-magic-overlay[data-gift="sparkle"] .chapter-relic { left: 5%; bottom: 12%; }
+.map-magic-overlay[data-gift="taste"] .chapter-relic { left: auto; right: 8%; bottom: 7%; }
+.map-magic-overlay[data-gift="love"] .chapter-relic { left: 8%; bottom: 8%; }
+.ink-constellation { position: absolute; right: 4.2%; bottom: 6.5%; width: 28%; height: 21%; overflow: visible; opacity: .36; filter: drop-shadow(0 1px 0 #e8c783); }
+.ink-constellation > path { fill: none; stroke: currentColor; stroke-width: .38; stroke-dasharray: 1.4 2.6; }
+.ink-constellation g path { fill: none; stroke: currentColor; stroke-width: .42; }
+.ink-constellation circle { fill: #9e5d34; transform-box: fill-box; transform-origin: center; animation: inkStarPulse 4.2s ease-in-out var(--star-delay) infinite; }
+.map-owl-flight { position: absolute; width: clamp(70px, 9vw, 126px); opacity: 0; will-change: transform, opacity; filter: drop-shadow(0 3px 2px #e7c37b88); }
+.owl-flight-near { left: -13%; top: 27%; animation: owlCrossNear 19s cubic-bezier(.3, .02, .64, .98) .8s infinite; }
+.owl-flight-far { right: -10%; top: 13%; width: clamp(42px, 5vw, 68px); animation: owlCrossFar 27s linear 11s infinite; }
+.flying-owl svg { display: block; overflow: visible; }
+.flying-owl path { fill: currentColor; stroke: #1d120c; stroke-width: .8; }
+.flying-owl circle { fill: #ddbd76; stroke: none; filter: drop-shadow(0 0 2px #f3d995); }
+.flying-owl .owl-feather-line { fill: none; stroke: #d1ad70; stroke-width: .9; opacity: .45; }
+.flying-owl .owl-face { fill: #372117; }
+.flying-owl .owl-beak { fill: #b57b3c; }
+.owl-wing { transform-box: fill-box; transform-origin: center right; animation: owlWingLeft .72s ease-in-out infinite alternate; }
+.owl-wing-right { transform-origin: center left; animation-name: owlWingRight; }
+.owl-flight-far .owl-wing { animation-duration: .9s; }
+.owl-flight-glimmer { position: absolute; left: 49%; top: 52%; width: 6px; height: 6px; border-radius: 50%; background: #ce9952; box-shadow: -20px 4px 0 -1px #b6834a, -43px 9px 0 -2px #b6834a, -67px 5px 0 -2px #b6834a, 0 0 13px #ddae61; opacity: .5; }
+.falling-feather { position: absolute; width: 19px; height: 5px; border-top: 1.4px solid #2b1b12; border-radius: 70% 20%; opacity: 0; }
+.falling-feather::after { content: ""; position: absolute; left: 7px; top: -5px; width: 7px; height: 9px; border-left: 1px solid #2b1b12; transform: skewX(-33deg); }
+.feather-one { left: 67%; top: 5%; animation: featherFall 13s ease-in-out 6s infinite; }
+.feather-two { left: 28%; top: 1%; transform: scale(.7); animation: featherFallTwo 17s ease-in-out 13s infinite; }
 .illustrated-base-map { filter: sepia(.2) saturate(.78) contrast(1.04) brightness(.96); }
 .has-illustrated-base .legacy-blueprint { display: none; }
 .has-illustrated-base .coordinate-grid { opacity: .08; }
@@ -158,14 +223,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .atlas-compass text { fill: #382419; stroke: none; font-size: 9px; font-weight: 700; text-anchor: middle; }
 .map-scale { fill: none; stroke: #3c281b; stroke-width: 1.2; opacity: .72; }
 .map-scale text { fill: #3c281b; stroke: none; font-size: 6px; }
-.route-path { fill: none; stroke: #2a1b12; stroke-width: 1.45; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .58; filter: drop-shadow(0 0 1px #2a140b); }
+.route-path { fill: none; stroke: #2a1b12; stroke-width: 1.45; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .58; filter: drop-shadow(0 0 1px #2a140b); animation: routeInkFlow 13s linear infinite; }
 .footstep { fill: #21150e; opacity: 0; transition: opacity .34s ease; filter: drop-shadow(0 .5px .6px #e1bd78); }
-.footstep.visible { opacity: .68; }
+.footstep.visible { opacity: .68; animation: footstepReveal .62s cubic-bezier(.18, .82, .24, 1) both; }
 .atlas-point { pointer-events: none; }
 .atlas-point .point-glow { fill: #9d4b2e; opacity: .22; transform-box: fill-box; transform-origin: center; animation: atlasPointBreath 1.8s ease-in-out infinite; }
 .atlas-point .point-ring { fill: #dfc17e; stroke: #2a1a12; stroke-width: 1.7; filter: drop-shadow(0 0 3px #f1c96d); }
 .atlas-point .point-core { fill: #321b12; }
 .goal-point .point-glow { fill: #bd7139; animation-delay: -.9s; }
+.goal-point:not(.arrived) .point-ring { animation: goalBeacon 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .goal-point.arrived .point-ring { fill: #7d382c; stroke: #f0d293; }
 .goal-point.arrived .point-core { fill: #f0d293; }
 .goal-point .point-ring, .goal-point .point-core { transition: fill .32s ease, stroke .32s ease; }
@@ -177,6 +243,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .goal-tag text { fill: #f1d79e; font-size: 6.2px; font-weight: 700; letter-spacing: .12em; text-anchor: middle; }
 .you-heading-arrow { transform-origin: 0 0; transition: transform .18s linear; }
 .you-heading-arrow path { fill: #73372b; stroke: #ead299; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 3px #1a0f0a99); }
+.you-magic-orbit { fill: #a55734; stroke: #572a1d; stroke-width: .55; opacity: .72; transform-box: fill-box; transform-origin: center; animation: currentMagicOrbit 7s linear infinite; filter: drop-shadow(0 0 2px #f1c777); }
+.you-magic-orbit path { fill: none; stroke-dasharray: 1 5; opacity: .42; }
 .you-marker.in-fog { opacity: .6; filter: blur(.6px); }
 .map-cartouche path { fill: #c8a66ac9; stroke: #4b3020; stroke-width: 1.3; }
 .map-title { font-size: 10.5px; font-weight: 700; fill: #2f1e14; letter-spacing: .14em; text-transform: uppercase; }
@@ -191,6 +259,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .map-fog-local { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 30% 50%, transparent 0 20%, #e7d4af77 45%, #e7d4afcc 78%); animation: fogPulse 5s ease-in-out infinite alternate; }
 .quest-card { position: absolute; z-index: 16; top: max(82px, calc(env(safe-area-inset-top) + 72px)); right: max(22px, env(safe-area-inset-right)); width: 292px; max-height: calc(100dvh - 174px); background-color: #c6a36bf2; background-image: radial-gradient(circle at 34% 18%, #eed8a6f7 0%, #d2af72f4 47%, #a87649f0 100%), repeating-radial-gradient(circle at 20% 30%, #4a2d1812 0 1px, transparent 1px 5px); border: 1px solid #8d633b; padding: 28px 24px 22px; box-shadow: inset 0 0 52px #5c351d80, 0 16px 42px #0d0806b3; overflow: auto; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: width .3s cubic-bezier(.22, 1, .36, 1), padding .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease; will-change: width, padding; }
 .quest-card::before { content: ""; position: absolute; inset: 8px; border: 1px solid #7c5738; pointer-events: none; }
+.quest-card::after { content: "✦  ✧  ✦"; position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: #70482e99; font-size: 9px; letter-spacing: .34em; pointer-events: none; }
 .quest-card.is-collapsed { width: 248px; padding: 50px 20px 18px; box-shadow: inset 0 0 38px #5c351d70, 0 12px 30px #0d08068f; }
 .quest-panel-toggle { position: absolute; z-index: 2; top: 14px; right: 14px; padding: 5px 8px; border: 1px solid #765334; background: #e5cb94a6; color: #392418; font-family: inherit; font-size: 9px; letter-spacing: .08em; }
 .quest-number { position: absolute; top: 13px; right: 20px; font-size: 50px; line-height: 1; color: #80583755; }
@@ -208,6 +277,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .distance-row { margin: 20px 0; padding: 13px 0; border-block: 1px solid #765334; display: flex; justify-content: space-between; align-items: end; }
 .distance-row span { font-size: 18px; font-weight: 700; }.distance-row small { font-size: 10px; }
 .quest-card .primary-button, .quest-card .secondary-button { width: 100%; }
+.primary-button, .secondary-button, .wax-button { position: relative; overflow: hidden; isolation: isolate; }
+.primary-button::after, .secondary-button::after { content: ""; position: absolute; z-index: -1; left: -38%; top: -95%; width: 28%; height: 290%; background: linear-gradient(90deg, transparent, #efd99d50, transparent); transform: rotate(19deg); animation: buttonSpellSweep 5.2s ease-in-out infinite; }
+.primary-button:active, .secondary-button:active { transform: translateY(1px) scale(.99); filter: brightness(1.08); }
 .tiny-note { font-size: 10px !important; opacity: .68; text-align: center; }
 .nearby-letter h1 em { display: block; margin-top: 12px; font-size: .35em; letter-spacing: .12em; }
 .nearby-formal-link { display: block; width: max-content; margin: 18px auto 0; color: #4b3020; font-size: 12px; text-underline-offset: 4px; }
@@ -222,6 +294,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .location-warning { font-size: 11px; padding: 10px; background: #8a4b3530; margin-bottom: 12px; }.location-warning button { float: right; background: transparent; border: 0; text-decoration: underline; }
 
 .fog-screen { color: #ead3a3; background: #231711; text-align: center; }
+.magic-atmosphere[data-phase="fog"] .rune-dial { opacity: .32; width: 240px; height: 240px; filter: drop-shadow(0 0 13px #e1b65c70); }
+.magic-atmosphere[data-phase="fog"] .rune-dial-left { left: calc(50% - 120px); bottom: calc(50% - 120px); }
+.magic-atmosphere[data-phase="fog"] .rune-dial-right { display: none; }
+.magic-atmosphere[data-phase="fog"] .enchanted-quill { left: 12%; right: auto; bottom: 15%; }
 .fog-screen::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(80deg, transparent 0 55px, #c9b18710 56px 58px); }
 .fog-layer { position: absolute; width: 100%; height: 80%; border-radius: 50%; filter: blur(55px); background: #dfcfb0; opacity: .2; animation: drift 10s ease-in-out infinite alternate; }
 .fog-layer.two { animation-direction: alternate-reverse; opacity: .13; transform: translateX(-20%); }
@@ -232,6 +308,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .spinning-compass { font-size: 76px; animation: spin 7s linear infinite; }
 
 .camera-modal { position: fixed; inset: 0; z-index: 200; background: #160f0c; color: #ead7ac; display: grid; grid-template-rows: 72px minmax(0, 1fr) 84px; padding: max(8px, env(safe-area-inset-top)) 18px max(8px, env(safe-area-inset-bottom)); contain: layout paint; transform: translateZ(0); }
+.camera-modal::before { content: ""; position: absolute; z-index: 0; inset: 12px; opacity: .23; pointer-events: none; border: 1px solid #af8751; background: radial-gradient(circle at 8% 13%, #e8c476 0 1px, transparent 2px), radial-gradient(circle at 92% 18%, #e8c476 0 1px, transparent 2px), radial-gradient(circle at 16% 86%, #e8c476 0 1px, transparent 2px), radial-gradient(circle at 85% 82%, #e8c476 0 1px, transparent 2px); background-size: 170px 130px, 210px 160px, 190px 140px, 240px 180px; box-shadow: inset 0 0 90px #9f673827; animation: cameraConstellationBreath 6s ease-in-out infinite; }
+.camera-modal > * { position: relative; z-index: 1; }
+.camera-modal::after { content: "✦     ✧     ✦"; position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%); color: #bf9558; font-size: 9px; letter-spacing: .38em; opacity: .65; }
 .camera-header { display: grid; grid-template-columns: 150px 1fr 100px; align-items: center; gap: 12px; }
 .camera-header button { color: #ead7ac; }.camera-header > div:nth-child(2) { text-align: center; display: flex; flex-direction: column; }.camera-header span { font-size: 9px; letter-spacing: .2em; }.camera-header strong { font-size: 14px; margin-top: 5px; }.attempt-mark { font-size: 12px; text-align: right; }
 .photo-comparison { position: relative; width: min(1180px, 96vw); min-height: 0; margin: auto; display: grid; grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr); align-items: stretch; }
@@ -250,12 +329,14 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .reference-pending { position: absolute; z-index: 2; inset: auto 14px 14px; padding: 8px 12px; color: #f0d49e; background: #21150ee6; border: 1px solid #977043; text-align: center; font-size: 10px; line-height: 1.5; }
 .comparison-seal { display: grid; place-items: center; align-self: center; width: 54px; height: 54px; color: #e1bd79; font: 30px Georgia, serif; }
 .camera-controls { display: flex; justify-content: center; align-items: center; gap: 24px; }.camera-controls > span { max-width: 540px; font-size: 11px; opacity: .7; }.upload-controls .primary-button { min-width: 190px; }
-.score-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 310px; text-align: center; padding: 20px; background: #d7bb83ed; color: var(--ink); border: 3px double #4b3322; box-shadow: 0 18px 50px #000; }.score-card b { display: block; font-size: 64px; line-height: 1; }.score-card > span { letter-spacing: .18em; font-size: 10px; }.score-card p { font-size: 13px; }.score-card small { opacity: .65; }.score-card.passed { background: #e1c78d; }
+.score-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 310px; text-align: center; padding: 20px; background: #d7bb83ed; color: var(--ink); border: 3px double #4b3322; box-shadow: 0 18px 50px #000; }.score-card b { display: block; font-size: 64px; line-height: 1; }.score-card > span { letter-spacing: .18em; font-size: 10px; }.score-card p { font-size: 13px; }.score-card small { opacity: .65; }.score-card.passed { background: #e1c78d; animation: passedScoreGlow 2.2s ease-in-out infinite; }
 .magic-interference { position: fixed; bottom: 5px; left: 0; right: 0; text-align: center; font-size: 10px; color: #d9bd86; }
 .photo-error { position: fixed; z-index: 4; left: 50%; bottom: max(66px, calc(env(safe-area-inset-bottom) + 54px)); transform: translateX(-50%); margin: 0; padding: 8px 14px; color: #f2d6b2; background: #733b32e8; border: 1px solid #bb8266; font-size: 11px; box-shadow: 0 7px 20px #0008; }
 
 .unlock-backdrop, .gm-backdrop { position: fixed; inset: 0; z-index: 240; display: grid; place-items: center; background: #130c08df; -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
-.unlock-card { width: min(520px, 74vw); padding: 48px 55px 38px; text-align: center; background: linear-gradient(145deg, #e5c98f, #bc9058); border: 3px double #503521; box-shadow: 0 25px 90px #000; will-change: transform, opacity; transform: translateZ(0); }
+.unlock-card { position: relative; width: min(520px, 74vw); padding: 48px 55px 38px; text-align: center; background: linear-gradient(145deg, #e5c98f, #bc9058); border: 3px double #503521; box-shadow: 0 25px 90px #000; will-change: transform, opacity; transform: translateZ(0); }
+.unlock-card::before { content: ""; position: absolute; z-index: -1; left: 50%; top: 50%; width: min(640px, 88vw); aspect-ratio: 1; border: 1px dashed #e5c47d8c; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 24px #d49a4154, inset 0 0 28px #d49a4133; animation: unlockRuneTurn 24s linear infinite; }
+.unlock-card::after { content: "✦  ◇  ✦  ◇  ✦"; position: absolute; left: 50%; bottom: -42px; transform: translateX(-50%); color: #e4c17e; font-size: 10px; letter-spacing: .42em; white-space: nowrap; text-shadow: 0 0 8px #dca64d; }
 .unlock-seal { display: grid; place-items: center; width: 70px; height: 70px; margin: -85px auto 20px; border-radius: 50%; background: var(--wax); color: #ecd49f; font-size: 35px; border: 5px double #421918; box-shadow: 0 8px 18px #3a2114; }
 .unlock-card > span { letter-spacing: .23em; font-size: 10px; }.unlock-card h2 { font-size: 39px; margin: 14px 0; }.unlock-card p { line-height: 1.85; }.unlock-card small { display: block; margin: 18px; }.unlock-card .primary-button { min-width: 200px; }
 
@@ -292,9 +373,38 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .cannon-left { left: 7%; transform: rotate(25deg); }
 .cannon-right { right: 7%; transform: rotate(-25deg); }
 
-.finale-screen { color: var(--ink); text-align: center; background: radial-gradient(circle, #ead39d, #a8794b 72%, #43291c); }.finale-screen::before { content: ""; position: absolute; inset: 5%; border: 3px double #583a26; }.finale-screen > * { position: relative; }.final-heart { font-size: 70px; color: #74302d; }.finale-screen > span { letter-spacing: .27em; font-size: 10px; }.finale-screen h1 { font-size: clamp(48px, 7vw, 80px); line-height: .83; margin: 12px 0; text-transform: uppercase; }.finale-screen blockquote { line-height: 1.9; }.gallery-strip { display: flex; justify-content: center; gap: 12px; max-width: 78vw; overflow-x: auto; padding: 15px; }.gallery-strip button { flex: 0 0 145px; border: 1px solid #583a26; background: #e2c58c; padding: 6px; }.gallery-strip img { width: 100%; height: 85px; object-fit: cover; filter: sepia(.2); }.gallery-strip span { font-size: 10px; }
+.finale-screen { color: var(--ink); text-align: center; background: radial-gradient(circle, #ead39d, #a8794b 72%, #43291c); }.finale-screen::before { content: ""; position: absolute; inset: 5%; border: 3px double #583a26; box-shadow: inset 0 0 80px #61391f36; }.finale-screen::after { content: "✦  THE ATLAS WILL REMEMBER  ✦"; position: absolute; left: 50%; bottom: 2.8%; transform: translateX(-50%); font: 700 9px Georgia, serif; letter-spacing: .28em; opacity: .62; }.finale-screen > * { position: relative; }.final-heart { font-size: 70px; color: #74302d; animation: finaleHeartFloat 3.6s ease-in-out infinite; }.finale-screen > span { letter-spacing: .27em; font-size: 10px; }.finale-screen h1 { font-size: clamp(48px, 7vw, 80px); line-height: .83; margin: 12px 0; text-transform: uppercase; text-shadow: 0 2px 0 #f1daa4, 0 8px 24px #4d2c1d35; }.finale-screen blockquote { line-height: 1.9; }.gallery-strip { display: flex; justify-content: center; gap: 12px; max-width: 78vw; overflow-x: auto; padding: 15px; }.gallery-strip button { flex: 0 0 145px; border: 1px solid #583a26; background: #e2c58c; padding: 6px; }.gallery-strip img { width: 100%; height: 85px; object-fit: cover; filter: sepia(.2); }.gallery-strip span { font-size: 10px; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes magicMoteFloat { 0%, 100% { opacity: 0; transform: translate3d(-4px, 10px, 0) scale(calc(var(--mote-scale) * .65)); } 18% { opacity: .28; } 48% { opacity: .9; transform: translate3d(8px, -13px, 0) scale(var(--mote-scale)); } 78% { opacity: .34; } }
+@keyframes runeDialTurn { to { transform: rotate(360deg); } }
+@keyframes quillHover { 0%, 100% { transform: translate3d(0, 2px, 0) rotate(12deg); } 42% { transform: translate3d(-8px, -7px, 0) rotate(5deg); } 68% { transform: translate3d(5px, -3px, 0) rotate(15deg); } }
+@keyframes quillWrite { 0%, 18% { opacity: 0; transform: rotate(-5deg) scaleX(0); } 48%, 72% { opacity: .52; transform: rotate(-5deg) scaleX(1); } 100% { opacity: 0; transform: rotate(-5deg) scaleX(1); } }
+@keyframes courierOwlCross { 0%, 8% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-6deg); } 13% { opacity: .58; } 48% { transform: translate3d(58vw, 6vh, 0) rotate(2deg) scale(1.08); } 81% { opacity: .5; } 90%, 100% { opacity: 0; transform: translate3d(124vw, -3vh, 0) rotate(7deg) scale(.82); } }
+@keyframes inkStarPulse { 0%, 100% { opacity: .24; transform: scale(.7); } 42% { opacity: .9; transform: scale(1.65); } }
+@keyframes relicVapor { 0% { opacity: 0; stroke-dashoffset: 20; transform: translateY(4px); } 42% { opacity: .8; } 100% { opacity: 0; stroke-dashoffset: 0; transform: translateY(-8px); } }
+@keyframes relicWheelTurn { to { transform: rotate(360deg); } }
+@keyframes relicWingBeat { from { transform: rotate(-7deg); } to { transform: rotate(10deg); } }
+@keyframes relicRecordTurn { to { transform: rotate(360deg); } }
+@keyframes relicCounterTurn { to { transform: rotate(-360deg); } }
+@keyframes relicGemRay { 0%, 100% { opacity: .22; stroke-dashoffset: 10; } 50% { opacity: 1; stroke-dashoffset: 0; } }
+@keyframes relicHeartBeat { 0%, 100% { transform: scale(.9); } 45% { transform: scale(1.13); } }
+@keyframes routeInkFlow { to { stroke-dashoffset: -48; } }
+@keyframes goalBeacon { 0%, 100% { filter: drop-shadow(0 0 2px #f1c96d); transform: scale(.94); } 50% { filter: drop-shadow(0 0 8px #f1c96d); transform: scale(1.14); } }
+@keyframes statusStar { 0%, 100% { opacity: .36; transform: rotate(0) scale(.8); } 50% { opacity: 1; transform: rotate(180deg) scale(1.16); } }
+@keyframes buttonSpellSweep { 0%, 62% { opacity: 0; transform: translateX(0) rotate(19deg); } 70% { opacity: .75; } 90%, 100% { opacity: 0; transform: translateX(620%) rotate(19deg); } }
+@keyframes footstepReveal { from { opacity: 0; filter: blur(2px) drop-shadow(0 .5px .6px #e1bd78); } 60% { opacity: .8; } to { opacity: .68; filter: blur(0) drop-shadow(0 .5px .6px #e1bd78); } }
+@keyframes currentMagicOrbit { to { transform: rotate(360deg); } }
+@keyframes cameraConstellationBreath { 0%, 100% { opacity: .15; } 50% { opacity: .34; } }
+@keyframes passedScoreGlow { 0%, 100% { box-shadow: 0 18px 50px #000, 0 0 0 #e5bf6e00; } 50% { box-shadow: 0 18px 50px #000, 0 0 34px #e5bf6e80; } }
+@keyframes unlockRuneTurn { from { transform: translate(-50%, -50%) rotate(0); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes finaleHeartFloat { 0%, 100% { transform: translateY(2px) scale(.96); text-shadow: 0 0 0 transparent; } 50% { transform: translateY(-7px) scale(1.06); text-shadow: 0 0 18px #9b4e3e6b; } }
+@keyframes owlWingLeft { from { transform: rotate(9deg) scaleY(.86); } to { transform: rotate(-18deg) scaleY(1.06); } }
+@keyframes owlWingRight { from { transform: rotate(-9deg) scaleY(.86); } to { transform: rotate(18deg) scaleY(1.06); } }
+@keyframes owlCrossNear { 0%, 8% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-5deg) scale(.8); } 13% { opacity: .72; } 46% { transform: translate3d(48vw, -7vh, 0) rotate(2deg) scale(1); } 81% { opacity: .68; } 89%, 100% { opacity: 0; transform: translate3d(120vw, 5vh, 0) rotate(7deg) scale(.76); } }
+@keyframes owlCrossFar { 0%, 12% { opacity: 0; transform: translate3d(0, 0, 0) rotate(3deg); } 17% { opacity: .44; } 48% { transform: translate3d(-48vw, 4vh, 0) rotate(-4deg); } 82% { opacity: .4; } 90%, 100% { opacity: 0; transform: translate3d(-118vw, -5vh, 0) rotate(-7deg); } }
+@keyframes featherFall { 0%, 12% { opacity: 0; transform: translate3d(0, 0, 0) rotate(4deg); } 20% { opacity: .45; } 78% { opacity: .35; } 100% { opacity: 0; transform: translate3d(-12vw, 62vh, 0) rotate(330deg); } }
+@keyframes featherFallTwo { 0%, 10% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-15deg) scale(.7); } 18% { opacity: .38; } 100% { opacity: 0; transform: translate3d(16vw, 70vh, 0) rotate(-390deg) scale(.7); } }
 @keyframes drift { from { transform: translate(-18%, -5%) scale(1); } to { transform: translate(18%, 7%) scale(1.25); } }
 @keyframes fogPulse { from { opacity: .6; } to { opacity: .9; } }
 @keyframes atlasPointBreath { 0%, 100% { opacity: .12; transform: scale(.72); } 50% { opacity: .58; transform: scale(1.75); } }
@@ -331,7 +441,17 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
   .quest-card h2 { margin: 11px 0; }
   .quest-card > p { line-height: 1.55; }
   .distance-row { margin: 12px 0; }
+  .chapter-relic { width: 72px; opacity: .4; }
+  .enchanted-quill { display: none; }
+}
+@media (max-width: 1050px) {
+  .rune-dial { width: 112px; height: 112px; }
+  .chapter-relic { width: 78px; }
+  .owl-flight-far { display: none; }
+  .ambient-motes i:nth-child(3n) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  .map-owl-flight, .courier-owl, .falling-feather { display: none !important; }
+  .ambient-motes i { opacity: .35; }
 }

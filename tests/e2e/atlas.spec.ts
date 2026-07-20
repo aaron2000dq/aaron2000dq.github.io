@@ -37,6 +37,36 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
+test("renders a layered magical atmosphere without blocking the atlas", async ({ page }) => {
+  await page.goto("/?mode=fulltest&run=e2e-magical-atmosphere");
+  await expect(page.locator(".magic-atmosphere")).toHaveAttribute("data-phase", "intro");
+  await expect(page.locator(".ambient-motes i")).toHaveCount(12);
+  await expect(page.locator(".rune-dial")).toHaveCount(2);
+  await expect(page.locator(".enchanted-quill")).toBeVisible();
+  await expect(page.locator(".courier-owl")).toHaveCount(1);
+
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(page.locator(".map-magic-overlay")).toBeVisible();
+  await expect(page.locator(".map-owl-flight")).toHaveCount(2);
+  await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
+  await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
+  await expect(page.locator(".you-magic-orbit")).toBeVisible();
+  await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight)).toBe(false);
+});
+
+test("keeps the magical interface usable with reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/?mode=fulltest&run=e2e-magic-reduced-motion");
+  await expect(page.locator(".courier-owl")).toHaveCSS("display", "none");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(page.locator(".map-stage")).toBeVisible();
+  await expect(page.locator(".map-owl-flight").first()).toHaveCSS("display", "none");
+  await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
+  await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
+});
+
 test("automatically arrives after two accurate nearby location samples", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.25414, longitude: 120.21094, accuracy: 18 });
@@ -257,7 +287,9 @@ test("walks the four preset rehearsal maps and unlocks one with live geolocation
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation(origin);
   await page.goto("/?mode=nearby");
+  await expect(page.locator(".magic-atmosphere")).toHaveAttribute("data-phase", "intro");
   await page.getByRole("button", { name: "展开固定彩排地图" }).click();
+  await expect(page.locator(".magic-atmosphere")).toHaveAttribute("data-phase", "map");
   const route = page.locator(".nearby-route");
   await expect(route).toBeVisible();
   await expect(route.locator("h2")).toContainText("富力中心北区 · 东门");
@@ -308,13 +340,14 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   );
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  for (const [gift, asset] of [
-    ["好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
-    ["好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
-    ["好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+  for (const [gift, asset, giftType] of [
+    ["好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "scent"],
+    ["好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion"],
+    ["好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound"],
   ]) {
     await expect(page.locator(".quest-card h2")).toContainText(gift);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
+    await expect(page.locator(`.chapter-relic[data-gift='${giftType}']`)).toBeVisible();
     await openCartographer(page);
     await page.getByRole("button", { name: "强制过关" }).click();
     await page.getByRole("button", { name: "返回载具" }).click();
@@ -322,17 +355,20 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   }
 
   await expect(page.locator(".quest-card h2")).toContainText("好看的");
+  await expect(page.locator(".chapter-relic[data-gift='sparkle']")).toBeVisible();
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png");
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
   await page.getByRole("button", { name: "点亮下一个坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("好吃的");
+  await expect(page.locator(".chapter-relic[data-gift='taste']")).toBeVisible();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
   await page.getByRole("button", { name: "点亮下一个坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("好爱的");
+  await expect(page.locator(".chapter-relic[data-gift='love']")).toBeVisible();
   await page.getByRole("button", { name: "打开最后一封信" }).click();
   await page.getByRole("button", { name: "完成探索" }).click();
   await expect(page.getByRole("heading", { name: "Exploration Completed" })).toBeVisible();

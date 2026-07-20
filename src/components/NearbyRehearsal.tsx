@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MapCanvas } from "./MapCanvas";
+import { MagicAtmosphere } from "./MagicAtmosphere";
 import { rehearsalZones } from "@/src/config/rehearsal";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
@@ -104,6 +105,7 @@ export function NearbyRehearsal() {
   if (!started) {
     return (
       <main className="atlas-shell nearby-rehearsal-shell">
+        <MagicAtmosphere phase="intro" giftType="scent" />
         <section className="intro-screen">
           <div className="intro-map-lines" />
           <div className="sealed-letter nearby-letter">
@@ -124,6 +126,7 @@ export function NearbyRehearsal() {
   if (activeIndex >= rehearsalZones.length) {
     return (
       <main className="atlas-shell">
+        <MagicAtmosphere phase="finale" giftType="love" />
         <section className="finale-screen nearby-finale">
           <div>
             <span className="eyebrow">FIXED REHEARSAL COMPLETE</span>
@@ -139,6 +142,7 @@ export function NearbyRehearsal() {
 
   return (
     <main className="atlas-shell">
+      <MagicAtmosphere phase="map" giftType={checkpoint.giftType} />
       <section className="exploration-screen nearby-map-screen">
         <header className="topbar">
           <div><span>FIXED REHEARSAL ATLAS</span><b>{zone.title}</b></div>

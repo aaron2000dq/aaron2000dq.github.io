@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { projectPositionToMap } from "@/src/lib/geo";
 import type { Checkpoint, ExplorationZone, PositionSample } from "@/src/types";
+import { MapMagicOverlay } from "./MapMagicOverlay";
 
 type Props = {
   zone: ExplorationZone;
@@ -440,6 +441,12 @@ export function MapCanvas({
             role="img"
             aria-label="当前位置"
           >
+            <g className="you-magic-orbit" aria-hidden="true">
+              <circle cx="0" cy="-14" r="1.5" />
+              <circle cx="11" cy="8" r="1" />
+              <circle cx="-12" cy="6" r="1.2" />
+              <path d="M0-14A14 14 0 0 1 11 8M11 8A14 14 0 0 1-12 6M-12 6A14 14 0 0 1 0-14" />
+            </g>
             <g className="you-heading-arrow" transform={`rotate(${heading})`}>
               <path d="M0-25 10-9 3-11 0-8-3-11-10-9Z" />
             </g>
@@ -453,6 +460,7 @@ export function MapCanvas({
             <text x="20" y="29" className="map-subtitle">{zone.subtitle}</text>
           </g>
         </svg>
+        <MapMagicOverlay giftType={checkpoint.giftType} />
       </motion.div>
       {illustratedMap && loadedAsset !== illustratedMap && failedAsset !== illustratedMap && (
         <div className="map-illustration-loading" role="status">

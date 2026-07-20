@@ -6,6 +6,7 @@ import { CameraChallenge } from "./CameraChallenge";
 import { CelebrationLayer, type CelebrationKind } from "./CelebrationLayer";
 import { GmPanel } from "./GmPanel";
 import { MapCanvas } from "./MapCanvas";
+import { MagicAtmosphere } from "./MagicAtmosphere";
 import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
 import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from "@/src/lib/storage";
@@ -413,6 +414,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   return (
     <main className="atlas-shell">
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
+      <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} />
       <button
         className={`compass-secret ${compassHolding ? "is-holding" : ""}`}
         aria-label="指南针"
