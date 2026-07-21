@@ -54,6 +54,7 @@ export function CelebrationLayer({ kind, label }: CelebrationLayerProps) {
       {isArrival ? (
         <>
           <div className="arrival-aura" aria-hidden="true">
+            <i className="generated-rune-seal arrival-rune-seal" />
             <i className="arrival-ring ring-one" />
             <i className="arrival-ring ring-two" />
             {arrivalSparks.map((spark, index) => (
@@ -84,6 +85,7 @@ export function CelebrationLayer({ kind, label }: CelebrationLayerProps) {
       ) : (
         <>
           <div className="photo-celebration-flash" aria-hidden="true" />
+          <div className="generated-rune-seal memory-rune-seal" aria-hidden="true" />
           <div className="confetti-field" aria-hidden="true">
             {photoConfetti.map((piece, index) => (
               <i

@@ -414,7 +414,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   return (
     <main className="atlas-shell">
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
-      <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} />
+      <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} awake={progress.phase !== "intro" || introOpening} />
       <button
         className={`compass-secret ${compassHolding ? "is-holding" : ""}`}
         aria-label="指南针"
@@ -436,6 +436,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             <div className="intro-atlas-reveal" aria-hidden={!introOpening}>
               <div className="intro-map-sheet">
                 <img src={storyZones[0].illustratedMapAsset ?? "/assets/maps/qianjiang-scent-v3.jpg"} alt="" />
+                <div className="intro-generated-ink-bloom" />
                 <div className="intro-map-crease vertical"/><div className="intro-map-crease horizontal"/>
                 <svg viewBox="0 0 800 500" preserveAspectRatio="none">
                   <path className="intro-ink-route" d="M96 405 C160 370 182 315 252 306 S345 275 398 226 S482 180 535 144 S628 118 694 82"/>
@@ -516,6 +517,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
         {progress.phase === "finale" && (
           <motion.section className="finale-screen" key="finale" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="finale-generated-rune" aria-hidden="true" />
             <div className="final-heart">♡</div><span>A HIDDEN PLACE HAS BEEN FOUND</span><h1>Exploration<br/>Completed</h1><blockquote>今天的地图已经走完。<br/>但我们的探索，还会继续很多很多年。<br/><b>Happy Birthday, bb.</b></blockquote>
             <div className="gallery-strip">{photos.length ? photos.map((photo) => <button key={photo.id} onClick={() => sharePhoto(photo)}><img src={photo.dataUrl} alt="探索复刻照片"/><span>{photo.score} 分 · 保存</span></button>) : <p>完成照片关卡后，探索相册会出现在这里。</p>}</div>
             <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>
@@ -529,6 +531,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {unlockOpen && (
           <motion.div className="unlock-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.section className="unlock-card" initial={{ scale: 0.7, rotate: -3 }} animate={{ scale: 1, rotate: 0 }}>
+              <div className="unlock-generated-rune" aria-hidden="true" />
               <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>{checkpoint.giftType.toUpperCase()} FOUND</span><h2>{giftNames[checkpoint.giftType]}</h2><p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "完成探索" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "点亮下一个坐标" : "返回载具"}</button>
             </motion.section>
           </motion.div>

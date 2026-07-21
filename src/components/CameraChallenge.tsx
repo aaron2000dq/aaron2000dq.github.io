@@ -89,8 +89,13 @@ export function CameraChallenge({
     if (!capture) return;
     setScoring(true);
     setPhotoError("");
+    const startedAt = performance.now();
     try {
       const match = await scorePhoto(reference, capture, checkpoint.matchMode);
+      const remainingCeremonyMs = Math.max(0, 1_250 - (performance.now() - startedAt));
+      if (remainingCeremonyMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, remainingCeremonyMs));
+      }
       if (!active.current) return;
       setResult(match);
       onAttempt(match);
@@ -129,7 +134,8 @@ export function CameraChallenge({
         <div className="attempt-mark">第 {attempt + 1} 次</div>
       </div>
 
-      <div className="photo-comparison">
+      <div className={`photo-comparison ${scoring ? "is-scanning-memory" : ""}`}>
+        <div className="memory-scan-beam" aria-hidden="true" />
         <section className="photo-panel reference-photo-panel">
           <header><span>01</span><div><b>参考照片</b><small>由制图人提前拍摄</small></div></header>
           <div className="photo-stage">

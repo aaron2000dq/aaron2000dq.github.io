@@ -1,10 +1,11 @@
 import type { CSSProperties } from "react";
 import type { Checkpoint, StoryProgress } from "@/src/types";
-import { OwlSilhouette } from "./MapMagicOverlay";
+import { CinematicOwl } from "./CinematicOwl";
 
 type Props = {
   phase: StoryProgress["phase"];
   giftType: Checkpoint["giftType"];
+  awake?: boolean;
 };
 
 const motes = [
@@ -14,9 +15,12 @@ const motes = [
   [87, 58, 0.46, 13, -10.4], [94, 29, 0.72, 19, -2.8], [97, 79, 0.55, 14, -8.9],
 ];
 
-export function MagicAtmosphere({ phase, giftType }: Props) {
+export function MagicAtmosphere({ phase, giftType, awake = true }: Props) {
   return (
-    <div className="magic-atmosphere" data-phase={phase} data-gift={giftType} aria-hidden="true">
+    <div className={`magic-atmosphere ${awake ? "is-awake" : ""}`} data-phase={phase} data-gift={giftType} aria-hidden="true">
+      <div className="cinematic-fog cinematic-fog-primary" />
+      <div className="cinematic-fog cinematic-fog-secondary" />
+      <div className="cinematic-rune-field" />
       <div className="ambient-motes">
         {motes.map(([x, y, scale, duration, delay], index) => (
           <i
@@ -53,7 +57,7 @@ export function MagicAtmosphere({ phase, giftType }: Props) {
         <span className="quill-ink-line" />
       </div>
 
-      <div className="courier-owl"><div className="flying-owl"><OwlSilhouette /></div></div>
+      <div className="courier-owl"><CinematicOwl className="owl-courier-hero" /></div>
       <div className="magic-edge magic-edge-top" />
       <div className="magic-edge magic-edge-bottom" />
     </div>

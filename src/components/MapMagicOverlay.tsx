@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Checkpoint } from "@/src/types";
+import { CinematicOwl } from "./CinematicOwl";
 
 const starNodes = [
   { x: 12, y: 20, delay: "-.6s" },
@@ -9,25 +10,6 @@ const starNodes = [
   { x: 76, y: 14, delay: "-3.4s" },
   { x: 88, y: 42, delay: "-2.2s" },
 ];
-
-export function OwlSilhouette() {
-  return (
-    <svg viewBox="0 0 132 62" aria-hidden="true">
-      <g className="owl-wing owl-wing-left">
-        <path d="M58 31C42 22 24 8 4 4c5 13 15 25 31 34 8 5 15 6 23 4Z" />
-        <path className="owl-feather-line" d="M49 33C35 26 23 18 13 10M43 38C30 34 20 28 12 21" />
-      </g>
-      <g className="owl-wing owl-wing-right">
-        <path d="M74 31C90 22 108 8 128 4c-5 13-15 25-31 34-8 5-15 6-23 4Z" />
-        <path className="owl-feather-line" d="M83 33c14-7 26-15 36-23M89 38c13-4 23-10 31-17" />
-      </g>
-      <path className="owl-body" d="M53 24c1-12 7-18 13-18s12 6 13 18l-4 24-9 10-9-10Z" />
-      <path className="owl-face" d="M56 17 62 9l4 7 4-7 6 8-2 13-8 5-8-5Z" />
-      <circle cx="62" cy="21" r="1.8" /><circle cx="70" cy="21" r="1.8" />
-      <path className="owl-beak" d="m66 23 3 4-3 2-3-2Z" />
-    </svg>
-  );
-}
 
 function ChapterRelic({ giftType }: { giftType: Checkpoint["giftType"] }) {
   return (
@@ -87,6 +69,10 @@ function ChapterRelic({ giftType }: { giftType: Checkpoint["giftType"] }) {
 export function MapMagicOverlay({ giftType }: { giftType: Checkpoint["giftType"] }) {
   return (
     <div className="map-magic-overlay" data-gift={giftType} aria-hidden="true">
+      <div className="map-reveal-veil" />
+      <div className="map-arcane-fog map-arcane-fog-a" />
+      <div className="map-arcane-fog map-arcane-fog-b" />
+      <div className="map-candle-bloom" />
       <svg className="ink-constellation" viewBox="0 0 100 50" preserveAspectRatio="none">
         <path d="M12 20 24 38 43 17 61 32 76 14 88 42" />
         {starNodes.map((node, index) => (
@@ -99,10 +85,10 @@ export function MapMagicOverlay({ giftType }: { giftType: Checkpoint["giftType"]
 
       <div className="map-owl-flight owl-flight-near">
         <span className="owl-flight-glimmer" />
-        <div className="flying-owl"><OwlSilhouette /></div>
+        <CinematicOwl className="owl-map-near" />
       </div>
       <div className="map-owl-flight owl-flight-far">
-        <div className="flying-owl"><OwlSilhouette /></div>
+        <CinematicOwl className="owl-map-far" />
       </div>
 
       <div className="falling-feather feather-one" />

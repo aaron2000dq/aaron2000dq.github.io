@@ -44,9 +44,13 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".rune-dial")).toHaveCount(2);
   await expect(page.locator(".enchanted-quill")).toBeVisible();
   await expect(page.locator(".courier-owl")).toHaveCount(1);
+  await expect(page.locator(".cinematic-fog")).toHaveCount(2);
+  await expect(page.locator(".cinematic-owl-sprite")).toHaveCount(1);
 
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-magic-overlay")).toBeVisible();
+  await expect(page.locator(".map-reveal-veil")).toBeVisible();
+  await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
   await expect(page.locator(".map-owl-flight")).toHaveCount(2);
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
   await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
@@ -79,6 +83,7 @@ test("automatically arrives after two accurate nearby location samples", async (
   await page.waitForTimeout(100);
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
+  await expect(page.locator(".arrival-rune-seal")).toBeVisible();
   await expect(page.getByText("坐标已回应")).toBeVisible();
   await expect(page.locator(".goal-arrival-ripple")).toHaveCount(2);
   await expect(page.getByText("精度 ±14m")).toBeVisible();
@@ -416,7 +421,9 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await uploadInput.setInputFiles("public/references/scent.svg");
   const startedAt = Date.now();
   await page.getByRole("button", { name: "开始匹配" }).click();
+  await expect(page.locator(".memory-scan-beam")).toBeVisible();
   await expect(page.locator("[data-celebration='photo']")).toBeVisible();
+  await expect(page.locator(".memory-rune-seal")).toBeVisible();
   await expect(page.locator(".confetti-cannon")).toHaveCount(2);
   await expect(page.locator(".confetti-piece")).toHaveCount(52);
   await expect(page.getByText("画面与记忆重合")).toBeVisible();
@@ -508,6 +515,11 @@ test("stores the complete atlas and local vision model for offline use", async (
       "mediapipe/wasm/vision_wasm_internal.js",
       "mediapipe/wasm/vision_wasm_internal.wasm",
       "workers/photo-score.js",
+      "assets/magic/parchment-cinematic-v1.jpg",
+      "assets/magic/arcane-fog-field-v1.jpg",
+      "assets/magic/rune-seal-burst-v1.png",
+      "assets/magic/ink-bloom-mask-v1.jpg",
+      "assets/magic/owl-courier-sprite-v1.png",
     ];
     const exact = await Promise.all(
       paths.map(async (path) => {
