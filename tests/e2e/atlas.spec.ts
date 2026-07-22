@@ -16,7 +16,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
   await expect(page.locator(".intro-ink-route")).toBeVisible();
-  await expect(page.getByText("好闻的")).toBeVisible();
+  await expect(page.getByText("好闻的")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/qianjiang-scent-v3.jpg");
   await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
 
@@ -44,6 +44,11 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".rune-dial")).toHaveCount(2);
   await expect(page.locator(".enchanted-quill")).toBeVisible();
   await expect(page.locator(".courier-owl")).toHaveCount(1);
+  await expect(page.locator(".envelope-prop")).toBeVisible();
+  await expect(page.locator(".intro-wax-trigger")).toBeVisible();
+  await expect(page.locator(".owl-flight-shadow")).toHaveCount(1);
+  await expect(page.locator(".owl-wind-lanes i")).toHaveCount(4);
+  await expect(page.locator(".owl-feather-burst i")).toHaveCount(6);
   await expect(page.locator(".cinematic-fog")).toHaveCount(2);
   await expect(page.locator(".cinematic-owl-sprite")).toHaveCount(1);
   await expect(page.locator(".atlas-gilded-frame")).toBeVisible();
@@ -68,6 +73,9 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/?mode=fulltest&run=e2e-magic-reduced-motion");
   await expect(page.locator(".courier-owl")).toHaveCSS("display", "none");
+  await expect(page.locator(".owl-flight-shadow")).toHaveCSS("display", "none");
+  await expect(page.locator(".owl-wind-lanes")).toHaveCSS("display", "none");
+  await expect(page.locator(".owl-feather-burst")).toHaveCSS("display", "none");
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-stage")).toBeVisible();
   await expect(page.locator(".map-owl-flight").first()).toHaveCSS("display", "none");
@@ -527,6 +535,8 @@ test("stores the complete atlas and local vision model for offline use", async (
       "assets/magic/gilded-atlas-frame-v2.png",
       "assets/magic/constellation-veins-v2.png",
       "assets/magic/cartographer-medallion-v2.png",
+      "assets/magic/explorer-envelope-open-v3.png",
+      "assets/magic/exploration-wax-seal-v3.png",
     ];
     const exact = await Promise.all(
       paths.map(async (path) => {

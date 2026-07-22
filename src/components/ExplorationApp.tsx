@@ -342,7 +342,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
       () => setProgress((current) => ({ ...current, phase: "map" })),
-      reducedMotion ? 250 : 3400,
+      reducedMotion ? 250 : 4000,
     );
   }
 
@@ -457,20 +457,24 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
             <motion.div
               className="sealed-letter opening-letter"
-              animate={introOpening ? { opacity: 0, scale: 1.13, rotate: 0, y: 24, filter: "blur(5px)" } : { opacity: 1, scale: 1, rotate: -.7, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1.05, ease: [0.55, 0.06, 0.35, 0.98], delay: introOpening ? .28 : 0 }}
+              animate={introOpening ? { opacity: 0, scale: 1.04, rotate: .25, y: 52, filter: "blur(4px)" } : { opacity: 1, scale: 1, rotate: -.35, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1.08, ease: [0.55, 0.06, 0.35, 0.98], delay: introOpening ? 1.62 : 0 }}
             >
-              <div className="eyebrow">TO THE EXPLORER</div>
-              <h1>Exploration<br/><em>Atlas</em></h1>
-              <p>杭州有五个坐标，正在等待今天的寿星发现。</p>
-              <blockquote>城市很大，地图很小。今年想和你探索的，不只是杭州的坐标，还有我们尚未抵达的每一个明天。</blockquote>
-              <div className="device-readiness" aria-label="设备就绪状态">
-                <span className="ready">{deviceStatus.label}</span>
-                <span className={deviceStatus.location ? "ready" : "warning"}>{deviceStatus.location ? "定位可用" : "定位需暗门兜底"}</span>
-                <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "相册上传可用" : "照片读取不可用"}</span>
-                <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "离线地图已缓存" : "正在缓存离线地图"}</span>
+              <div className="envelope-prop" aria-hidden="true" />
+              <div className="envelope-letter-content">
+                <div className="eyebrow">PRIVATE DELIVERY · TO THE EXPLORER</div>
+                <h1>Exploration <em>Atlas</em></h1>
+                <p>杭州有五个坐标，正在等待今天的寿星发现。</p>
+                <blockquote>今年想和你探索的，不只是杭州的坐标，<br/>还有我们尚未抵达的每一个明天。</blockquote>
+                <div className="device-readiness" aria-label="设备就绪状态">
+                  <span className="ready">{deviceStatus.label}</span>
+                  <span className={deviceStatus.location ? "ready" : "warning"}>{deviceStatus.location ? "定位可用" : "定位需暗门兜底"}</span>
+                  <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "相册可用" : "照片读取不可用"}</span>
+                  <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "离线地图已缓存" : "正在缓存"}</span>
+                </div>
               </div>
-              <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas}><span>EA<i/></span><b>{introOpening ? "地图正在显影…" : "开启地图"}</b></button>
+              <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "按下火漆 · 接收探索地图"}</b></button>
+              <div className="envelope-wind-fold" aria-hidden="true" />
             </motion.div>
             <footer>2026 BIRTHDAY EDITION · HANGZHOU</footer>
           </motion.section>

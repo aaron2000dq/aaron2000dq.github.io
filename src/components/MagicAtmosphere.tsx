@@ -61,7 +61,10 @@ export function MagicAtmosphere({ phase, giftType, awake = true }: Props) {
         <span className="quill-ink-line" />
       </div>
 
+      <div className="owl-flight-shadow" />
+      <div className="owl-wind-lanes"><i/><i/><i/><i/></div>
       <div className="courier-owl"><CinematicOwl className="owl-courier-hero" /></div>
+      <div className="owl-feather-burst"><i/><i/><i/><i/><i/><i/></div>
       <div className="magic-edge magic-edge-top" />
       <div className="magic-edge magic-edge-bottom" />
     </div>

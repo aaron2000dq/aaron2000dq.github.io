@@ -39,8 +39,12 @@ await page.getByRole("button", { name: "开启地图" }).waitFor({ state: "visib
 await page.waitForTimeout(350);
 await capture("01-intro-resting");
 await page.getByRole("button", { name: "开启地图" }).click();
-await page.waitForTimeout(1_250);
-await capture("02-intro-owl-courier");
+await page.waitForTimeout(420);
+await capture("02a-seal-release");
+await page.waitForTimeout(1_450);
+await capture("02b-intro-owl-courier");
+await page.waitForTimeout(1_150);
+await capture("02c-map-unfolding");
 await page.locator(".map-stage").waitFor({ state: "visible" });
 await page.waitForTimeout(2_600);
 await capture("03-map-settled");
