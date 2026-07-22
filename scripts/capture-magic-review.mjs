@@ -35,6 +35,8 @@ async function openCartographer() {
 }
 
 await page.goto(`${baseURL}/?mode=fulltest&run=magic-visual-review`);
+await page.getByRole("button", { name: "开启地图" }).waitFor({ state: "visible" });
+await page.waitForTimeout(350);
 await capture("01-intro-resting");
 await page.getByRole("button", { name: "开启地图" }).click();
 await page.waitForTimeout(1_250);

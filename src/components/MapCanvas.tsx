@@ -391,6 +391,7 @@ export function MapCanvas({
           )}
           <AtlasFurniture />
           <g className="legacy-blueprint"><DistrictBlueprint kind={zone.mapKind} /></g>
+          <path className="route-path route-path-aura" d={zone.svgPath} aria-hidden="true" />
           <path className="route-path" d={zone.svgPath} />
           {footsteps.map((point, index) => {
             return (

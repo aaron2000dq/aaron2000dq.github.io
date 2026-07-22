@@ -387,6 +387,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .intro-map-lines { opacity: .07; mix-blend-mode: multiply; }
 .sealed-letter { background: linear-gradient(132deg, #eed7a7dc, #d5af72e8 72%, #ad7949e8); border-color: #8d6237; box-shadow: 0 28px 100px #0e0705d6, inset 0 0 70px #6e3e1d4d, 0 0 0 1px #e6c37a38; -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px); }
 .sealed-letter::before { box-shadow: inset 0 0 20px #6c421f36; }
+.opening-letter { width: min(780px, 80vw); }
+.opening-letter h1 { font-size: clamp(48px, 5.6vw, 72px); letter-spacing: .015em; }
 .intro-map-sheet { box-shadow: 0 35px 120px #0e0704, inset 0 0 90px #2d1509c7; }
 .intro-generated-ink-bloom { position: absolute; z-index: 3; inset: -12%; opacity: 0; pointer-events: none; background: url('/assets/magic/ink-bloom-mask-v1.jpg') center/cover no-repeat; mix-blend-mode: multiply; filter: contrast(1.18) sepia(.72); transform: scale(1.28) translateX(-12%); }
 .intro-screen.is-opening .intro-generated-ink-bloom { animation: introGeneratedInk 2.25s cubic-bezier(.18,.72,.24,1) .58s forwards; }
@@ -450,6 +452,152 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .finale-screen::before { inset: 2%; border-color: #cfa65a80; box-shadow: inset 0 0 140px #1a0c07b8; }
 .finale-generated-rune { position: absolute; z-index: 0; left: 50%; top: 48%; width: min(82vh, 64vw); aspect-ratio: 1; transform: translate(-50%, -50%); background: url('/assets/magic/rune-seal-burst-v1.png') center/contain no-repeat; mix-blend-mode: screen; opacity: .2; animation: finaleGeneratedRune 24s linear infinite; }
 .finale-screen > *:not(.finale-generated-rune) { z-index: 2; }
+
+/* Exploration Atlas ornate edition — generated celestial brasswork */
+.atlas-constellation-veil,
+.atlas-gilded-frame,
+.atlas-edge-glints { position: absolute; inset: 0; pointer-events: none; }
+.atlas-constellation-veil {
+  z-index: 1;
+  inset: -2%;
+  opacity: .16;
+  background: url('/assets/magic/constellation-veins-v2.png') center/100% 100% no-repeat;
+  filter: drop-shadow(0 0 4px #e8ba6294) saturate(.82);
+  transform: scale(1.015);
+  transform-origin: center;
+  animation: constellationDrift 22s ease-in-out infinite alternate;
+}
+.atlas-constellation-veil.veil-two { opacity: .075; transform: scaleX(-1) scale(1.08); animation-duration: 31s; animation-direction: alternate-reverse; }
+.atlas-gilded-frame {
+  z-index: 9;
+  inset: 5px;
+  opacity: .48;
+  background: url('/assets/magic/gilded-atlas-frame-v2.png') center/100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px #130906c7) drop-shadow(0 0 3px #e3b65b5e);
+  animation: atlasFrameWake 8s ease-in-out infinite alternate;
+}
+.atlas-edge-glints { z-index: 10; }
+.atlas-edge-glints i { position: absolute; width: 5px; height: 5px; border-radius: 50%; opacity: 0; background: #ffe3a1; box-shadow: 0 0 5px 2px #f5c86c, 0 0 18px 6px #cc7c305c; animation: brassGlint 7.2s ease-in-out infinite; }
+.atlas-edge-glints i:nth-child(1) { left: 3.8%; top: 8.5%; animation-delay: -1.2s; }
+.atlas-edge-glints i:nth-child(2) { right: 5.2%; top: 9.5%; animation-delay: -4.6s; }
+.atlas-edge-glints i:nth-child(3) { left: 6.8%; bottom: 7.4%; animation-delay: -3.1s; }
+.atlas-edge-glints i:nth-child(4) { right: 4.3%; bottom: 8.8%; animation-delay: -6.3s; }
+.magic-atmosphere[data-phase="map"] .atlas-gilded-frame { opacity: .31; }
+.magic-atmosphere[data-phase="map"] .atlas-constellation-veil { opacity: .085; }
+.magic-atmosphere[data-phase="fog"] .atlas-gilded-frame,
+.magic-atmosphere[data-phase="finale"] .atlas-gilded-frame { opacity: .63; }
+.magic-atmosphere[data-phase="fog"] .atlas-constellation-veil,
+.magic-atmosphere[data-phase="finale"] .atlas-constellation-veil { opacity: .27; }
+
+.topbar {
+  height: 60px;
+  border: 1px solid #a9844f;
+  clip-path: polygon(0 9px, 9px 0, calc(50% - 44px) 0, calc(50% - 36px) 5px, calc(50% + 36px) 5px, calc(50% + 44px) 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px));
+  background: linear-gradient(100deg, #170e0ad9, #3b2518ef 31%, #2a190ff2 67%, #170e0ae6);
+  box-shadow: 0 14px 34px #100704ba, inset 0 0 0 1px #d4ae6930, inset 0 -15px 28px #0e07065e;
+  -webkit-backdrop-filter: blur(11px) saturate(1.18);
+  backdrop-filter: blur(11px) saturate(1.18);
+  overflow: hidden;
+}
+.topbar::before { content: ""; position: absolute; inset: 5px; pointer-events: none; border: 1px solid #c6a05a3d; clip-path: inherit; }
+.topbar::after { content: ""; position: absolute; left: -25%; top: -120%; width: 17%; height: 340%; pointer-events: none; background: linear-gradient(90deg, transparent, #f2d48a24, transparent); transform: rotate(18deg); animation: topbarLacquerGlint 9s ease-in-out infinite; }
+.topbar > div:first-child { position: relative; min-width: 300px; padding-left: 49px; }
+.topbar-sigil { position: absolute; left: 0; top: 50%; width: 41px; height: 41px; transform: translateY(-50%); background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; filter: drop-shadow(0 3px 5px #080403) drop-shadow(0 0 4px #e2b45c69); animation: topbarMedallionBreathe 5.8s ease-in-out infinite; }
+.topbar span { color: #c8a66b; letter-spacing: .24em; }
+.topbar b { color: #f0dcac; font-weight: 400; letter-spacing: .035em; text-shadow: 0 2px 5px #090403; }
+.chapter-dots { position: relative; align-items: center; padding: 0 18px; }
+.chapter-dots::before { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, #a77c43aa, transparent); }
+.chapter-dots i { position: relative; z-index: 1; width: 7px; height: 7px; background: #24150e; box-shadow: 0 0 0 3px #25160e; }
+.chapter-dots i.active { background: #edcc7f; box-shadow: 0 0 0 3px #25160e, 0 0 15px 3px #d99e4096; }
+.status-chip { position: relative; border-color: #a27b46; background: linear-gradient(180deg, #51341f8f, #1d110bbb); box-shadow: inset 0 0 12px #e3b96312; }
+
+.quest-card {
+  width: 310px;
+  padding: 27px 25px 23px;
+  border: 1px solid #b18752;
+  clip-path: polygon(0 13px, 13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px), calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px));
+  background-color: #c99f62f2;
+  background-image: linear-gradient(125deg, #f0daadf4 0%, #d0aa6ef0 47%, #9d6b42ed 100%), url('/assets/magic/parchment-cinematic-v1.jpg');
+  background-size: auto, cover;
+  background-blend-mode: normal, multiply;
+  box-shadow: inset 0 0 70px #4d2b1766, inset 0 0 0 5px #e9ca8d1f;
+  filter: drop-shadow(0 18px 24px #100805b8) drop-shadow(0 0 1px #e0bd78);
+  animation: questPaperGlow 7s ease-in-out infinite;
+}
+.quest-card::before { inset: 8px; border: 3px double #7b5435a8; clip-path: inherit; }
+.quest-card::after { content: "✦  CARTOGRAPHER'S FIELD NOTE  ✦"; top: auto; bottom: 7px; width: 100%; color: #6240298c; font-size: 6px; letter-spacing: .22em; text-align: center; }
+.quest-card.is-collapsed { width: 258px; padding: 52px 21px 20px; }
+.quest-medallion { position: absolute; z-index: 1; left: 16px; top: 13px; width: 56px; height: 56px; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; filter: drop-shadow(0 4px 5px #3a201480) drop-shadow(0 0 3px #f2d28d70); animation: medallionBreathe 5.8s ease-in-out infinite; }
+.quest-medallion .quest-number,
+.floating-quest-card .quest-medallion .quest-number { position: absolute; inset: 0; display: grid; place-items: center; color: #f2dda9; font: 700 12px/1 Georgia, serif; text-shadow: 0 1px 4px #080403, 0 0 4px #080403; }
+.quest-card.is-expanded > .eyebrow,
+.nearby-route > .eyebrow { min-height: 43px; display: flex; align-items: center; padding-left: 61px; color: #5e3c27; }
+.quest-card.is-collapsed .quest-medallion { width: 42px; height: 42px; left: 14px; top: 10px; }
+.quest-card.is-collapsed .quest-medallion .quest-number { font-size: 10px; }
+.quest-panel-toggle { top: 15px; right: 16px; border: 1px solid #6f492e; border-radius: 999px; padding: 6px 11px; background: linear-gradient(#efd9a8c9, #ba8c57c4); box-shadow: 0 3px 8px #5b351d38, inset 0 0 0 1px #fff3c533; }
+.quest-card h2 { position: relative; margin-top: 13px; }
+.quest-card h2::after { content: ""; display: block; width: 42px; height: 1px; margin-top: 11px; background: linear-gradient(90deg, #6f472d, transparent); }
+.quest-card.is-collapsed h2::after { margin-top: 7px; }
+.distance-row { border-block-color: #755033b5; }
+.quest-card .primary-button { border-color: #a17b49; background: linear-gradient(110deg, #1b100b, #3e2819 55%, #1b100b); box-shadow: inset 0 0 0 1px #d3ad6a24, 0 7px 16px #3b241b4c; }
+
+.route-path-aura { stroke: #e9bd67; stroke-width: 7.5; stroke-dasharray: none; opacity: .1; filter: blur(2.2px) drop-shadow(0 0 5px #f2cc77); animation: routeAuraPulse 4.6s ease-in-out infinite; }
+
+.camera-modal::before {
+  inset: 5px;
+  opacity: .64;
+  border: 0;
+  background: url('/assets/magic/gilded-atlas-frame-v2.png') center/100% 100% no-repeat, url('/assets/magic/constellation-veins-v2.png') center/100% 100% no-repeat;
+  filter: drop-shadow(0 0 5px #d9a95058);
+  box-shadow: inset 0 0 120px #0007;
+  animation: cameraOrnamentBreathe 8s ease-in-out infinite;
+}
+.camera-header { margin: 0 34px; border-bottom: 1px solid #a37c4659; }
+.camera-header > div:nth-child(2)::before { content: "✦"; display: block; margin-bottom: 2px; color: #d7ad61; text-shadow: 0 0 10px #dda84c; }
+.photo-comparison { width: min(1160px, 91vw); grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); gap: 4px; }
+.photo-panel {
+  position: relative;
+  padding: 14px;
+  border: 3px double #9f7846;
+  clip-path: polygon(0 13px, 13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px), calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px));
+  background: linear-gradient(142deg, #352319f5, #120b08fa 64%), url('/assets/magic/parchment-cinematic-v1.jpg') center/cover;
+  background-blend-mode: normal, multiply;
+  box-shadow: inset 0 0 62px #000a, inset 0 0 0 7px #d2aa5a0c;
+  filter: drop-shadow(0 16px 22px #050201a8);
+}
+.photo-panel::before { content: ""; position: absolute; z-index: 0; inset: 7px; border: 1px solid #d1a65b2f; pointer-events: none; clip-path: inherit; }
+.photo-panel > * { position: relative; z-index: 1; }
+.photo-panel header { border-bottom-color: #b98c4d69; }
+.photo-panel header > span { border: 3px double #b58a4f; background: radial-gradient(circle, #4a2c1b, #160d09); box-shadow: 0 0 12px #d9ac5645, inset 0 0 7px #d9ac5633; }
+.photo-stage { border: 1px solid #9b7241; box-shadow: 0 0 0 4px #0b0605, 0 0 0 5px #b58a4b4f, inset 0 0 45px #000c; }
+.comparison-seal { width: 72px; height: 72px; border: 0; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; box-shadow: none; color: #f1d795; font-size: 22px; text-shadow: 0 2px 5px #000, 0 0 7px #e6b65e; animation: medallionBreathe 5.8s ease-in-out infinite; }
+.comparison-seal::before { width: 158px; opacity: .25; }
+.upload-dropzone { border-color: #c09b5c9c; background: radial-gradient(circle, #6b472326, transparent 67%); }
+.upload-dropzone i { border: 3px double #c5a05f; background: radial-gradient(circle, #4c2d1b, #130b08); box-shadow: inset 0 0 12px #d8ad5730; }
+
+.unlock-card { border: 1px solid #b88e56; clip-path: polygon(0 16px, 16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px)); background: linear-gradient(135deg, #eed8a7, #c79c60 67%, #9a673f), url('/assets/magic/parchment-cinematic-v1.jpg') center/cover; background-blend-mode: normal, multiply; box-shadow: 0 30px 100px #000, inset 0 0 70px #5a321a57; }
+.unlock-seal { width: 88px; height: 88px; margin-top: -94px; border: 0; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; color: #f0d498; text-shadow: 0 2px 5px #000; box-shadow: none; filter: drop-shadow(0 10px 11px #25130c87) drop-shadow(0 0 6px #e0ad525f); animation: medallionBreathe 5.8s ease-in-out infinite; }
+
+.finale-screen::before { inset: 1.4%; border: 1px solid #d1ad6778; box-shadow: inset 0 0 160px #160906c7, inset 0 0 0 5px #c89f5521; }
+.final-heart { width: 116px; height: 116px; margin: 0 auto 3px; display: grid; place-items: center; font-size: 44px; }
+.finale-content { position: relative; z-index: 2; width: min(900px, 78vw); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.finale-content > span { letter-spacing: .27em; font-size: 10px; }
+.final-heart i { position: absolute; z-index: 0; inset: 0; display: block; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; filter: drop-shadow(0 9px 11px #29140b8f) drop-shadow(0 0 9px #dca5486e); }
+.final-heart span { position: relative; z-index: 1; color: #e7c27c; text-shadow: 0 2px 6px #120705, 0 0 8px #e7ba6475; transform: translateY(1px); }
+.finale-screen h1 { margin: 7px 0 10px; letter-spacing: .035em; }
+.finale-screen blockquote { margin: 8px 0; }
+.gallery-strip { position: relative; }
+.gallery-strip::before { content: ""; position: absolute; left: 12%; right: 12%; top: 50%; height: 1px; z-index: -1; background: linear-gradient(90deg, transparent, #81522f, transparent); }
+
+@keyframes constellationDrift { 0% { opacity: .1; transform: translate3d(-.8%, .5%, 0) scale(1.015); } 50% { opacity: .21; } 100% { opacity: .13; transform: translate3d(.9%, -.6%, 0) scale(1.035); } }
+@keyframes atlasFrameWake { from { filter: drop-shadow(0 2px 2px #130906c7) drop-shadow(0 0 2px #e3b65b40); } to { filter: drop-shadow(0 3px 3px #130906d6) drop-shadow(0 0 7px #e3b65b82); } }
+@keyframes brassGlint { 0%, 73%, 100% { opacity: 0; transform: scale(.4); } 80% { opacity: 1; transform: scale(1.5); } 87% { opacity: .3; transform: scale(.85); } 92% { opacity: .9; transform: scale(1.12); } }
+@keyframes topbarLacquerGlint { 0%, 55% { opacity: 0; transform: translateX(0) rotate(18deg); } 63% { opacity: 1; } 84%, 100% { opacity: 0; transform: translateX(780%) rotate(18deg); } }
+@keyframes topbarMedallionBreathe { 0%, 100% { transform: translateY(-50%) scale(.97); filter: drop-shadow(0 3px 5px #080403) brightness(.91); } 50% { transform: translateY(-50%) scale(1.025); filter: drop-shadow(0 4px 7px #080403) drop-shadow(0 0 5px #e4b45c72) brightness(1.06); } }
+@keyframes medallionBreathe { 0%, 100% { transform: translateZ(0) scale(.97); filter: drop-shadow(0 4px 5px #180b0680) brightness(.91); } 50% { transform: translateZ(0) scale(1.025); filter: drop-shadow(0 5px 8px #180b0699) drop-shadow(0 0 5px #e4b45c72) brightness(1.06); } }
+@keyframes questPaperGlow { 0%, 100% { border-color: #9e7647; } 50% { border-color: #c8a363; } }
+@keyframes routeAuraPulse { 0%, 100% { opacity: .055; stroke-width: 6; } 50% { opacity: .2; stroke-width: 10; } }
+@keyframes cameraOrnamentBreathe { 0%, 100% { opacity: .47; filter: drop-shadow(0 0 3px #d9a95046); } 50% { opacity: .72; filter: drop-shadow(0 0 8px #d9a95073); } }
 
 @keyframes cinematicCandleSweep { from { opacity: .66; transform: scale(1); } to { opacity: 1; transform: scale(1.035); } }
 @keyframes introGeneratedInk { 0% { opacity: 0; transform: scale(1.32) translateX(-16%); filter: contrast(1.05) sepia(.4) blur(4px); } 38% { opacity: .34; } 72% { opacity: .2; } 100% { opacity: 0; transform: scale(1.02) translateX(0); filter: contrast(1.18) sepia(.72) blur(0); } }

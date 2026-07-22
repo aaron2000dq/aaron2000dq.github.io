@@ -46,6 +46,8 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".courier-owl")).toHaveCount(1);
   await expect(page.locator(".cinematic-fog")).toHaveCount(2);
   await expect(page.locator(".cinematic-owl-sprite")).toHaveCount(1);
+  await expect(page.locator(".atlas-gilded-frame")).toBeVisible();
+  await expect(page.locator(".atlas-constellation-veil")).toHaveCount(2);
 
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-magic-overlay")).toBeVisible();
@@ -55,6 +57,8 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
   await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
+  await expect(page.locator(".route-path-aura")).toBeVisible();
+  await expect(page.locator(".quest-medallion")).toBeVisible();
   await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight)).toBe(false);
@@ -520,6 +524,9 @@ test("stores the complete atlas and local vision model for offline use", async (
       "assets/magic/rune-seal-burst-v1.png",
       "assets/magic/ink-bloom-mask-v1.jpg",
       "assets/magic/owl-courier-sprite-v1.png",
+      "assets/magic/gilded-atlas-frame-v2.png",
+      "assets/magic/constellation-veins-v2.png",
+      "assets/magic/cartographer-medallion-v2.png",
     ];
     const exact = await Promise.all(
       paths.map(async (path) => {

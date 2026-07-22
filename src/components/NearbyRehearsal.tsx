@@ -145,7 +145,7 @@ export function NearbyRehearsal() {
       <MagicAtmosphere phase="map" giftType={checkpoint.giftType} />
       <section className="exploration-screen nearby-map-screen">
         <header className="topbar">
-          <div><span>FIXED REHEARSAL ATLAS</span><b>{zone.title}</b></div>
+          <div><i className="topbar-sigil" aria-hidden="true"/><span>FIXED REHEARSAL ATLAS</span><b>{zone.title}</b></div>
           <div className="chapter-dots">{rehearsalZones.map((item, index) => <i key={item.id} className={index <= activeIndex ? "active" : ""}/>)}</div>
           <div className="status-chip">{arrived ? "测试点已抵达" : location.status === "active" ? "正在跟踪位置" : "定位在云雾中"}</div>
         </header>
@@ -163,7 +163,7 @@ export function NearbyRehearsal() {
             data-target-latitude={checkpoint.location.latitude}
             data-target-longitude={checkpoint.location.longitude}
           >
-            <div className="quest-number">{String(activeIndex + 1).padStart(2, "0")}</div>
+            <div className="quest-medallion" aria-hidden="true"><span className="quest-number">{String(activeIndex + 1).padStart(2, "0")}</span></div>
             <span className="eyebrow">PRESET TEST COORDINATE</span>
             <h2>{checkpoint.label}<small>附近固定地点 {activeIndex + 1}/4</small></h2>
             <p>{checkpoint.clue}</p>

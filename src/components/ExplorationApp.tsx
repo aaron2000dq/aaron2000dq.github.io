@@ -485,7 +485,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
         {progress.phase === "map" && (
           <motion.section className="exploration-screen" key={`${zone.id}-${checkpoint.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <header className="topbar"><div><span>THE EXPLORATION ATLAS</span><b>{zone.title}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已解锁" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
+            <header className="topbar"><div><i className="topbar-sigil" aria-hidden="true"/><span>THE EXPLORATION ATLAS</span><b>{zone.title}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已解锁" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
               <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
               <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
@@ -495,7 +495,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                   aria-expanded={questExpanded}
                   onClick={() => setQuestExpanded((current) => !current)}
                 >{questExpanded ? "收起" : "查看线索"}</button>
-                <div className="quest-number">{String(giftOrder[checkpoint.giftType]).padStart(2, "0")}</div>
+                <div className="quest-medallion" aria-hidden="true"><span className="quest-number">{String(giftOrder[checkpoint.giftType]).padStart(2, "0")}</span></div>
                 <span className="eyebrow">CURRENT COORDINATE</span>
                 <h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>
                 {questExpanded && <p className="quest-clue">{checkpoint.clue}</p>}
@@ -518,9 +518,11 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {progress.phase === "finale" && (
           <motion.section className="finale-screen" key="finale" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="finale-generated-rune" aria-hidden="true" />
-            <div className="final-heart">♡</div><span>A HIDDEN PLACE HAS BEEN FOUND</span><h1>Exploration<br/>Completed</h1><blockquote>今天的地图已经走完。<br/>但我们的探索，还会继续很多很多年。<br/><b>Happy Birthday, bb.</b></blockquote>
-            <div className="gallery-strip">{photos.length ? photos.map((photo) => <button key={photo.id} onClick={() => sharePhoto(photo)}><img src={photo.dataUrl} alt="探索复刻照片"/><span>{photo.score} 分 · 保存</span></button>) : <p>完成照片关卡后，探索相册会出现在这里。</p>}</div>
-            <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>
+            <div className="finale-content">
+              <div className="final-heart" aria-hidden="true"><i/><span>♡</span></div><span>A HIDDEN PLACE HAS BEEN FOUND</span><h1>Exploration<br/>Completed</h1><blockquote>今天的地图已经走完。<br/>但我们的探索，还会继续很多很多年。<br/><b>Happy Birthday, bb.</b></blockquote>
+              <div className="gallery-strip">{photos.length ? photos.map((photo) => <button key={photo.id} onClick={() => sharePhoto(photo)}><img src={photo.dataUrl} alt="探索复刻照片"/><span>{photo.score} 分 · 保存</span></button>) : <p>完成照片关卡后，探索相册会出现在这里。</p>}</div>
+              <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>
+            </div>
           </motion.section>
         )}
       </AnimatePresence>

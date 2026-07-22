@@ -18,6 +18,10 @@ const motes = [
 export function MagicAtmosphere({ phase, giftType, awake = true }: Props) {
   return (
     <div className={`magic-atmosphere ${awake ? "is-awake" : ""}`} data-phase={phase} data-gift={giftType} aria-hidden="true">
+      <div className="atlas-constellation-veil veil-one" />
+      <div className="atlas-constellation-veil veil-two" />
+      <div className="atlas-gilded-frame" />
+      <div className="atlas-edge-glints"><i/><i/><i/><i/></div>
       <div className="cinematic-fog cinematic-fog-primary" />
       <div className="cinematic-fog cinematic-fog-secondary" />
       <div className="cinematic-rune-field" />
