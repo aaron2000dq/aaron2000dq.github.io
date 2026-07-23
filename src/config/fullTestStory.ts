@@ -24,16 +24,22 @@ export const fullTestZones: ExplorationZone[] = [
   {
     ...rehearsalZones[0],
     id: "fulltest-v2-scent-district",
+    mysteryTitle: formalZones[0].mysteryTitle,
+    mysterySubtitle: formalZones[0].mysterySubtitle,
     checkpoints: [testCheckpoint(formalZones[0].checkpoints[0], rehearsalZones[0].checkpoints[0])],
   },
   {
     ...rehearsalZones[1],
     id: "fulltest-v2-motion-district",
+    mysteryTitle: formalZones[1].mysteryTitle,
+    mysterySubtitle: formalZones[1].mysterySubtitle,
     checkpoints: [testCheckpoint(formalZones[1].checkpoints[0], rehearsalZones[1].checkpoints[0])],
   },
   {
     ...rehearsalZones[2],
     id: "fulltest-v2-sound-district",
+    mysteryTitle: formalZones[2].mysteryTitle,
+    mysterySubtitle: formalZones[2].mysterySubtitle,
     checkpoints: [testCheckpoint(formalZones[2].checkpoints[0], rehearsalZones[2].checkpoints[0])],
   },
   {
@@ -41,6 +47,8 @@ export const fullTestZones: ExplorationZone[] = [
     id: "fulltest-v2-grand-atlas",
     title: "FULI NORTH · GRAND TEST ATLAS",
     subtitle: "富力中心北区北门 · 闪光、终点与隐藏章节",
+    mysteryTitle: formalZones[3].mysteryTitle,
+    mysterySubtitle: formalZones[3].mysterySubtitle,
     checkpoints: [
       testCheckpoint(formalZones[3].checkpoints[0], rehearsalZones[3].checkpoints[0], {
         label: "富力中心北区 · 北门",

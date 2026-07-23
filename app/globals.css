@@ -165,6 +165,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .chapter-relic path, .chapter-relic circle { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .chapter-relic > span { display: block; margin-top: -8px; padding-top: 5px; border-top: 1px solid currentColor; font: 700 clamp(5px, .55vw, 8px)/1.2 Georgia, serif; letter-spacing: .16em; text-align: center; }
 .chapter-relic .relic-fill, .chapter-relic .gem-core, .chapter-relic .letter-heart { fill: #9a5131; fill-opacity: .46; }
+.mystery-relic { opacity: .38; }
+.mystery-relic svg { animation: mysteryRelicBreathe 4.8s ease-in-out infinite; }
+.mystery-relic .mystery-relic-dot { fill: currentColor; stroke: none; }
 .relic-vapor { stroke-dasharray: 6 6; animation: relicVapor 3.4s ease-in-out infinite; }
 .vapor-two { animation-delay: -1.5s; }
 .relic-wheel { transform-origin: 60px 62px; animation: relicWheelTurn 18s linear infinite; }
@@ -540,6 +543,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .quest-card h2::after { content: ""; display: block; width: 42px; height: 1px; margin-top: 11px; background: linear-gradient(90deg, #6f472d, transparent); }
 .quest-card.is-collapsed h2::after { margin-top: 7px; }
 .distance-row { border-block-color: #755033b5; }
+.quest-story-beat {
+  margin: 13px 0 9px;
+  padding: 9px 11px;
+  border-left: 2px solid #7b5032;
+  color: #4c2f1f;
+  background: #f0d9a32b;
+  font: italic 12px/1.65 Georgia, "Songti SC", serif;
+}
+.quest-story-beat + .quest-clue { margin-top: 8px; }
 .quest-card .primary-button { border-color: #a17b49; background: linear-gradient(110deg, #1b100b, #3e2819 55%, #1b100b); box-shadow: inset 0 0 0 1px #d3ad6a24, 0 7px 16px #3b241b4c; }
 
 .route-path-aura { stroke: #e9bd67; stroke-width: 7.5; stroke-dasharray: none; opacity: .1; filter: blur(2.2px) drop-shadow(0 0 5px #f2cc77); animation: routeAuraPulse 4.6s ease-in-out infinite; }
@@ -578,6 +590,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 
 .unlock-card { border: 1px solid #b88e56; clip-path: polygon(0 16px, 16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px)); background: linear-gradient(135deg, #eed8a7, #c79c60 67%, #9a673f), url('/assets/magic/parchment-cinematic-v1.jpg') center/cover; background-blend-mode: normal, multiply; box-shadow: 0 30px 100px #000, inset 0 0 70px #5a321a57; }
 .unlock-seal { width: 88px; height: 88px; margin-top: -94px; border: 0; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; color: #f0d498; text-shadow: 0 2px 5px #000; box-shadow: none; filter: drop-shadow(0 10px 11px #25130c87) drop-shadow(0 0 6px #e0ad525f); animation: medallionBreathe 5.8s ease-in-out infinite; }
+.unlock-card h2 small { display: block; margin-top: 4px; font-size: 14px; font-weight: 400; letter-spacing: .12em; }
+.unlock-story-beat {
+  max-width: 420px;
+  margin: 0 auto 13px;
+  padding: 9px 14px;
+  border-block: 1px solid #76503355;
+  color: #5b3925;
+  font: italic 13px/1.7 Georgia, "Songti SC", serif;
+}
 
 .finale-screen::before { inset: 1.4%; border: 1px solid #d1ad6778; box-shadow: inset 0 0 160px #160906c7, inset 0 0 0 5px #c89f5521; }
 .final-heart { width: 116px; height: 116px; margin: 0 auto 3px; display: grid; place-items: center; font-size: 44px; }
@@ -763,6 +784,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 @keyframes relicCounterTurn { to { transform: rotate(-360deg); } }
 @keyframes relicGemRay { 0%, 100% { opacity: .22; stroke-dashoffset: 10; } 50% { opacity: 1; stroke-dashoffset: 0; } }
 @keyframes relicHeartBeat { 0%, 100% { transform: scale(.9); } 45% { transform: scale(1.13); } }
+@keyframes mysteryRelicBreathe { 0%, 100% { opacity: .6; transform: scale(.96) rotate(-1deg); } 50% { opacity: 1; transform: scale(1.035) rotate(1deg); } }
 @keyframes routeInkFlow { to { stroke-dashoffset: -48; } }
 @keyframes goalBeacon { 0%, 100% { filter: drop-shadow(0 0 2px #f1c96d); transform: scale(.94); } 50% { filter: drop-shadow(0 0 8px #f1c96d); transform: scale(1.14); } }
 @keyframes statusStar { 0%, 100% { opacity: .36; transform: rotate(0) scale(.8); } 50% { opacity: 1; transform: rotate(180deg) scale(1.16); } }

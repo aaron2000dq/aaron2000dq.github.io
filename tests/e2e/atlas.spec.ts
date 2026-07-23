@@ -16,7 +16,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
   await expect(page.locator(".intro-ink-route")).toBeVisible();
-  await expect(page.getByText("好闻的")).toBeVisible({ timeout: 7_000 });
+  await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/qianjiang-scent-v3.jpg");
   await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
 
@@ -60,7 +60,7 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
   await expect(page.locator(".map-owl-flight")).toHaveCount(2);
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
-  await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
   await expect(page.locator(".route-path-aura")).toBeVisible();
   await expect(page.locator(".quest-medallion")).toBeVisible();
@@ -110,7 +110,7 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-stage")).toBeVisible();
   await expect(page.locator(".map-owl-flight").first()).toHaveCSS("display", "none");
-  await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
 });
 
@@ -259,6 +259,36 @@ test("keeps the map immersive with a collapsible floating quest card", async ({ 
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
+test("conceals every first coordinate answer until arrival, then reveals it together", async ({ page }) => {
+  await page.addInitScript(() => {
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?mode=fulltest&run=e2e-no-spoilers");
+  await page.getByRole("button", { name: "开启地图" }).click();
+
+  await expect(page.locator(".topbar b")).toHaveText("XXVIII · THE FIRST TRACE");
+  await expect(page.locator(".map-cartouche .map-title")).toHaveText("XXVIII · THE FIRST TRACE");
+  await expect(page.locator(".quest-card h2")).toContainText("第一枚未知坐标");
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
+  await expect(page.locator(".chapter-relic[data-gift='scent']")).toHaveCount(0);
+  await expect(page.getByText("好闻的", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("富力中心北区 · 东门", { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel(/目的地 富力中心北区/)).toHaveCount(0);
+  await expect(page.getByLabel("尚未揭晓的目的地")).toBeVisible();
+
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制抵达" }).click();
+
+  await expect(page.locator(".topbar b")).toHaveText("FULI NORTH · EAST GATE");
+  await expect(page.locator(".quest-card h2")).toContainText("好闻的");
+  await expect(page.locator(".quest-card h2")).toContainText("富力中心北区 · 东门");
+  await expect(page.locator(".chapter-relic[data-gift='scent']")).toBeVisible();
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toHaveCount(0);
+});
+
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.25414, longitude: 120.21094, accuracy: 18 });
@@ -388,37 +418,41 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   );
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  for (const [gift, asset, giftType] of [
-    ["好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "scent"],
-    ["好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion"],
-    ["好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound"],
+  for (const [mystery, gift, asset] of [
+    ["第一枚未知坐标", "好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+    ["第三枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
   ]) {
-    await expect(page.locator(".quest-card h2")).toContainText(gift);
+    await expect(page.locator(".quest-card h2")).toContainText(mystery);
+    await expect(page.getByText(gift, { exact: true })).toHaveCount(0);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
-    await expect(page.locator(`.chapter-relic[data-gift='${giftType}']`)).toBeVisible();
+    await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
     await openCartographer(page);
     await page.getByRole("button", { name: "强制过关" }).click();
-    await page.getByRole("button", { name: "返回载具" }).click();
-    await page.getByRole("button", { name: "我已停车，展开下一片地图" }).click();
+    await expect(page.locator(".unlock-card h2")).toContainText(gift);
+    await page.getByRole("button", { name: "带着这一页返回载具" }).click();
+    await page.getByRole("button", { name: "我已停车，翻开下一页" }).click();
   }
 
-  await expect(page.locator(".quest-card h2")).toContainText("好看的");
-  await expect(page.locator(".chapter-relic[data-gift='sparkle']")).toBeVisible();
+  await expect(page.locator(".quest-card h2")).toContainText("第四枚未知坐标");
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png");
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
-  await page.getByRole("button", { name: "点亮下一个坐标" }).click();
+  await expect(page.locator(".unlock-card h2")).toContainText("好看的");
+  await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
-  await expect(page.locator(".quest-card h2")).toContainText("好吃的");
-  await expect(page.locator(".chapter-relic[data-gift='taste']")).toBeVisible();
+  await expect(page.locator(".quest-card h2")).toContainText("第五枚未知坐标");
+  await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
-  await page.getByRole("button", { name: "点亮下一个坐标" }).click();
+  await expect(page.locator(".unlock-card h2")).toContainText("好吃的");
+  await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("好爱的");
   await expect(page.locator(".chapter-relic[data-gift='love']")).toBeVisible();
   await page.getByRole("button", { name: "打开最后一封信" }).click();
-  await page.getByRole("button", { name: "完成探索" }).click();
+  await page.getByRole("button", { name: "翻开二十九岁的第一章" }).click();
   await expect(page.getByRole("heading", { name: "Exploration Completed" })).toBeVisible();
 });
 
@@ -470,7 +504,7 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await expect(page.locator(".confetti-cannon")).toHaveCount(2);
   await expect(page.locator(".confetti-piece")).toHaveCount(52);
   await expect(page.getByText("画面与记忆重合")).toBeVisible();
-  await expect(page.getByText("SCENT FOUND")).toBeVisible();
+  await expect(page.getByText("PAGE 01 · REVEALED")).toBeVisible();
   expect(Date.now() - startedAt).toBeLessThan(4_000);
   await expect(page.getByText(/照片匹配度 \d+%/)).toBeVisible();
 
@@ -525,7 +559,7 @@ test("falls back to scene matching when the pose model cannot load", async ({ pa
   await uploadInput.setInputFiles("public/references/scent.svg");
   const startedAt = Date.now();
   await page.getByRole("button", { name: "开始匹配" }).click();
-  await expect(page.getByText("SCENT FOUND")).toBeVisible();
+  await expect(page.getByText("PAGE 01 · REVEALED")).toBeVisible();
   expect(Date.now() - startedAt).toBeLessThan(4_000);
   await expect(page.getByText(/场景匹配模式/)).toBeVisible();
 });

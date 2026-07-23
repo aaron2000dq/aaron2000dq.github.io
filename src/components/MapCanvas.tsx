@@ -236,6 +236,12 @@ export function MapCanvas({
   heading = 0,
   onMapFocus,
 }: Props) {
+  const displayedTitle = arrived
+    ? zone.title
+    : zone.mysteryTitle ?? `XXVIII · PAGE ${String(zone.order).padStart(2, "0")}`;
+  const displayedSubtitle = arrived
+    ? zone.subtitle
+    : zone.mysterySubtitle ?? "二十八岁的最后一页 · 坐标仍在雾中";
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
   const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
@@ -343,7 +349,7 @@ export function MapCanvas({
   }
 
   return (
-    <div className="map-stage" aria-label={`${zone.title} 活点地图`} onClick={onMapFocus}>
+    <div className="map-stage" aria-label={`${displayedTitle} 活点地图`} onClick={onMapFocus}>
       <div className="map-tools" aria-label="地图缩放">
         <button onClick={() => setZoom((value) => Math.min(1.18, value + 0.08))}>＋</button>
         <button onClick={() => setZoom((value) => Math.max(0.92, value - 0.08))}>−</button>
@@ -409,7 +415,7 @@ export function MapCanvas({
             transform={`translate(${checkpoint.mapPoint.x} ${checkpoint.mapPoint.y})`}
             className={`atlas-point goal-point ${arrived ? "arrived" : ""}`}
             role="img"
-            aria-label={`目的地 ${checkpoint.label}`}
+            aria-label={arrived ? `目的地 ${checkpoint.label}` : "尚未揭晓的目的地"}
           >
             {arrived && (
               <g className="goal-arrival-burst" aria-hidden="true">
@@ -457,11 +463,11 @@ export function MapCanvas({
           </motion.g>
           <g className="map-cartouche" transform="translate(42 34)">
             <path d="M0 0h330l-14 34H0l10-17z" />
-            <text x="20" y="16" className="map-title">{zone.title}</text>
-            <text x="20" y="29" className="map-subtitle">{zone.subtitle}</text>
+            <text x="20" y="16" className="map-title">{displayedTitle}</text>
+            <text x="20" y="29" className="map-subtitle">{displayedSubtitle}</text>
           </g>
         </svg>
-        <MapMagicOverlay giftType={checkpoint.giftType} />
+        <MapMagicOverlay giftType={checkpoint.giftType} revealed={arrived} />
       </motion.div>
       {illustratedMap && loadedAsset !== illustratedMap && failedAsset !== illustratedMap && (
         <div className="map-illustration-loading" role="status">

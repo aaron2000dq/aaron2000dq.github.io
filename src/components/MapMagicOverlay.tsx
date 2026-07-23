@@ -66,9 +66,32 @@ function ChapterRelic({ giftType }: { giftType: Checkpoint["giftType"] }) {
   );
 }
 
-export function MapMagicOverlay({ giftType }: { giftType: Checkpoint["giftType"] }) {
+function MysteryRelic() {
   return (
-    <div className="map-magic-overlay" data-gift={giftType} aria-hidden="true">
+    <div className="chapter-relic mystery-relic" data-gift="mystery">
+      <svg viewBox="0 0 120 120">
+        <g>
+          <circle cx="60" cy="58" r="38" />
+          <circle cx="60" cy="58" r="29" />
+          <path d="M43 49q2-17 18-17 16 0 17 14 0 10-11 16-8 4-8 13" />
+          <circle className="mystery-relic-dot" cx="59" cy="89" r="2.6" />
+          <path d="M60 8v9M60 99v9M10 58h9M101 58h9M24 22l7 7M89 87l7 7M96 22l-7 7M31 87l-7 7" />
+        </g>
+      </svg>
+      <span>COORDINATE SEALED</span>
+    </div>
+  );
+}
+
+export function MapMagicOverlay({
+  giftType,
+  revealed,
+}: {
+  giftType: Checkpoint["giftType"];
+  revealed: boolean;
+}) {
+  return (
+    <div className="map-magic-overlay" data-gift={revealed ? giftType : "mystery"} aria-hidden="true">
       <div className="map-reveal-veil" />
       <div className="map-arcane-fog map-arcane-fog-a" />
       <div className="map-arcane-fog map-arcane-fog-b" />
@@ -93,7 +116,7 @@ export function MapMagicOverlay({ giftType }: { giftType: Checkpoint["giftType"]
 
       <div className="falling-feather feather-one" />
       <div className="falling-feather feather-two" />
-      <ChapterRelic giftType={giftType} />
+      {revealed ? <ChapterRelic giftType={giftType} /> : <MysteryRelic />}
     </div>
   );
 }

@@ -10,6 +10,8 @@ export const zones: ExplorationZone[] = [
     order: 1,
     title: "Qianjiang · Scent District",
     subtitle: "万象城与钱江新城 · 寻找城市的气味",
+    mysteryTitle: "XXVIII · THE FIRST TRACE",
+    mysterySubtitle: "二十八岁的最后一页 · 第一枚坐标仍在雾中",
     parkingLabel: "杭州万象城 · P3 出口",
     parkingMapPoint: { x: 118, y: 412 },
     center: { latitude: 30.25402, longitude: 120.20992 },
@@ -26,6 +28,9 @@ export const zones: ExplorationZone[] = [
       {
         id: "aesop-scent",
         label: "Aesop",
+        mysteryTitle: "第一枚未知坐标",
+        mysteryLabel: "答案尚在风里",
+        storyBeat: "把二十八岁的最后一阵风，收进二十九岁的第一件行李。",
         giftType: "scent",
         location: { latitude: 30.254158, longitude: 120.21097 },
         unlockRadiusM: 150,
@@ -33,9 +38,9 @@ export const zones: ExplorationZone[] = [
         matchMode: "pose-scene",
         passScore: 72,
         clue:
-          "第一种线索无法被看见，却会比脚步停留得更久。请前往气味汇集的地方，找到属于这一岁的香气。",
+          "它看不见，也握不住，却能让一段记忆忽然回来。沿着墨迹前进，二十八岁的最后一阵风正在终点等你。",
         unlockCopy:
-          "好闻的，是一阵风经过以后，依然让人想起你的味道。今天的第一份礼物，是一瓶由你亲自选择的香水。",
+          "二十八岁的最后一阵风，被装进你亲自挑选的香气里。第一件带去二十九岁的行李，是一瓶属于你的香水。",
         photoPrompt: "手指地图前进方向，拍下探索开始的画面。",
         mapPoint: { x: 610, y: 112 },
       },
@@ -46,6 +51,8 @@ export const zones: ExplorationZone[] = [
     order: 2,
     title: "Caihe · Motion District",
     subtitle: "庆春东路与采荷街区 · 寻找移动的方式",
+    mysteryTitle: "XXVIII · THE SECOND PASSAGE",
+    mysterySubtitle: "旧一岁的脚步 · 正在寻找新的方向",
     parkingLabel: "采荷街区 · 庆春东路停车点",
     parkingMapPoint: { x: 110, y: 420 },
     center: { latitude: 30.26002, longitude: 120.17805 },
@@ -62,6 +69,9 @@ export const zones: ExplorationZone[] = [
       {
         id: "liv-motion",
         label: "Liv",
+        mysteryTitle: "第二枚未知坐标",
+        mysteryLabel: "答案藏在下一段路",
+        storyBeat: "让二十八岁走过的路，变成二十九岁出发的方向。",
         giftType: "motion",
         location: { latitude: 30.26031, longitude: 120.178712 },
         unlockRadiusM: 150,
@@ -69,9 +79,9 @@ export const zones: ExplorationZone[] = [
         matchMode: "pose-scene",
         passScore: 72,
         clue:
-          "探索不只需要目的地，还需要一种喜欢的出发方式。下一件礼物不会被你带走，它会在今后的很多天里，带你去更远的地方。",
+          "有些礼物会被你带走，有些却会反过来带着你。沿着这一页的脚印，去找到二十九岁更轻盈的出发方式。",
         unlockCopy:
-          "好用的，是让普通的上下班，也能变成一小段自由的旅行。第二份礼物，是一辆属于你的自行车。",
+          "从这一页开始，二十九岁的路不必只靠双脚。第二件行李是一辆属于你的自行车，让普通的通勤也变成一小段自由旅行。",
         photoPrompt: "扶着一辆想象中的自行车，回头向镜头招手。",
         mapPoint: { x: 630, y: 116 },
       },
@@ -82,6 +92,8 @@ export const zones: ExplorationZone[] = [
     order: 3,
     title: "Jingwei · Sound District",
     subtitle: "石桥路与经纬创意园 · 寻找时间的声音",
+    mysteryTitle: "XXVIII · THE THIRD ECHO",
+    mysterySubtitle: "被时间保存的一小段 · 正等待再次发生",
     parkingLabel: "经纬创意园 · 7A 区停车点",
     parkingMapPoint: { x: 108, y: 420 },
     center: { latitude: 30.32472, longitude: 120.18808 },
@@ -98,6 +110,9 @@ export const zones: ExplorationZone[] = [
       {
         id: "vinyl-sound",
         label: "聆翔文化",
+        mysteryTitle: "第三枚未知坐标",
+        mysteryLabel: "答案绕着时间旋转",
+        storyBeat: "让二十八岁的回声，在二十九岁的房间里重新响起。",
         giftType: "sound",
         location: { latitude: 30.3251, longitude: 120.18866 },
         unlockRadiusM: 160,
@@ -105,9 +120,9 @@ export const zones: ExplorationZone[] = [
         matchMode: "pose-scene",
         passScore: 72,
         clue:
-          "有些回忆不会消失，它们只是藏进了一圈又一圈的纹路里。当针尖落下，时间便会重新开始旋转。",
+          "有些时刻没有消失，只是藏进一圈又一圈的纹路。沿墨迹找到它，让二十八岁的某段回声重新发生。",
         unlockCopy:
-          "好听的，是唱针落下的那一刻，房间里只剩音乐和我们。第三份礼物，是一张由你亲自选中的爵士黑胶。",
+          "二十八岁的回声，会在二十九岁的房间里继续旋转。第三件行李是一张由你亲自选中的爵士黑胶，等唱针落下，只剩音乐和我们。",
         photoPrompt: "用一张想象中的唱片遮住半张脸。",
         mapPoint: { x: 602, y: 122 },
       },
@@ -118,6 +133,8 @@ export const zones: ExplorationZone[] = [
     order: 4,
     title: "Qianjiang · Grand Atlas",
     subtitle: "来福士、万象城、城市阳台 · 闪光与高空终点",
+    mysteryTitle: "XXVIII · THE NIGHT ATLAS",
+    mysterySubtitle: "旧一岁的最后一夜 · 还藏着两枚坐标",
     parkingLabel: "杭州来福士 · T1 停车区",
     parkingMapPoint: { x: 130, y: 365 },
     center: { latitude: 30.251737, longitude: 120.207682 },
@@ -139,6 +156,9 @@ export const zones: ExplorationZone[] = [
       {
         id: "dior-sparkle",
         label: "Dior",
+        mysteryTitle: "第四枚未知坐标",
+        mysteryLabel: "答案正在夜色里发光",
+        storyBeat: "收下一束只属于你的光，照亮二十九岁的第一章。",
         giftType: "sparkle",
         location: { latitude: 30.254158, longitude: 120.21097 },
         unlockRadiusM: 170,
@@ -146,15 +166,18 @@ export const zones: ExplorationZone[] = [
         matchMode: "pose-scene",
         passScore: 72,
         clue:
-          "前面的礼物陪你闻见世界、穿过城市、听见时间。接下来这件礼物，不负责带你去任何地方。它只负责在你抬起手的时候，提醒你今天有多好看。",
+          "前三页已经被收进行囊。第四页不负责带你去任何地方，它只在你抬起手的时候，留下一点只属于你的光。",
         unlockCopy:
-          "好看的不只是礼物，是你戴上它以后，我移不开的眼睛。第四份礼物，是一件可以戴在身上的闪光。",
+          "这是二十八岁最后一夜里，专门留给你的光。第四件行李是一件戴在身上的闪耀，陪你照亮二十九岁的第一章。",
         photoPrompt: "面向橱窗伸出空手腕，为闪光留下位置。",
         mapPoint: { x: 535, y: 150 },
       },
       {
         id: "balcony-taste",
         label: "城市阳台",
+        mysteryTitle: "第五枚未知坐标",
+        mysteryLabel: "答案比城市更接近天空",
+        storyBeat: "在杭州的夜色里，好好告别二十八岁，再一起迎接下一岁。",
         giftType: "taste",
         location: { latitude: 30.244199, longitude: 120.212496 },
         unlockRadiusM: 180,
@@ -162,15 +185,18 @@ export const zones: ExplorationZone[] = [
         matchMode: "scene-only",
         passScore: 70,
         clue:
-          "你已经找到了城市的气味、速度、声音和光。最后一个坐标不在街道上。请抬起头，去往今晚距离天空更近的地方。",
+          "地面上的四页已经写完。最后一枚坐标不藏在脚边，请抬起头，去往今晚比城市更接近天空的地方。",
         unlockCopy:
-          "好吃的，是今天所有路程结束以后，和最喜欢的人一起坐下来。第五份礼物，是杭州夜景里的一顿晚餐。",
+          "在杭州夜景前，我们把二十八岁好好收藏，再坐下来迎接二十九岁。第五件行李，是和最喜欢的人共享的一顿晚餐与生日蛋糕。",
         photoPrompt: "抬头寻找高处的终点，让天空占据画面上半部。",
         mapPoint: { x: 670, y: 338 },
       },
       {
         id: "hidden-love",
         label: "Love",
+        mysteryTitle: "地图之外的最后一页",
+        mysteryLabel: "它从来不需要坐标",
+        storyBeat: "读完这封信，二十八岁的故事合上，二十九岁的第一章正式开始。",
         giftType: "love",
         location: { latitude: 30.251737, longitude: 120.207682 },
         unlockRadiusM: 200,
@@ -178,9 +204,9 @@ export const zones: ExplorationZone[] = [
         matchMode: "scene-only",
         passScore: 0,
         clue:
-          "地图可以找到气味、礼物、餐厅和城市里的坐标。但有一个地方，从来不需要导航。因为无论走到哪里，你都一直在这里。",
+          "地图找到了五枚坐标，却还有一个地方从来不需要导航。无论走到哪里，你都一直在那里。",
         unlockCopy:
-          "前面的五份礼物，分别是好闻的、好用的、好听的、好看的和好吃的。但生日里还应该有一份‘好爱的’。在过去、今天和地图上还没有出现的未来里，你一直都被我好好地爱着。",
+          "前面的五件行李，会陪你走进二十九岁；最后这一份不用拿在手里。读完这封信，二十八岁的故事合上，而在过去、今天和地图尚未画出的未来里，你都会被我好好地爱着。",
         photoPrompt: "不需要复刻。请打开最后一封信。",
         mapPoint: { x: 230, y: 330 },
       },
@@ -200,9 +226,9 @@ export const initialProgress: StoryProgress = {
 };
 
 export const fogMessages = [
-  "探索者正在穿越地图尚未记录的区域……",
-  "前方坐标被云雾笼罩，请在载具停止后继续探索。",
-  "有些距离适合用脚步丈量，有些距离需要暂时交给风。",
+  "二十八岁的第一枚印记已经收好。地图正在把下一段路，折进二十九岁的行囊。",
+  "旧一岁的脚步正在变成新的方向。前方还有一段回声，等待被时间重新唤醒。",
+  "二十八岁的回声渐渐远去。最后两枚坐标，将在同一片夜色里连续显形。",
 ];
 
 export function findZone(id: string) {

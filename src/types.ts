@@ -23,6 +23,9 @@ export type MatchMode = "pose-scene" | "scene-only";
 export type Checkpoint = {
   id: string;
   label: string;
+  mysteryTitle?: string;
+  mysteryLabel?: string;
+  storyBeat?: string;
   giftType: GiftType;
   location: LatLng;
   unlockRadiusM: number;
@@ -40,6 +43,8 @@ export type ExplorationZone = {
   order: number;
   title: string;
   subtitle: string;
+  mysteryTitle?: string;
+  mysterySubtitle?: string;
   parkingLabel: string;
   parkingMapPoint: { x: number; y: number };
   center: LatLng;
