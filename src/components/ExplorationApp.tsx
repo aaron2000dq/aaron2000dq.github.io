@@ -38,6 +38,18 @@ type ExplorationAppProps = {
   storyZones?: ExplorationZone[];
 };
 
+async function decodeIntroImage(src: string) {
+  await new Promise<void>((resolve) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => {
+      image.decode().catch(() => undefined).finally(resolve);
+    };
+    image.onerror = () => resolve();
+    image.src = src;
+  });
+}
+
 function createInitialProgress(storyZones: ExplorationZone[]): StoryProgress {
   return {
     activeZoneId: storyZones[0].id,
@@ -117,7 +129,24 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   }, [checkpoint.id, arrived]);
 
   useEffect(() => {
-    Promise.all([loadProgress(storageNamespace, storyInitialProgress), getPhotos(storageNamespace)]).then(([saved, savedPhotos]) => {
+    const introAssets = [
+      "/assets/magic/parchment-cinematic-v1.jpg",
+      "/assets/magic/explorer-envelope-open-v3.png",
+      "/assets/magic/exploration-wax-seal-v3.png",
+      "/assets/magic/owl-courier-sprite-v1.png",
+      "/assets/magic/gilded-atlas-frame-v2.png",
+      "/assets/magic/constellation-veins-v2.png",
+      storyZones[0].illustratedMapAsset ?? "/assets/maps/qianjiang-scent-v3.jpg",
+    ];
+    Promise.all([
+      loadProgress(storageNamespace, storyInitialProgress),
+      getPhotos(storageNamespace),
+    ]).then(async ([saved, savedPhotos]) => {
+      if (saved.phase === "intro") {
+        for (const src of introAssets) {
+          await decodeIntroImage(src);
+        }
+      }
       const checkpointExists = storyZones.some((item) =>
         item.checkpoints.some((candidate) => candidate.id === saved.activeCheckpointId),
       );
@@ -342,7 +371,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
       () => setProgress((current) => ({ ...current, phase: "map" })),
-      reducedMotion ? 250 : 4000,
+      reducedMotion ? 250 : 3650,
     );
   }
 
@@ -409,10 +438,10 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     }
   }
 
-  if (!hydrated) return <div className="loading-screen"><div className="ink-loader"/><p>正在展开地图……</p></div>;
+  if (!hydrated) return <div className="loading-screen"><div className="ink-loader"/><p>正在唤醒信使与地图……</p></div>;
 
   return (
-    <main className="atlas-shell">
+    <main className="atlas-shell" data-intro-assets="ready">
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
       <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} awake={progress.phase !== "intro" || introOpening} />
       <button
@@ -430,7 +459,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
       <AnimatePresence mode="wait">
         {progress.phase === "intro" && (
-          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.025 }} transition={{ duration: .45 }}>
+          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .32 }}>
             <div className="intro-map-lines" />
 
             <div className="intro-atlas-reveal" aria-hidden={!introOpening}>
@@ -455,11 +484,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
               </div>
             </div>
 
-            <motion.div
-              className="sealed-letter opening-letter"
-              animate={introOpening ? { opacity: 0, scale: 1.04, rotate: .25, y: 52, filter: "blur(4px)" } : { opacity: 1, scale: 1, rotate: -.35, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1.08, ease: [0.55, 0.06, 0.35, 0.98], delay: introOpening ? 1.62 : 0 }}
-            >
+            <div className="sealed-letter opening-letter">
               <div className="envelope-prop" aria-hidden="true" />
               <div className="envelope-letter-content">
                 <div className="eyebrow">PRIVATE DELIVERY · TO THE EXPLORER</div>
@@ -475,7 +500,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
               </div>
               <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "按下火漆 · 接收探索地图"}</b></button>
               <div className="envelope-wind-fold" aria-hidden="true" />
-            </motion.div>
+            </div>
             <footer>2026 BIRTHDAY EDITION · HANGZHOU</footer>
           </motion.section>
         )}

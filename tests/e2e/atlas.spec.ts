@@ -55,7 +55,7 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".atlas-constellation-veil")).toHaveCount(2);
 
   await page.getByRole("button", { name: "开启地图" }).click();
-  await expect(page.locator(".map-magic-overlay")).toBeVisible();
+  await expect(page.locator(".map-magic-overlay")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator(".map-reveal-veil")).toBeVisible();
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
   await expect(page.locator(".map-owl-flight")).toHaveCount(2);
@@ -67,6 +67,37 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight)).toBe(false);
+});
+
+test("keeps the first-play delivery cinematic geometrically stable", async ({ page }) => {
+  await page.goto("/?mode=fulltest&run=e2e-intro-compositor-stability");
+  await expect(page.locator(".atlas-shell")).toHaveAttribute("data-intro-assets", "ready");
+  await expect(page.locator(".intro-map-sheet img")).toHaveJSProperty("complete", true);
+  await expect(page.locator(".intro-map-sheet")).toHaveCSS("clip-path", "none");
+  await expect(page.locator(".intro-map-sheet")).toHaveCSS("filter", "none");
+  await expect(page.locator(".opening-letter")).toHaveCSS("filter", "none");
+
+  const intro = page.locator(".intro-screen");
+  const initial = await intro.boundingBox();
+  expect(initial).not.toBeNull();
+  await page.getByRole("button", { name: "开启地图" }).click();
+
+  const heights: number[] = [];
+  const widths: number[] = [];
+  const tops: number[] = [];
+  for (let index = 0; index < 28; index += 1) {
+    await page.waitForTimeout(100);
+    const box = await intro.boundingBox();
+    expect(box).not.toBeNull();
+    heights.push(box!.height);
+    widths.push(box!.width);
+    tops.push(box!.y);
+  }
+
+  expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(1);
+  expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
+  expect(Math.max(...tops) - Math.min(...tops)).toBeLessThan(1);
+  await expect(page.locator(".map-stage")).toBeVisible({ timeout: 7_000 });
 });
 
 test("keeps the magical interface usable with reduced motion", async ({ page }) => {
@@ -148,7 +179,7 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   await page.goto("/?mode=fulltest&run=e2e-point-markers");
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  await expect(page.locator(".goal-point")).toBeVisible();
+  await expect(page.locator(".goal-point")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator(".goal-tag")).toContainText("GOAL");
   await expect(page.locator(".you-marker")).toBeVisible();
   await expect(page.locator(".atlas-point .point-glow")).toHaveCount(2);
