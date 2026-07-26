@@ -214,15 +214,15 @@ test("compensates the compass for an iPad landscape screen", async ({ page }) =>
         value: class DeviceOrientationEvent extends Event {},
       });
     }
-    Object.defineProperty(window.screen.orientation, "angle", {
-      configurable: true,
-      get: () => 90,
-    });
   });
   await page.goto("/?mode=fulltest&run=e2e-landscape-heading");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
   await page.evaluate(() => {
+    Object.defineProperty(window.screen.orientation, "angle", {
+      configurable: true,
+      get: () => 90,
+    });
     const event = new Event("deviceorientation");
     Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
     window.dispatchEvent(event);
