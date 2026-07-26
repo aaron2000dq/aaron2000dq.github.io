@@ -249,7 +249,13 @@ export function MapCanvas({
   const [marker, setMarker] = useState(zone.parkingMapPoint);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [footsteps, setFootsteps] = useState<Array<{ x: number; y: number; angle: number; side: number }>>([]);
+  const [pawTrail, setPawTrail] = useState<Array<{
+    id: string;
+    x: number;
+    y: number;
+    angle: number;
+    side: number;
+  }>>([]);
   const lastTrailPoint = useRef(zone.parkingMapPoint);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({
@@ -267,26 +273,28 @@ export function MapCanvas({
     const dx = next.x - previous.x;
     const dy = next.y - previous.y;
     const distance = Math.hypot(dx, dy);
-    if (distance < 7) return;
+    if (distance < 9) return;
     const angle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
-    const count = Math.min(8, Math.max(1, Math.floor(distance / 10)));
-    setFootsteps((current) => {
+    const count = Math.min(4, Math.max(1, Math.floor(distance / 18)));
+    setPawTrail((current) => {
+      const createdAt = `${position.timestamp}-${Math.round(next.x)}-${Math.round(next.y)}`;
       const added = Array.from({ length: count }, (_, index) => {
         const ratio = (index + 1) / (count + 1);
         return {
+          id: `${createdAt}-${index}`,
           x: previous.x + dx * ratio,
           y: previous.y + dy * ratio,
           angle,
           side: current.length + index,
         };
       });
-      return [...current, ...added].slice(-44);
+      return [...current, ...added].slice(-18);
     });
     lastTrailPoint.current = next;
   }, [position?.timestamp, zone, checkpoint]);
 
   useEffect(() => {
-    setFootsteps([]);
+    setPawTrail([]);
     const start = position ? projectPositionToMap(position, zone, checkpoint) : zone.parkingMapPoint;
     setMarker(start);
     lastTrailPoint.current = start;
@@ -399,15 +407,22 @@ export function MapCanvas({
           <g className="legacy-blueprint"><DistrictBlueprint kind={zone.mapKind} /></g>
           <path className="route-path route-path-aura" d={zone.svgPath} aria-hidden="true" />
           <path className="route-path" d={zone.svgPath} />
-          {footsteps.map((point, index) => {
+          {pawTrail.map((point) => {
             return (
               <g
-                key={index}
-                className="footstep visible"
+                key={point.id}
+                className="paw-trail"
                 transform={`translate(${point.x} ${point.y}) rotate(${point.angle}) translate(${point.side % 2 ? 3.4 : -3.4} 0)`}
               >
-                <ellipse cy="-3.2" rx="2.15" ry="4.4" />
-                <ellipse cy="3.4" rx="1.35" ry="2.45" />
+                <circle className="paw-ripple paw-ripple-first" r="4.5" />
+                <circle className="paw-ripple paw-ripple-second" r="4.5" />
+                <g className="paw-print">
+                  <ellipse className="paw-pad" cy="2.2" rx="3.9" ry="3.25" />
+                  <ellipse className="paw-toe" cx="-4.1" cy="-2.2" rx="1.35" ry="1.75" transform="rotate(-24 -4.1 -2.2)" />
+                  <ellipse className="paw-toe" cx="-1.35" cy="-4.25" rx="1.3" ry="1.75" transform="rotate(-8 -1.35 -4.25)" />
+                  <ellipse className="paw-toe" cx="1.6" cy="-4.15" rx="1.3" ry="1.75" transform="rotate(9 1.6 -4.15)" />
+                  <ellipse className="paw-toe" cx="4.25" cy="-1.9" rx="1.3" ry="1.7" transform="rotate(25 4.25 -1.9)" />
+                </g>
               </g>
             );
           })}

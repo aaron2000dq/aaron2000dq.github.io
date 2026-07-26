@@ -20,6 +20,18 @@ export function haversineDistance(a: LatLng, b: LatLng) {
   return 2 * EARTH_RADIUS_M * Math.asin(Math.sqrt(h));
 }
 
+/** Geographic bearing from point A to B, where 0 is north and 90 is east. */
+export function bearingDegrees(a: LatLng, b: LatLng) {
+  const lat1 = (a.latitude * Math.PI) / 180;
+  const lat2 = (b.latitude * Math.PI) / 180;
+  const dLng = ((b.longitude - a.longitude) * Math.PI) / 180;
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
 function toMeters(point: LatLng, origin: LatLng) {
   const latScale = (Math.PI / 180) * EARTH_RADIUS_M;
   const lngScale = latScale * Math.cos((origin.latitude * Math.PI) / 180);
@@ -96,7 +108,10 @@ export function smoothPositionSample(
     longitude: previous.longitude + (next.longitude - previous.longitude) * alpha,
     accuracy: next.accuracy,
     timestamp: next.timestamp,
-    heading: Number.isFinite(next.heading) ? next.heading : previous.heading,
+    // A heading describes the current sample, not a permanent orientation.
+    // Dropping a stale course lets the live device compass take over while the
+    // explorer is standing still or after a new chapter begins.
+    heading: Number.isFinite(next.heading) ? next.heading : undefined,
   };
 }
 
@@ -207,7 +222,9 @@ export function isInsideCheckpoint(
     accuracyM < 0 ||
     accuracyM > maxAccuracyM
   ) return false;
-  const accuracyAllowance = Math.min(80, Math.max(0, accuracyM * 0.35));
+  // The checkpoint radius is the story rule. Accuracy may soften the edge a
+  // little, but it must never turn a 30 m checkpoint into a broad geofence.
+  const accuracyAllowance = Math.min(10, Math.max(0, accuracyM * 0.2));
   return distanceM <= radiusM + accuracyAllowance;
 }
 

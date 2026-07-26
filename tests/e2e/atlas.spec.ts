@@ -58,7 +58,8 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".map-magic-overlay")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator(".map-reveal-veil")).toBeVisible();
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
-  await expect(page.locator(".map-owl-flight")).toHaveCount(2);
+  await expect(page.locator(".theme-messenger")).toHaveCount(1);
+  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "scent");
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
@@ -109,7 +110,7 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
   await expect(page.locator(".owl-feather-burst")).toHaveCSS("display", "none");
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-stage")).toBeVisible();
-  await expect(page.locator(".map-owl-flight").first()).toHaveCSS("display", "none");
+  await expect(page.locator(".theme-messenger")).toHaveCSS("display", "none");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
 });
@@ -130,7 +131,13 @@ test("automatically arrives after two accurate nearby location samples", async (
   await expect(page.getByText("坐标已回应")).toBeVisible();
   await expect(page.locator(".goal-arrival-ripple")).toHaveCount(2);
   await expect(page.getByText("精度 ±14m")).toBeVisible();
-  await expect(page.locator(".footstep.visible").first()).toBeVisible();
+  await expect(page.locator(".paw-trail").first()).toBeVisible();
+  await expect(page.locator(".paw-trail").first().locator(".paw-toe")).toHaveCount(4);
+  await expect(page.locator(".paw-trail").first().locator(".paw-ripple")).toHaveCount(2);
+  expect(
+    await page.locator(".paw-trail").first().evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("pawTrailLifecycle");
+  await expect(page.locator(".paw-trail").first()).toHaveCSS("animation-duration", "9s");
   await expect(page.locator(".you-marker")).toBeVisible();
 });
 
@@ -199,6 +206,31 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(123)");
 });
 
+test("compensates the compass for an iPad landscape screen", async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!("DeviceOrientationEvent" in window)) {
+      Object.defineProperty(window, "DeviceOrientationEvent", {
+        configurable: true,
+        value: class DeviceOrientationEvent extends Event {},
+      });
+    }
+    Object.defineProperty(window.screen.orientation, "angle", {
+      configurable: true,
+      get: () => 90,
+    });
+  });
+  await page.goto("/?mode=fulltest&run=e2e-landscape-heading");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await page.evaluate(() => {
+    const event = new Event("deviceorientation");
+    Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
+    window.dispatchEvent(event);
+  });
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "33");
+  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(33)");
+});
+
 test("moves the explorer dot from live coordinates and force-arrival never teleports it", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.27463, longitude: 119.99011, accuracy: 18 });
@@ -216,7 +248,8 @@ test("moves the explorer dot from live coordinates and force-arrival never telep
   const beforeY = Number(await marker.getAttribute("data-map-y"));
   await context.setGeolocation({ latitude: 30.27496, longitude: 119.99011, accuracy: 18 });
   await expect.poll(async () => Number(await marker.getAttribute("data-map-y"))).toBeLessThan(beforeY - 10);
-  await expect(page.locator(".footstep.visible").first()).toBeVisible();
+  await expect(marker).toHaveAttribute("data-heading", "0");
+  await expect(page.locator(".paw-trail").first()).toBeVisible();
 
   const beforeForce = {
     x: await marker.getAttribute("data-map-x"),
@@ -418,14 +451,15 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   );
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  for (const [mystery, gift, asset] of [
-    ["第一枚未知坐标", "好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
-    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
-    ["第三枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png"],
+  for (const [mystery, gift, asset, theme] of [
+    ["第一枚未知坐标", "好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "scent"],
+    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion"],
+    ["第三枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound"],
   ]) {
     await expect(page.locator(".quest-card h2")).toContainText(mystery);
     await expect(page.getByText(gift, { exact: true })).toHaveCount(0);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
+    await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", theme);
     await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
     await openCartographer(page);
     await page.getByRole("button", { name: "强制过关" }).click();
@@ -435,6 +469,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   }
 
   await expect(page.locator(".quest-card h2")).toContainText("第四枚未知坐标");
+  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "sparkle");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png");
   await openCartographer(page);
@@ -443,6 +478,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("第五枚未知坐标");
+  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "taste");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
@@ -450,6 +486,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("好爱的");
+  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "love");
   await expect(page.locator(".chapter-relic[data-gift='love']")).toBeVisible();
   await page.getByRole("button", { name: "打开最后一封信" }).click();
   await page.getByRole("button", { name: "翻开二十九岁的第一章" }).click();

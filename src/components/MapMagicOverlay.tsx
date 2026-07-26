@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import type { Checkpoint } from "@/src/types";
-import { CinematicOwl } from "./CinematicOwl";
 
 const starNodes = [
   { x: 12, y: 20, delay: "-.6s" },
@@ -83,6 +82,59 @@ function MysteryRelic() {
   );
 }
 
+function ThemeMessenger({ giftType }: { giftType: Checkpoint["giftType"] }) {
+  return (
+    <div className={`theme-messenger theme-messenger-${giftType}`} data-theme={giftType}>
+      <span className="theme-messenger-glow" />
+      <svg viewBox="0 0 120 72">
+        {giftType === "scent" && (
+          <g className="messenger-petals">
+            <path d="M34 39q-15-19 2-27 14 13-2 27ZM52 34q1-24 19-18 4 19-19 18ZM70 43q15-18 27-5-7 18-27 5Z" />
+            <path className="messenger-line" d="M24 52q35-25 78-12" />
+          </g>
+        )}
+        {giftType === "motion" && (
+          <g className="messenger-wheel">
+            <circle cx="60" cy="37" r="23" />
+            <circle cx="60" cy="37" r="4" />
+            <path d="M60 14v46M37 37h46M44 21l32 32M76 21 44 53" />
+            <path className="messenger-line" d="M21 29q10-8 22-5M18 41q12-6 22-2" />
+          </g>
+        )}
+        {giftType === "sound" && (
+          <g className="messenger-note">
+            <path d="M47 47V16l34-7v31M47 19l34-7" />
+            <ellipse cx="38" cy="50" rx="11" ry="7" />
+            <ellipse cx="72" cy="43" rx="11" ry="7" />
+            <path className="messenger-line" d="M17 24q11-7 21 0M86 25q10-8 18 1" />
+          </g>
+        )}
+        {giftType === "sparkle" && (
+          <g className="messenger-comet">
+            <path d="m73 12 5 13 14 1-11 9 4 14-12-8-12 8 4-14-11-9 14-1Z" />
+            <path className="messenger-line" d="M58 30Q31 19 10 36M61 39Q34 34 18 50" />
+          </g>
+        )}
+        {giftType === "taste" && (
+          <g className="messenger-fireflies">
+            <circle cx="42" cy="39" r="5" />
+            <circle cx="75" cy="27" r="4" />
+            <circle cx="88" cy="50" r="3" />
+            <path className="messenger-line" d="M19 48q28-34 80-14" />
+          </g>
+        )}
+        {giftType === "love" && (
+          <g className="messenger-letter">
+            <path d="M24 18h72v43H24Z" />
+            <path d="m24 20 36 27 36-27M24 61l28-23M96 61 68 38" />
+            <path className="messenger-heart" d="M60 28c-8-9-17 3 0 13 17-10 8-22 0-13Z" />
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+}
+
 export function MapMagicOverlay({
   giftType,
   revealed,
@@ -106,16 +158,7 @@ export function MapMagicOverlay({
         ))}
       </svg>
 
-      <div className="map-owl-flight owl-flight-near">
-        <span className="owl-flight-glimmer" />
-        <CinematicOwl className="owl-map-near" />
-      </div>
-      <div className="map-owl-flight owl-flight-far">
-        <CinematicOwl className="owl-map-far" />
-      </div>
-
-      <div className="falling-feather feather-one" />
-      <div className="falling-feather feather-two" />
+      <ThemeMessenger giftType={giftType} />
       {revealed ? <ChapterRelic giftType={giftType} /> : <MysteryRelic />}
     </div>
   );

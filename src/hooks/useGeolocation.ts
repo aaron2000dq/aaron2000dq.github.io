@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { holdLastReliablePosition, smoothPositionSample } from "@/src/lib/geo";
+import {
+  bearingDegrees,
+  haversineDistance,
+  holdLastReliablePosition,
+  smoothPositionSample,
+} from "@/src/lib/geo";
 import type { PositionSample } from "@/src/types";
 
 type LocationStatus = "idle" | "requesting" | "active" | "imprecise" | "denied" | "unavailable";
@@ -45,6 +50,12 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           setStatus("imprecise");
           setError(`当前定位精度约 ±${Math.round(next.accuracy)} 米，墨点已冻结，等待更准确的位置。`);
           return;
+        }
+        const previous = sampleRef.current;
+        if (previous && !Number.isFinite(next.heading)) {
+          const movedM = haversineDistance(previous, next);
+          const courseThresholdM = Math.max(4, Math.min(12, next.accuracy * 0.3));
+          if (movedM >= courseThresholdM) next.heading = bearingDegrees(previous, next);
         }
         const smoothed = smoothPositionSample(sampleRef.current, next);
         sampleRef.current = smoothed;

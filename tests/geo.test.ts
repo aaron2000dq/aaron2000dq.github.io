@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  bearingDegrees,
   haversineDistance,
   holdLastReliablePosition,
   isInsideCheckpoint,
@@ -45,11 +46,21 @@ describe("geographic matching", () => {
     expect(sample?.accuracy).toBe(22);
   });
 
-  it("allows a bounded accuracy cushion for geofences", () => {
-    expect(isInsideCheckpoint(165, 80, 150)).toBe(true);
-    expect(isInsideCheckpoint(260, 80, 150)).toBe(false);
-    expect(isInsideCheckpoint(0, 500, 150, 200)).toBe(false);
-    expect(isInsideCheckpoint(0, Number.NaN, 150, 200)).toBe(false);
+  it("keeps the 30 metre geofence tight while allowing a small accuracy edge", () => {
+    expect(isInsideCheckpoint(39, 80, 30)).toBe(true);
+    expect(isInsideCheckpoint(41, 80, 30)).toBe(false);
+    expect(isInsideCheckpoint(0, 500, 30, 200)).toBe(false);
+    expect(isInsideCheckpoint(0, Number.NaN, 30, 200)).toBe(false);
+  });
+
+  it("derives a geographic walking direction when GPS has no compass heading", () => {
+    expect(bearingDegrees(route[0], route[1])).toBeCloseTo(90, 1);
+    expect(
+      bearingDegrees(route[0], {
+        latitude: route[0].latitude + 0.001,
+        longitude: route[0].longitude,
+      }),
+    ).toBeCloseTo(0, 1);
   });
 
   it("freezes at the last reliable coordinate when a coarse sample arrives", () => {
@@ -92,10 +103,11 @@ describe("geographic matching", () => {
   });
 
   it("responds immediately to meaningful movement without a five-sample freeze", () => {
-    const previous = { latitude: 30.275, longitude: 119.99, accuracy: 35, timestamp: 1 };
+    const previous = { latitude: 30.275, longitude: 119.99, accuracy: 35, timestamp: 1, heading: 180 };
     const next = { latitude: 30.2752, longitude: 119.99, accuracy: 35, timestamp: 2 };
     const smoothed = smoothPositionSample(previous, next);
     expect(smoothed.latitude).toBeGreaterThan(30.27515);
     expect(smoothed.timestamp).toBe(2);
+    expect(smoothed.heading).toBeUndefined();
   });
 });

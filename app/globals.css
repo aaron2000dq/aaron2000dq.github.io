@@ -184,6 +184,55 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .ink-constellation > path { fill: none; stroke: currentColor; stroke-width: .38; stroke-dasharray: 1.4 2.6; }
 .ink-constellation g path { fill: none; stroke: currentColor; stroke-width: .42; }
 .ink-constellation circle { fill: #9e5d34; transform-box: fill-box; transform-origin: center; animation: inkStarPulse 4.2s ease-in-out var(--star-delay) infinite; }
+.theme-messenger {
+  position: absolute;
+  z-index: 14;
+  left: -18%;
+  top: 18%;
+  width: clamp(82px, 10vw, 146px);
+  color: #2a190f;
+  opacity: 0;
+  filter: drop-shadow(0 2px 1px #e7c37b8f);
+  will-change: transform, opacity;
+  animation: themeMessengerCross 20s cubic-bezier(.25,.02,.6,1) 3.2s infinite;
+}
+.theme-messenger svg { display: block; width: 100%; overflow: visible; }
+.theme-messenger path,
+.theme-messenger circle,
+.theme-messenger ellipse {
+  fill: #392219b8;
+  stroke: #24150e;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.theme-messenger .messenger-line { fill: none; stroke-width: 1.25; stroke-dasharray: 3 5; opacity: .64; }
+.theme-messenger-glow {
+  position: absolute;
+  left: 48%;
+  top: 47%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e1b95b;
+  box-shadow: 0 0 20px 8px #e0b65b70;
+  opacity: .48;
+  animation: themeMessengerGlow 2.8s ease-in-out infinite;
+}
+.theme-messenger-scent { top: 24%; animation-duration: 22s; }
+.theme-messenger-scent .messenger-petals path:not(.messenger-line) { transform-box: fill-box; transform-origin: center; animation: messengerPetalFlutter 1.8s ease-in-out infinite alternate; }
+.theme-messenger-motion { top: 16%; animation-delay: 5.8s; }
+.theme-messenger-motion .messenger-wheel { transform-origin: 60px 37px; animation: messengerWheelTurn 3.6s linear infinite; }
+.theme-messenger-sound { top: 26%; animation-duration: 24s; }
+.theme-messenger-sound .messenger-note { transform-origin: center; animation: messengerNoteBob 1.9s ease-in-out infinite alternate; }
+.theme-messenger-sparkle { top: 12%; animation-delay: 7.5s; animation-duration: 18s; }
+.theme-messenger-sparkle .messenger-comet { animation: messengerCometPulse 1.8s ease-in-out infinite; transform-origin: 73px 30px; }
+.theme-messenger-taste { top: 29%; animation-duration: 25s; }
+.theme-messenger-taste .messenger-fireflies circle { fill: #d7a94c; stroke: #6b411d; filter: drop-shadow(0 0 5px #e3b357); animation: messengerFirefly 2.2s ease-in-out infinite alternate; }
+.theme-messenger-taste .messenger-fireflies circle:nth-child(2) { animation-delay: -.8s; }
+.theme-messenger-taste .messenger-fireflies circle:nth-child(3) { animation-delay: -1.5s; }
+.theme-messenger-love { top: 20%; animation-delay: 4.8s; animation-duration: 23s; }
+.theme-messenger-love .messenger-heart { fill: #8f3e36; animation: messengerHeartBeat 1.7s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .map-owl-flight { position: absolute; width: clamp(70px, 9vw, 126px); opacity: 0; will-change: transform, opacity; filter: drop-shadow(0 3px 2px #e7c37b88); }
 .owl-flight-near { left: -13%; top: 27%; animation: owlCrossNear 19s cubic-bezier(.3, .02, .64, .98) .8s infinite; }
 .owl-flight-far { right: -10%; top: 13%; width: clamp(42px, 5vw, 68px); animation: owlCrossFar 27s linear 11s infinite; }
@@ -228,8 +277,25 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 .map-scale { fill: none; stroke: #3c281b; stroke-width: 1.2; opacity: .72; }
 .map-scale text { fill: #3c281b; stroke: none; font-size: 6px; }
 .route-path { fill: none; stroke: #2a1b12; stroke-width: 1.45; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .58; filter: drop-shadow(0 0 1px #2a140b); animation: routeInkFlow 13s linear infinite; }
-.footstep { fill: #21150e; opacity: 0; transition: opacity .34s ease; filter: drop-shadow(0 .5px .6px #e1bd78); }
-.footstep.visible { opacity: .68; animation: footstepReveal .62s cubic-bezier(.18, .82, .24, 1) both; }
+.paw-trail {
+  opacity: 0;
+  color: #25150e;
+  filter: drop-shadow(0 .7px .8px #e4c27e);
+  animation: pawTrailLifecycle 9s cubic-bezier(.2,.7,.25,1) forwards;
+}
+.paw-print { fill: currentColor; transform-box: fill-box; transform-origin: center; animation: pawPrintPress .72s cubic-bezier(.2,.8,.25,1) both; }
+.paw-pad { opacity: .76; }
+.paw-toe { opacity: .82; }
+.paw-ripple {
+  fill: none;
+  stroke: #68402b;
+  stroke-width: 1.15;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pawWaterRipple 1.65s cubic-bezier(.12,.65,.25,1) forwards;
+}
+.paw-ripple-second { animation-delay: .28s; }
 .atlas-point { pointer-events: none; }
 .atlas-point .point-glow { fill: #9d4b2e; opacity: .22; transform-box: fill-box; transform-origin: center; animation: atlasPointBreath 1.8s ease-in-out infinite; }
 .atlas-point .point-ring { fill: #dfc17e; stroke: #2a1a12; stroke-width: 1.7; filter: drop-shadow(0 0 3px #f1c96d); }
@@ -786,10 +852,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 @keyframes relicHeartBeat { 0%, 100% { transform: scale(.9); } 45% { transform: scale(1.13); } }
 @keyframes mysteryRelicBreathe { 0%, 100% { opacity: .6; transform: scale(.96) rotate(-1deg); } 50% { opacity: 1; transform: scale(1.035) rotate(1deg); } }
 @keyframes routeInkFlow { to { stroke-dashoffset: -48; } }
+@keyframes themeMessengerCross { 0%, 8% { opacity: 0; transform: translate3d(0,5vh,0) scale(.7) rotate(-8deg); } 14% { opacity: .66; } 46% { opacity: .78; transform: translate3d(59vw,-7vh,0) scale(1) rotate(2deg); } 80% { opacity: .48; } 91%, 100% { opacity: 0; transform: translate3d(133vw,4vh,0) scale(.76) rotate(7deg); } }
+@keyframes themeMessengerGlow { 0%, 100% { opacity: .22; transform: scale(.65); } 50% { opacity: .62; transform: scale(1.28); } }
+@keyframes messengerPetalFlutter { from { transform: rotate(-7deg) scale(.93); } to { transform: rotate(9deg) scale(1.05); } }
+@keyframes messengerWheelTurn { to { transform: rotate(360deg); } }
+@keyframes messengerNoteBob { from { transform: translateY(4px) rotate(-4deg); } to { transform: translateY(-5px) rotate(5deg); } }
+@keyframes messengerCometPulse { 0%, 100% { opacity: .55; transform: scale(.86) rotate(-4deg); } 50% { opacity: 1; transform: scale(1.12) rotate(3deg); } }
+@keyframes messengerFirefly { from { opacity: .3; transform: scale(.65); } to { opacity: 1; transform: scale(1.35); } }
+@keyframes messengerHeartBeat { 0%, 100% { transform: scale(.88); } 42% { transform: scale(1.2); } }
 @keyframes goalBeacon { 0%, 100% { filter: drop-shadow(0 0 2px #f1c96d); transform: scale(.94); } 50% { filter: drop-shadow(0 0 8px #f1c96d); transform: scale(1.14); } }
 @keyframes statusStar { 0%, 100% { opacity: .36; transform: rotate(0) scale(.8); } 50% { opacity: 1; transform: rotate(180deg) scale(1.16); } }
 @keyframes buttonSpellSweep { 0%, 62% { opacity: 0; transform: translateX(0) rotate(19deg); } 70% { opacity: .75; } 90%, 100% { opacity: 0; transform: translateX(620%) rotate(19deg); } }
-@keyframes footstepReveal { from { opacity: 0; filter: blur(2px) drop-shadow(0 .5px .6px #e1bd78); } 60% { opacity: .8; } to { opacity: .68; filter: blur(0) drop-shadow(0 .5px .6px #e1bd78); } }
+@keyframes pawTrailLifecycle { 0% { opacity: 0; filter: blur(1.5px) drop-shadow(0 .7px .8px #e4c27e); } 9% { opacity: .82; } 58% { opacity: .62; } 100% { opacity: 0; filter: blur(.45px) drop-shadow(0 .7px .8px #e4c27e); } }
+@keyframes pawPrintPress { 0% { transform: scale(.45); } 55% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes pawWaterRipple { 0% { opacity: .58; transform: scale(.42); } 68% { opacity: .24; } 100% { opacity: 0; transform: scale(3.1); } }
 @keyframes currentMagicOrbit { to { transform: rotate(360deg); } }
 @keyframes cameraConstellationBreath { 0%, 100% { opacity: .15; } 50% { opacity: .34; } }
 @keyframes passedScoreGlow { 0%, 100% { box-shadow: 0 18px 50px #000, 0 0 0 #e5bf6e00; } 50% { box-shadow: 0 18px 50px #000, 0 0 34px #e5bf6e80; } }
@@ -851,6 +927,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid #f1d49b; outline-
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
-  .map-owl-flight, .courier-owl, .falling-feather, .owl-flight-shadow, .owl-wind-lanes, .owl-feather-burst { display: none !important; }
+  .theme-messenger, .map-owl-flight, .courier-owl, .falling-feather, .owl-flight-shadow, .owl-wind-lanes, .owl-feather-burst { display: none !important; }
   .ambient-motes i { opacity: .35; }
 }
