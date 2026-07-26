@@ -13,10 +13,21 @@ type PermissionAwareOrientationEvent = typeof DeviceOrientationEvent & {
 };
 
 function currentScreenAngle() {
+  const normalize = (angle: number) => ((angle % 360) + 360) % 360;
   const screenAngle = window.screen.orientation?.angle;
-  if (Number.isFinite(screenAngle)) return Number(screenAngle);
   const legacyAngle = (window as Window & { orientation?: number }).orientation;
-  return Number.isFinite(legacyAngle) ? Number(legacyAngle) : 0;
+  const screenValue = Number.isFinite(screenAngle) ? normalize(Number(screenAngle)) : null;
+  const legacyValue = Number.isFinite(legacyAngle) ? normalize(Number(legacyAngle)) : null;
+  const isLandscape = window.matchMedia?.("(orientation: landscape)").matches;
+
+  // iPadOS Safari can expose a finite but stale screen.orientation.angle=0
+  // after rotating. In landscape, prefer whichever API actually reports a
+  // quarter turn; in portrait, both APIs normally settle back to zero.
+  if (isLandscape) {
+    if (screenValue === 90 || screenValue === 270) return screenValue;
+    if (legacyValue === 90 || legacyValue === 270) return legacyValue;
+  }
+  return screenValue ?? legacyValue ?? 0;
 }
 
 function compassDegrees(event: CompassOrientationEvent) {

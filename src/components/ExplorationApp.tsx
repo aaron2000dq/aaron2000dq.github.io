@@ -149,9 +149,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       getPhotos(storageNamespace),
     ]).then(async ([saved, savedPhotos]) => {
       if (saved.phase === "intro") {
-        for (const src of introAssets) {
-          await decodeIntroImage(src);
-        }
+        await Promise.all(introAssets.map((src) => decodeIntroImage(src)));
       }
       const checkpointExists = storyZones.some((item) =>
         item.checkpoints.some((candidate) => candidate.id === saved.activeCheckpointId),

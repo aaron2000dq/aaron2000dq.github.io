@@ -231,6 +231,34 @@ test("compensates the compass for an iPad landscape screen", async ({ page }) =>
   await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(33)");
 });
 
+test("uses the iPad legacy quarter-turn when Screen Orientation is stuck at zero", async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!("DeviceOrientationEvent" in window)) {
+      Object.defineProperty(window, "DeviceOrientationEvent", {
+        configurable: true,
+        value: class DeviceOrientationEvent extends Event {},
+      });
+    }
+    Object.defineProperty(window.screen.orientation, "angle", {
+      configurable: true,
+      get: () => 0,
+    });
+    Object.defineProperty(window, "orientation", {
+      configurable: true,
+      get: () => 90,
+    });
+  });
+  await page.goto("/?mode=fulltest&run=e2e-legacy-landscape-heading");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "停车完毕，开始探索" }).click();
+  await page.evaluate(() => {
+    const event = new Event("deviceorientation");
+    Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
+    window.dispatchEvent(event);
+  });
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "33");
+});
+
 test("moves the explorer dot from live coordinates and force-arrival never teleports it", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.27463, longitude: 119.99011, accuracy: 18 });
