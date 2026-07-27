@@ -83,54 +83,69 @@ function MysteryRelic() {
 }
 
 function ThemeMessenger({ giftType }: { giftType: Checkpoint["giftType"] }) {
+  const assetByGift: Record<Checkpoint["giftType"], string> = {
+    scent: "/assets/magic/chapters/scent-botanical-v1.webp",
+    motion: "/assets/magic/chapters/motion-wheel-v1.webp",
+    sound: "/assets/magic/chapters/sound-vinyl-v1.webp",
+    sparkle: "/assets/magic/chapters/sparkle-jewels-v1.webp",
+    taste: "/assets/magic/chapters/taste-cloche-v1.webp",
+    love: "/assets/magic/chapters/love-letter-v1.webp",
+  };
+  const fragmentNodes = [
+    { x: "-38%", y: "8%", delay: "-.4s", scale: .68, spin: "-16deg" },
+    { x: "-19%", y: "67%", delay: "-2.1s", scale: .42, spin: "31deg" },
+    { x: "9%", y: "-22%", delay: "-3.8s", scale: .56, spin: "11deg" },
+    { x: "38%", y: "81%", delay: "-1.2s", scale: .38, spin: "-35deg" },
+    { x: "68%", y: "-9%", delay: "-4.9s", scale: .72, spin: "24deg" },
+    { x: "91%", y: "48%", delay: "-2.9s", scale: .48, spin: "-12deg" },
+    { x: "116%", y: "16%", delay: "-5.7s", scale: .31, spin: "47deg" },
+    { x: "121%", y: "78%", delay: "-1.8s", scale: .59, spin: "-27deg" },
+  ];
+
   return (
-    <div className={`theme-messenger theme-messenger-${giftType}`} data-theme={giftType}>
-      <span className="theme-messenger-glow" />
-      <svg viewBox="0 0 120 72">
-        {giftType === "scent" && (
-          <g className="messenger-petals">
-            <path d="M34 39q-15-19 2-27 14 13-2 27ZM52 34q1-24 19-18 4 19-19 18ZM70 43q15-18 27-5-7 18-27 5Z" />
-            <path className="messenger-line" d="M24 52q35-25 78-12" />
-          </g>
-        )}
-        {giftType === "motion" && (
-          <g className="messenger-wheel">
-            <circle cx="60" cy="37" r="23" />
-            <circle cx="60" cy="37" r="4" />
-            <path d="M60 14v46M37 37h46M44 21l32 32M76 21 44 53" />
-            <path className="messenger-line" d="M21 29q10-8 22-5M18 41q12-6 22-2" />
-          </g>
-        )}
-        {giftType === "sound" && (
-          <g className="messenger-note">
-            <path d="M47 47V16l34-7v31M47 19l34-7" />
-            <ellipse cx="38" cy="50" rx="11" ry="7" />
-            <ellipse cx="72" cy="43" rx="11" ry="7" />
-            <path className="messenger-line" d="M17 24q11-7 21 0M86 25q10-8 18 1" />
-          </g>
-        )}
-        {giftType === "sparkle" && (
-          <g className="messenger-comet">
-            <path d="m73 12 5 13 14 1-11 9 4 14-12-8-12 8 4-14-11-9 14-1Z" />
-            <path className="messenger-line" d="M58 30Q31 19 10 36M61 39Q34 34 18 50" />
-          </g>
-        )}
-        {giftType === "taste" && (
-          <g className="messenger-fireflies">
-            <circle cx="42" cy="39" r="5" />
-            <circle cx="75" cy="27" r="4" />
-            <circle cx="88" cy="50" r="3" />
-            <path className="messenger-line" d="M19 48q28-34 80-14" />
-          </g>
-        )}
-        {giftType === "love" && (
-          <g className="messenger-letter">
-            <path d="M24 18h72v43H24Z" />
-            <path d="m24 20 36 27 36-27M24 61l28-23M96 61 68 38" />
-            <path className="messenger-heart" d="M60 28c-8-9-17 3 0 13 17-10 8-22 0-13Z" />
-          </g>
-        )}
-      </svg>
+    <div
+      className={`theme-messenger theme-messenger-${giftType}`}
+      data-theme={giftType}
+      data-asset={assetByGift[giftType]}
+    >
+      <span className="chapter-cinematic-shadow" />
+      <span className="chapter-cinematic-wake wake-one" />
+      <span className="chapter-cinematic-wake wake-two" />
+      <span className="chapter-cinematic-wake wake-three" />
+
+      <div className="chapter-cinematic-relic">
+        <span className="chapter-cinematic-halo" />
+        <span className="chapter-cinematic-orbit orbit-one" />
+        <span className="chapter-cinematic-orbit orbit-two" />
+        <img
+          className="chapter-cinematic-asset"
+          src={assetByGift[giftType]}
+          width="1254"
+          height="1254"
+          alt=""
+          draggable={false}
+        />
+        <span className="chapter-cinematic-sheen" />
+      </div>
+
+      <div className="chapter-cinematic-fragments">
+        {fragmentNodes.map((node, index) => (
+          <i
+            key={index}
+            style={{
+              "--fragment-x": node.x,
+              "--fragment-y": node.y,
+              "--fragment-delay": node.delay,
+              "--fragment-scale": node.scale,
+              "--fragment-spin": node.spin,
+            } as CSSProperties}
+          />
+        ))}
+      </div>
+
+      <div className="chapter-cinematic-sparks">
+        {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
+      </div>
     </div>
   );
 }
