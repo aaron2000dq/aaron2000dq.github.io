@@ -86,6 +86,34 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   expect(await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight)).toBe(false);
 });
 
+test("loads the self-hosted Chinese and English atlas type system", async ({ page }) => {
+  await page.goto("/?mode=fulltest&run=e2e-atlas-fonts");
+  const loadedFonts = await page.evaluate(async () => {
+    await Promise.all([
+      document.fonts.load('16px "Atlas Serif SC"', "探索地图"),
+      document.fonts.load('16px "Atlas Display"', "EXPLORATION"),
+      document.fonts.load('16px "Atlas Inscription"', "XXVIII"),
+    ]);
+    return {
+      serif: document.fonts.check('16px "Atlas Serif SC"', "探索地图"),
+      display: document.fonts.check('16px "Atlas Display"', "EXPLORATION"),
+      inscription: document.fonts.check('16px "Atlas Inscription"', "XXVIII"),
+    };
+  });
+  expect(loadedFonts).toEqual({ serif: true, display: true, inscription: true });
+  await expect(page.locator("body")).toHaveCSS("font-family", /Atlas Serif SC/);
+  await expect(page.locator(".opening-letter h1")).toHaveCSS("font-family", /Atlas Display/);
+  await expect(page.locator(".opening-letter .eyebrow")).toHaveCSS("font-family", /Atlas Inscription/);
+
+  for (const asset of [
+    "/assets/fonts/atlas-serif-sc-v1.woff2",
+    "/assets/fonts/atlas-display-v1.woff2",
+    "/assets/fonts/atlas-inscription-v1.woff2",
+  ]) {
+    expect((await page.request.get(asset)).ok()).toBe(true);
+  }
+});
+
 test("keeps the first-play delivery cinematic geometrically stable", async ({ page }) => {
   await page.goto("/?mode=fulltest&run=e2e-intro-compositor-stability");
   await expect(page.locator(".atlas-shell")).toHaveAttribute("data-intro-assets", "ready");
