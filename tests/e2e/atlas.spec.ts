@@ -58,24 +58,15 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".map-magic-overlay")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator(".map-reveal-veil")).toBeVisible();
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
-  await expect(page.locator(".theme-messenger")).toHaveCount(1);
-  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "scent");
-  await expect(page.locator(".chapter-cinematic-asset")).toHaveAttribute(
-    "src",
-    "/assets/magic/chapters/scent-botanical-v1.webp",
-  );
-  await expect(page.locator(".chapter-cinematic-fragments i")).toHaveCount(8);
-  await expect(page.locator(".chapter-cinematic-sparks i")).toHaveCount(7);
-  await expect(page.locator(".chapter-cinematic-wake")).toHaveCount(3);
+  await expect(page.locator(".theme-ambient")).toHaveCount(1);
+  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "scent");
+  await expect(page.locator(".theme-trace")).toHaveCount(1);
+  await expect(page.locator(".theme-particles i")).toHaveCount(12);
+  await expect(page.locator(".theme-light-blooms i")).toHaveCount(3);
+  await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
   expect(
-    await page.locator(".theme-messenger").evaluate((element) => getComputedStyle(element).animationName),
-  ).toBe("chapterScentPass");
-  expect(
-    await page.locator(".chapter-cinematic-asset").evaluate((element) => {
-      const image = element as HTMLImageElement;
-      return image.complete && image.naturalWidth > 0;
-    }),
-  ).toBe(true);
+    await page.locator(".theme-particles i").first().evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("scentLeafCurrent");
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
@@ -154,7 +145,7 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
   await expect(page.locator(".owl-feather-burst")).toHaveCSS("display", "none");
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-stage")).toBeVisible();
-  await expect(page.locator(".theme-messenger")).toHaveCSS("display", "none");
+  await expect(page.locator(".theme-ambient")).toHaveCSS("display", "none");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.getByRole("button", { name: "停车完毕，开始探索" })).toBeEnabled();
 });
@@ -523,16 +514,19 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   );
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  for (const [mystery, gift, asset, theme, messengerAsset] of [
-    ["第一枚未知坐标", "好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "scent", "/assets/magic/chapters/scent-botanical-v1.webp"],
-    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion", "/assets/magic/chapters/motion-wheel-v1.webp"],
-    ["第三枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound", "/assets/magic/chapters/sound-vinyl-v1.webp"],
+  for (const [mystery, gift, asset, theme, particleAnimation] of [
+    ["第一枚未知坐标", "好闻的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "scent", "scentLeafCurrent"],
+    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion", "motionWindCurrent"],
+    ["第三枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound", "soundNotePhrase"],
   ]) {
     await expect(page.locator(".quest-card h2")).toContainText(mystery);
     await expect(page.getByText(gift, { exact: true })).toHaveCount(0);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
-    await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", theme);
-    await expect(page.locator(".chapter-cinematic-asset")).toHaveAttribute("src", messengerAsset);
+    await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", theme);
+    expect(
+      await page.locator(".theme-particles i").first().evaluate((element) => getComputedStyle(element).animationName),
+    ).toBe(particleAnimation);
+    await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
     await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
     await openCartographer(page);
     await page.getByRole("button", { name: "强制过关" }).click();
@@ -542,8 +536,8 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   }
 
   await expect(page.locator(".quest-card h2")).toContainText("第四枚未知坐标");
-  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "sparkle");
-  await expect(page.locator(".chapter-cinematic-asset")).toHaveAttribute("src", "/assets/magic/chapters/sparkle-jewels-v1.webp");
+  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "sparkle");
+  await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png");
   await openCartographer(page);
@@ -552,8 +546,8 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("第五枚未知坐标");
-  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "taste");
-  await expect(page.locator(".chapter-cinematic-asset")).toHaveAttribute("src", "/assets/magic/chapters/taste-cloche-v1.webp");
+  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "taste");
+  await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制过关" }).click();
@@ -561,8 +555,8 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("好爱的");
-  await expect(page.locator(".theme-messenger")).toHaveAttribute("data-theme", "love");
-  await expect(page.locator(".chapter-cinematic-asset")).toHaveAttribute("src", "/assets/magic/chapters/love-letter-v1.webp");
+  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "love");
+  await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
   await expect(page.locator(".chapter-relic[data-gift='love']")).toBeVisible();
   await page.getByRole("button", { name: "打开最后一封信" }).click();
   await page.getByRole("button", { name: "翻开二十九岁的第一章" }).click();

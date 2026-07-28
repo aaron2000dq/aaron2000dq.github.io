@@ -82,70 +82,95 @@ function MysteryRelic() {
   );
 }
 
-function ThemeMessenger({ giftType }: { giftType: Checkpoint["giftType"] }) {
-  const assetByGift: Record<Checkpoint["giftType"], string> = {
-    scent: "/assets/magic/chapters/scent-botanical-v1.webp",
-    motion: "/assets/magic/chapters/motion-wheel-v1.webp",
-    sound: "/assets/magic/chapters/sound-vinyl-v1.webp",
-    sparkle: "/assets/magic/chapters/sparkle-jewels-v1.webp",
-    taste: "/assets/magic/chapters/taste-cloche-v1.webp",
-    love: "/assets/magic/chapters/love-letter-v1.webp",
-  };
-  const fragmentNodes = [
-    { x: "-38%", y: "8%", delay: "-.4s", scale: .68, spin: "-16deg" },
-    { x: "-19%", y: "67%", delay: "-2.1s", scale: .42, spin: "31deg" },
-    { x: "9%", y: "-22%", delay: "-3.8s", scale: .56, spin: "11deg" },
-    { x: "38%", y: "81%", delay: "-1.2s", scale: .38, spin: "-35deg" },
-    { x: "68%", y: "-9%", delay: "-4.9s", scale: .72, spin: "24deg" },
-    { x: "91%", y: "48%", delay: "-2.9s", scale: .48, spin: "-12deg" },
-    { x: "116%", y: "16%", delay: "-5.7s", scale: .31, spin: "47deg" },
-    { x: "121%", y: "78%", delay: "-1.8s", scale: .59, spin: "-27deg" },
-  ];
+const themeParticles = [
+  { lane: 12, delay: -1.2, duration: 15.8, scale: .54, drift: -7, spin: 210 },
+  { lane: 24, delay: -8.7, duration: 18.4, scale: .82, drift: 9, spin: -275 },
+  { lane: 37, delay: -4.1, duration: 16.6, scale: .62, drift: -12, spin: 340 },
+  { lane: 49, delay: -12.5, duration: 20.2, scale: 1.08, drift: 6, spin: -230 },
+  { lane: 61, delay: -6.4, duration: 17.5, scale: .72, drift: -9, spin: 295 },
+  { lane: 74, delay: -15.8, duration: 21.4, scale: .48, drift: 11, spin: -360 },
+  { lane: 84, delay: -3.3, duration: 19.1, scale: .91, drift: -6, spin: 245 },
+  { lane: 18, delay: -14.2, duration: 22.8, scale: .41, drift: 14, spin: -310 },
+  { lane: 43, delay: -10.6, duration: 23.2, scale: .58, drift: -15, spin: 390 },
+  { lane: 69, delay: -1.9, duration: 18.9, scale: .67, drift: 8, spin: -260 },
+  { lane: 91, delay: -11.3, duration: 24.1, scale: .38, drift: -11, spin: 325 },
+  { lane: 56, delay: -17.1, duration: 21.7, scale: .76, drift: 13, spin: -345 },
+];
 
+function ThemeTrace({ giftType }: { giftType: Checkpoint["giftType"] }) {
   return (
-    <div
-      className={`theme-messenger theme-messenger-${giftType}`}
-      data-theme={giftType}
-      data-asset={assetByGift[giftType]}
-    >
-      <span className="chapter-cinematic-shadow" />
-      <span className="chapter-cinematic-wake wake-one" />
-      <span className="chapter-cinematic-wake wake-two" />
-      <span className="chapter-cinematic-wake wake-three" />
+    <svg className="theme-trace" viewBox="0 0 1000 600" preserveAspectRatio="none">
+      {giftType === "scent" && (
+        <g className="trace-scent">
+          <path d="M-80 390C135 245 276 446 471 295S781 144 1090 246" />
+          <path d="M-90 432C172 319 318 472 506 340S817 216 1086 297" />
+          <path className="trace-accent" d="M18 366C175 288 284 372 404 309" />
+        </g>
+      )}
+      {giftType === "motion" && (
+        <g className="trace-motion">
+          <path d="M-90 496C186 480 296 355 470 332S733 282 1090 92" />
+          <path d="M-90 532C192 509 314 404 486 371S760 310 1092 149" />
+          <path className="trace-accent" d="M692 331a74 74 0 1 0 148 0 74 74 0 1 0-148 0m74-54v108m-54-54h108" />
+        </g>
+      )}
+      {giftType === "sound" && (
+        <g className="trace-sound">
+          <path d="M-70 245C137 158 302 348 499 252S799 152 1080 234" />
+          <path d="M-70 275C137 188 302 378 499 282S799 182 1080 264" />
+          <path d="M-70 305C137 218 302 408 499 312S799 212 1080 294" />
+          <path className="trace-accent" d="M728 188v106m0-103 83-20v101M728 294c-27-9-47 3-42 19 7 19 43 16 42-19m83-22c-27-9-47 3-42 19 7 19 43 16 42-19" />
+        </g>
+      )}
+      {giftType === "sparkle" && (
+        <g className="trace-sparkle">
+          <path d="M53 451 238 338 406 384 592 222 755 283 951 125" />
+          <path className="trace-accent" d="m238 320 7 18 18 7-18 7-7 18-7-18-18-7 18-7Zm354-119 8 21 21 8-21 8-8 21-8-21-21-8 21-8Zm359-94 6 18 18 6-18 6-6 18-6-18-18-6 18-6Z" />
+        </g>
+      )}
+      {giftType === "taste" && (
+        <g className="trace-taste">
+          <path d="M90 633C124 466 267 520 303 386s143-92 177-214M520 638c14-155 146-143 161-265s126-113 158-248" />
+          <path className="trace-accent" d="M738 438q0-79 66-82 66 3 66 82m-150 0h168m-185 18h204" />
+        </g>
+      )}
+      {giftType === "love" && (
+        <g className="trace-love">
+          <path d="M-52 389C156 302 288 413 439 322s279-53 359-133c62-62 102-15 69 32-40 57-126 2-43-67 66-54 180-37 260-91" />
+          <path className="trace-accent" d="M706 367c-44-54-105 10 0 86 105-76 44-140 0-86Z" />
+        </g>
+      )}
+    </svg>
+  );
+}
 
-      <div className="chapter-cinematic-relic">
-        <span className="chapter-cinematic-halo" />
-        <span className="chapter-cinematic-orbit orbit-one" />
-        <span className="chapter-cinematic-orbit orbit-two" />
-        <img
-          className="chapter-cinematic-asset"
-          src={assetByGift[giftType]}
-          width="1254"
-          height="1254"
-          alt=""
-          draggable={false}
-        />
-        <span className="chapter-cinematic-sheen" />
-      </div>
-
-      <div className="chapter-cinematic-fragments">
-        {fragmentNodes.map((node, index) => (
+function ThemeAmbient({ giftType }: { giftType: Checkpoint["giftType"] }) {
+  return (
+    <div className={`theme-ambient theme-ambient-${giftType}`} data-theme={giftType}>
+      <ThemeTrace giftType={giftType} />
+      <div className="theme-particles">
+        {themeParticles.map((particle, index) => (
           <i
             key={index}
+            data-variant={index % 3}
             style={{
-              "--fragment-x": node.x,
-              "--fragment-y": node.y,
-              "--fragment-delay": node.delay,
-              "--fragment-scale": node.scale,
-              "--fragment-spin": node.spin,
+              "--particle-lane": `${particle.lane}%`,
+              "--particle-delay": `${particle.delay}s`,
+              "--particle-duration": `${particle.duration}s`,
+              "--particle-scale": particle.scale,
+              "--particle-scale-small": particle.scale * .7,
+              "--particle-scale-large": particle.scale * 1.18,
+              "--particle-drift": `${particle.drift}vh`,
+              "--particle-drift-opposite": `${particle.drift * -1}vh`,
+              "--particle-drift-half": `${particle.drift * .5}vh`,
+              "--particle-spin": `${particle.spin}deg`,
+              "--particle-spin-mid": `${particle.spin * .62}deg`,
+              "--particle-spin-soft": `${particle.spin * .3}deg`,
             } as CSSProperties}
           />
         ))}
       </div>
-
-      <div className="chapter-cinematic-sparks">
-        {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
-      </div>
+      <div className="theme-light-blooms"><i/><i/><i/></div>
     </div>
   );
 }
@@ -173,7 +198,7 @@ export function MapMagicOverlay({
         ))}
       </svg>
 
-      <ThemeMessenger giftType={giftType} />
+      <ThemeAmbient giftType={giftType} />
       {revealed ? <ChapterRelic giftType={giftType} /> : <MysteryRelic />}
     </div>
   );

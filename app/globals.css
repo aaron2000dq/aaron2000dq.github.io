@@ -229,242 +229,171 @@ h1, h2, h3, blockquote, .display-type {
 .ink-constellation > path { fill: none; stroke: currentColor; stroke-width: .38; stroke-dasharray: 1.4 2.6; }
 .ink-constellation g path { fill: none; stroke: currentColor; stroke-width: .42; }
 .ink-constellation circle { fill: #9e5d34; transform-box: fill-box; transform-origin: center; animation: inkStarPulse 4.2s ease-in-out var(--star-delay) infinite; }
-.theme-messenger {
+.theme-ambient {
   position: absolute;
   z-index: 14;
-  width: clamp(184px, 20vw, 274px);
-  aspect-ratio: 1;
-  opacity: 0;
-  transform-origin: center;
-  isolation: isolate;
-  contain: layout style;
-  will-change: transform, opacity;
-}
-.chapter-cinematic-shadow {
-  position: absolute;
-  z-index: -3;
-  left: 15%;
-  right: 15%;
-  bottom: 8%;
-  height: 13%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, #160b07a3 0 18%, #341d1166 42%, transparent 72%);
-  filter: blur(5px);
-  transform: rotate(-5deg);
-  animation: chapterShadowBreathe 4.8s ease-in-out infinite;
-}
-.chapter-cinematic-relic {
-  position: absolute;
-  z-index: 2;
   inset: 0;
-  transform-origin: center;
-  will-change: transform;
+  overflow: hidden;
+  opacity: .78;
+  isolation: isolate;
+  contain: layout paint style;
 }
-.chapter-cinematic-asset {
+.theme-trace {
   position: absolute;
-  z-index: 2;
+  z-index: 1;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  -webkit-user-drag: none;
-  user-select: none;
-  filter: sepia(.08) saturate(.88) contrast(1.04) drop-shadow(0 7px 5px #21100796) drop-shadow(0 0 7px #efc66c74);
-  transform: translateZ(0);
+  overflow: visible;
+  fill: none;
+  stroke: #49301f;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 0 #eed4978a);
+  mix-blend-mode: multiply;
 }
-.chapter-cinematic-halo {
-  position: absolute;
-  z-index: 0;
-  inset: 18%;
-  border-radius: 50%;
-  opacity: .62;
-  background:
-    radial-gradient(circle, #f5cf747d 0 9%, #e4aa4242 21%, transparent 60%),
-    conic-gradient(from 20deg, transparent, #f0cb7869, transparent 18%, transparent 47%, #9a542b54, transparent 66%);
-  filter: blur(6px);
-  animation: chapterHaloBreathe 3.8s ease-in-out infinite;
-}
-.chapter-cinematic-orbit {
-  position: absolute;
-  z-index: 1;
-  inset: 18%;
-  border: 1px solid #d7ae6491;
-  border-radius: 50%;
-  opacity: .48;
-  box-shadow: 0 0 8px #e7b95c42, inset 0 0 8px #e7b95c2e;
-}
-.chapter-cinematic-orbit::before,
-.chapter-cinematic-orbit::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -3px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #e2bb70;
-  box-shadow: 0 0 8px 2px #edc875a8;
-}
-.chapter-cinematic-orbit::after { top: auto; bottom: -3px; transform: scale(.64); }
-.chapter-cinematic-orbit.orbit-one { animation: chapterOrbitSpin 12s linear infinite; }
-.chapter-cinematic-orbit.orbit-two { inset: 27%; border-style: dashed; animation: chapterOrbitCounterSpin 9s linear infinite; }
-.chapter-cinematic-sheen {
-  position: absolute;
-  z-index: 3;
-  inset: 13%;
+.theme-trace path {
+  vector-effect: non-scaling-stroke;
   opacity: 0;
-  border-radius: 47%;
-  background: linear-gradient(110deg, transparent 26%, #fff7d9d4 48%, transparent 64%);
-  mix-blend-mode: screen;
-  transform: translateX(-120%) skewX(-13deg);
-  animation: chapterRelicSheen 7.4s ease-in-out infinite;
+  stroke-dasharray: 18 11;
+  stroke-dashoffset: 240;
+  animation: themeTraceDraw 18s cubic-bezier(.24,.04,.42,1) infinite;
 }
-.chapter-cinematic-wake {
+.theme-trace path:nth-child(2) { animation-delay: -5.8s; }
+.theme-trace .trace-accent {
+  stroke: #7a4c2c;
+  stroke-width: 1.7;
+  stroke-dasharray: 7 8;
+  animation-delay: -10.5s;
+}
+.theme-particles,
+.theme-light-blooms { position: absolute; z-index: 2; inset: 0; overflow: hidden; }
+.theme-particles i {
   position: absolute;
-  z-index: -2;
-  right: 64%;
-  width: 92%;
-  height: 1px;
+  left: -7vw;
+  top: var(--particle-lane);
   opacity: 0;
-  border-radius: 50%;
-  background: linear-gradient(90deg, transparent, #f0cf8f8c 58%, #6f432982);
-  box-shadow: 0 0 5px #d6a85b42;
-  transform-origin: right;
-  animation: chapterWakePulse 3.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, opacity;
 }
-.chapter-cinematic-wake.wake-one { top: 37%; transform: rotate(-7deg); }
-.chapter-cinematic-wake.wake-two { top: 50%; width: 116%; transform: rotate(2deg); animation-delay: -.9s; }
-.chapter-cinematic-wake.wake-three { top: 63%; width: 74%; transform: rotate(9deg); animation-delay: -1.7s; }
-.chapter-cinematic-fragments,
-.chapter-cinematic-sparks { position: absolute; z-index: 4; inset: 0; }
-.chapter-cinematic-fragments i {
+.theme-light-blooms { z-index: 0; mix-blend-mode: screen; }
+.theme-light-blooms i {
   position: absolute;
-  left: calc(50% + var(--fragment-x));
-  top: calc(50% + var(--fragment-y));
-  width: 15px;
-  height: 9px;
-  opacity: 0;
-  transform: scale(var(--fragment-scale)) rotate(var(--fragment-spin));
-  animation: chapterFragmentDrift 5.8s ease-in-out var(--fragment-delay) infinite;
-}
-.chapter-cinematic-sparks i {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 3px;
-  height: 3px;
+  width: 22vw;
+  aspect-ratio: 1;
   border-radius: 50%;
   opacity: 0;
-  background: #f2d184;
-  box-shadow: 0 0 7px 2px #f0bd5fa8;
-  animation: chapterSparkOrbit 4.8s ease-out infinite;
+  background: radial-gradient(circle, #eec8782e 0 8%, #dba95412 32%, transparent 68%);
+  filter: blur(9px);
+  animation: themeBloomRoam 15s ease-in-out infinite;
 }
-.chapter-cinematic-sparks i:nth-child(2) { animation-delay: -.7s; }
-.chapter-cinematic-sparks i:nth-child(3) { animation-delay: -1.4s; }
-.chapter-cinematic-sparks i:nth-child(4) { animation-delay: -2.1s; }
-.chapter-cinematic-sparks i:nth-child(5) { animation-delay: -2.8s; }
-.chapter-cinematic-sparks i:nth-child(6) { animation-delay: -3.5s; }
-.chapter-cinematic-sparks i:nth-child(7) { animation-delay: -4.2s; }
+.theme-light-blooms i:nth-child(1) { left: 7%; top: 17%; animation-delay: -2s; }
+.theme-light-blooms i:nth-child(2) { right: 16%; top: 30%; width: 17vw; animation-delay: -8s; }
+.theme-light-blooms i:nth-child(3) { left: 42%; bottom: -8%; width: 28vw; animation-delay: -12s; }
 
-.theme-messenger-scent {
-  left: -21%;
-  top: 18%;
-  animation: chapterScentPass 38s cubic-bezier(.21,.02,.5,1) 1.5s infinite;
+/* Scent: individual bergamot leaves and petals move on different air currents.
+   There is deliberately no complete botanical object crossing the map. */
+.theme-ambient-scent .theme-particles i {
+  width: 20px;
+  height: 11px;
+  border-radius: 92% 12% 88% 18%;
+  background: linear-gradient(148deg, #dfc789, #8a7040 53%, #4d3824);
+  box-shadow: inset 0 0 0 1px #5037226b, 0 2px 3px #2a170d4d;
+  animation: scentLeafCurrent var(--particle-duration) cubic-bezier(.28,.03,.55,.98) var(--particle-delay) infinite;
 }
-.theme-messenger-scent .chapter-cinematic-relic { animation: botanicalSway 5.8s ease-in-out infinite; }
-.theme-messenger-scent .chapter-cinematic-fragments i {
-  width: 17px;
-  height: 10px;
-  border-radius: 90% 12% 88% 16%;
-  background: linear-gradient(145deg, #f7e8c6, #b99359 62%, #68422c);
-  box-shadow: inset 0 0 0 1px #5c39267d, 0 1px 3px #2c160c69;
-}
-.theme-messenger-scent .chapter-cinematic-fragments i::after {
+.theme-ambient-scent .theme-particles i::after {
   content: "";
   position: absolute;
   left: 3px;
   right: 2px;
   top: 50%;
   height: 1px;
-  background: #7650389e;
+  background: #5d422b9c;
+  transform: rotate(-4deg);
 }
+.theme-ambient-scent .theme-particles i[data-variant="1"] {
+  width: 12px;
+  height: 15px;
+  border-radius: 72% 18% 68% 24%;
+  background: linear-gradient(140deg, #f3e2b8, #c49b65 70%, #8a5b3a);
+}
+.theme-ambient-scent .theme-particles i[data-variant="2"] { filter: blur(.55px); }
+.theme-ambient-scent .theme-trace { opacity: .54; }
 
-.theme-messenger-motion {
-  left: -24%;
-  top: 54%;
-  animation: chapterMotionRide 34s cubic-bezier(.24,.01,.55,1) 4.8s infinite;
+/* Motion: only air trails and a cartographic compass echo; no bicycle icon flies by. */
+.theme-ambient-motion .theme-particles i {
+  width: clamp(35px, 5vw, 76px);
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #5a3b26a3 38%, #e0bd7691 68%, transparent);
+  box-shadow: 0 1px 0 #efd49857;
+  animation: motionWindCurrent var(--particle-duration) cubic-bezier(.2,.02,.45,1) var(--particle-delay) infinite;
 }
-.theme-messenger-motion .chapter-cinematic-relic { animation: wheelCompassFloat 4.4s ease-in-out infinite; }
-.theme-messenger-motion .chapter-cinematic-orbit.orbit-one { animation-duration: 3.2s; }
-.theme-messenger-motion .chapter-cinematic-fragments i {
-  width: 23px;
-  height: 3px;
-  border-radius: 100% 0 100% 0;
-  background: linear-gradient(90deg, transparent, #f4dab0 48%, #8b5b36);
-  box-shadow: 0 0 5px #e1b66b70;
-}
+.theme-ambient-motion .theme-trace { opacity: .48; }
+.theme-ambient-motion .trace-accent { transform-origin: 766px 331px; animation: compassTraceWake 16s ease-in-out infinite; }
 
-.theme-messenger-sound {
-  left: 106%;
-  top: 22%;
-  animation: chapterSoundDrift 42s cubic-bezier(.28,.01,.58,1) 2.6s infinite;
+/* Sound: notation appears in small phrases, as if the map briefly remembers a melody. */
+.theme-ambient-sound .theme-particles i {
+  left: var(--particle-lane);
+  top: var(--particle-lane);
+  color: #3b281b;
+  font: italic 700 20px/1 var(--font-display);
+  text-shadow: 0 1px #f0d79a, 0 0 4px #d5a65066;
+  animation: soundNotePhrase var(--particle-duration) cubic-bezier(.24,.04,.46,1) var(--particle-delay) infinite;
 }
-.theme-messenger-sound .chapter-cinematic-relic { animation: vinylLevitate 6.4s ease-in-out infinite; }
-.theme-messenger-sound .chapter-cinematic-orbit { border-width: 2px; opacity: .33; animation-duration: 5.2s; }
-.theme-messenger-sound .chapter-cinematic-fragments i {
-  width: auto;
-  height: auto;
-  color: #3b2418;
-  font: italic 700 23px/1 var(--font-display);
-  text-shadow: 0 1px #e8c984, 0 0 5px #e0b55c66;
-}
-.theme-messenger-sound .chapter-cinematic-fragments i::before { content: "♪"; }
-.theme-messenger-sound .chapter-cinematic-fragments i:nth-child(3n)::before { content: "♫"; }
+.theme-ambient-sound .theme-particles i::before { content: "♪"; }
+.theme-ambient-sound .theme-particles i[data-variant="1"]::before { content: "♫"; }
+.theme-ambient-sound .theme-particles i[data-variant="2"]::before { content: "·"; font-size: 28px; }
+.theme-ambient-sound .theme-trace { opacity: .5; }
 
-.theme-messenger-sparkle {
-  left: -19%;
-  top: 8%;
-  animation: chapterJewelArc 36s cubic-bezier(.22,.02,.46,1) 6.4s infinite;
-}
-.theme-messenger-sparkle .chapter-cinematic-relic { animation: jewelConstellationFloat 5.2s ease-in-out infinite; }
-.theme-messenger-sparkle .chapter-cinematic-fragments i {
-  width: 18px;
-  height: 18px;
-  background: conic-gradient(from 45deg, transparent 0 12%, #fff1bc 13% 18%, transparent 19% 37%, #d39d4b 38% 45%, transparent 46% 62%, #fff1bc 63% 69%, transparent 70%);
-  filter: drop-shadow(0 0 4px #efc875);
-  animation-name: jewelFragmentTwinkle;
-}
-
-.theme-messenger-taste {
-  left: 66%;
-  top: 56%;
-  animation: chapterDinnerApparition 40s cubic-bezier(.22,.01,.38,1) 3.8s infinite;
-}
-.theme-messenger-taste .chapter-cinematic-relic { animation: clocheLevitate 6.2s ease-in-out infinite; }
-.theme-messenger-taste .chapter-cinematic-shadow { background: radial-gradient(ellipse, #2a150b96, transparent 68%); }
-.theme-messenger-taste .chapter-cinematic-fragments i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ffe195;
-  box-shadow: 0 0 5px 2px #efb84a, 0 0 13px 5px #d9882c70;
-  animation-name: fireflyLanternRise;
-}
-
-.theme-messenger-love {
-  left: 67%;
-  top: 12%;
-  animation: chapterLetterArrival 44s cubic-bezier(.2,.03,.38,1) 5.2s infinite;
-}
-.theme-messenger-love .chapter-cinematic-relic { animation: letterKeepsakeFloat 5.6s ease-in-out infinite; }
-.theme-messenger-love .chapter-cinematic-fragments i {
-  width: 15px;
+/* Sparkle: pin-point glints follow a hand-drawn constellation instead of moving jewelry. */
+.theme-ambient-sparkle .theme-particles i {
+  left: var(--particle-lane);
+  top: calc(88% - var(--particle-lane));
+  width: 13px;
   height: 13px;
-  background: linear-gradient(135deg, #f2dfb7, #bc8b57);
-  box-shadow: inset 0 0 0 1px #6e422a78, 0 2px 3px #2b160c69;
-  clip-path: polygon(50% 100%, 4% 45%, 8% 20%, 27% 5%, 50% 27%, 73% 5%, 92% 20%, 96% 45%);
-  animation-name: paperHeartDrift;
+  background: conic-gradient(from 45deg, transparent 0 12%, #fff0b5 13% 18%, transparent 19% 38%, #956334 39% 44%, transparent 45% 62%, #ffe8a2 63% 69%, transparent 70%);
+  filter: drop-shadow(0 0 4px #efc875);
+  animation: sparkleConstellation var(--particle-duration) ease-in-out var(--particle-delay) infinite;
 }
+.theme-ambient-sparkle .theme-trace { opacity: .63; }
+.theme-ambient-sparkle .theme-light-blooms i { background: radial-gradient(circle, #fff0a84c, #e7b65317 34%, transparent 68%); }
+
+/* Taste: warm points rise vertically like distant restaurant lights. */
+.theme-ambient-taste .theme-particles i {
+  left: calc(6% + var(--particle-lane));
+  top: auto;
+  bottom: -5vh;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffe1a0;
+  box-shadow: 0 0 5px 2px #efb84a, 0 0 14px 5px #d9882c52;
+  animation: tasteLanternRise var(--particle-duration) ease-in-out var(--particle-delay) infinite;
+}
+.theme-ambient-taste .theme-trace { opacity: .42; }
+.theme-ambient-taste .theme-light-blooms i { background: radial-gradient(circle, #ffcb6d4a, #cc702018 38%, transparent 70%); }
+
+/* Love: tiny paper fibres and pressed-petal shapes follow a handwriting stroke. */
+.theme-ambient-love .theme-particles i {
+  width: 11px;
+  height: 9px;
+  background: linear-gradient(135deg, #efd8af, #af7950);
+  box-shadow: inset 0 0 0 1px #633f2961, 0 2px 3px #2b160c4d;
+  clip-path: polygon(50% 100%, 4% 45%, 8% 20%, 27% 5%, 50% 27%, 73% 5%, 92% 20%, 96% 45%);
+  animation: lovePaperDrift var(--particle-duration) cubic-bezier(.28,.02,.52,1) var(--particle-delay) infinite;
+}
+.theme-ambient-love .theme-particles i[data-variant="2"] {
+  width: 17px;
+  height: 3px;
+  border-radius: 50%;
+  clip-path: none;
+  background: #744832a6;
+  filter: blur(.3px);
+}
+.theme-ambient-love .theme-trace { opacity: .48; }
+.theme-ambient-love .theme-light-blooms i { background: radial-gradient(circle, #e6a6983d, #a14b4714 38%, transparent 70%); }
 .map-owl-flight { position: absolute; width: clamp(70px, 9vw, 126px); opacity: 0; will-change: transform, opacity; filter: drop-shadow(0 3px 2px #e7c37b88); }
 .owl-flight-near { left: -13%; top: 27%; animation: owlCrossNear 19s cubic-bezier(.3, .02, .64, .98) .8s infinite; }
 .owl-flight-far { right: -10%; top: 13%; width: clamp(42px, 5vw, 68px); animation: owlCrossFar 27s linear 11s infinite; }
@@ -1085,128 +1014,67 @@ h1, h2, h3, blockquote, .display-type {
 @keyframes relicHeartBeat { 0%, 100% { transform: scale(.9); } 45% { transform: scale(1.13); } }
 @keyframes mysteryRelicBreathe { 0%, 100% { opacity: .6; transform: scale(.96) rotate(-1deg); } 50% { opacity: 1; transform: scale(1.035) rotate(1deg); } }
 @keyframes routeInkFlow { to { stroke-dashoffset: -48; } }
-@keyframes chapterScentPass {
-  0%, 5% { opacity: 0; transform: translate3d(0, 7vh, 0) scale(.58) rotate(-12deg); }
-  11% { opacity: .74; }
-  28% { opacity: .9; transform: translate3d(38vw, -3vh, 0) scale(.9) rotate(-3deg); }
-  48% { opacity: .86; transform: translate3d(77vw, 4vh, 0) scale(1.04) rotate(3deg); }
-  62% { opacity: 0; transform: translate3d(128vw, -1vh, 0) scale(.72) rotate(11deg); }
-  100% { opacity: 0; transform: translate3d(128vw, -1vh, 0) scale(.72) rotate(11deg); }
+@keyframes themeTraceDraw {
+  0%, 6% { opacity: 0; stroke-dashoffset: 240; }
+  14% { opacity: .2; }
+  31% { opacity: .72; stroke-dashoffset: 58; }
+  48% { opacity: .34; stroke-dashoffset: -76; }
+  62%, 100% { opacity: 0; stroke-dashoffset: -180; }
 }
-@keyframes chapterMotionRide {
-  0%, 9% { opacity: 0; transform: translate3d(0, 3vh, 0) scale(.62) rotate(-9deg); }
-  15% { opacity: .82; }
-  36% { opacity: .9; transform: translate3d(48vw, -17vh, 0) scale(.92) rotate(-1deg); }
-  55% { opacity: .88; transform: translate3d(86vw, -29vh, 0) scale(1.02) rotate(5deg); }
-  70% { opacity: 0; transform: translate3d(132vw, -42vh, 0) scale(.66) rotate(13deg); }
-  100% { opacity: 0; transform: translate3d(132vw, -42vh, 0) scale(.66) rotate(13deg); }
+@keyframes themeBloomRoam {
+  0%, 100% { opacity: 0; transform: translate3d(-4%, 5%, 0) scale(.76); }
+  18% { opacity: .22; }
+  49% { opacity: .5; transform: translate3d(8%, -5%, 0) scale(1.06); }
+  76% { opacity: .16; }
 }
-@keyframes chapterSoundDrift {
-  0%, 7% { opacity: 0; transform: translate3d(0, 4vh, 0) scale(.68) rotate(7deg); }
-  13% { opacity: .76; }
-  31% { opacity: .88; transform: translate3d(-39vw, 10vh, 0) scale(.92) rotate(1deg); }
-  49% { opacity: .84; transform: translate3d(-78vw, -1vh, 0) scale(1.03) rotate(-5deg); }
-  64% { opacity: 0; transform: translate3d(-135vw, 7vh, 0) scale(.68) rotate(-12deg); }
-  100% { opacity: 0; transform: translate3d(-135vw, 7vh, 0) scale(.68) rotate(-12deg); }
+@keyframes scentLeafCurrent {
+  0%, 4% { opacity: 0; transform: translate3d(-3vw, 0, 0) scale(var(--particle-scale-small)) rotate(0); }
+  11% { opacity: .3; }
+  29% { opacity: .68; transform: translate3d(30vw, var(--particle-drift), 0) scale(var(--particle-scale)) rotate(var(--particle-spin-soft)); }
+  51% { opacity: .82; transform: translate3d(61vw, var(--particle-drift-opposite), 0) scale(var(--particle-scale)) rotate(var(--particle-spin-mid)); }
+  73% { opacity: .44; transform: translate3d(91vw, var(--particle-drift-half), 0) scale(var(--particle-scale)) rotate(var(--particle-spin)); }
+  88%, 100% { opacity: 0; transform: translate3d(116vw, 0, 0) scale(var(--particle-scale-small)) rotate(var(--particle-spin)); }
 }
-@keyframes chapterJewelArc {
-  0%, 10% { opacity: 0; transform: translate3d(0, 8vh, 0) scale(.55) rotate(-14deg); }
-  16% { opacity: .8; }
-  34% { opacity: .96; transform: translate3d(44vw, -4vh, 0) scale(.92) rotate(-4deg); }
-  53% { opacity: .9; transform: translate3d(84vw, 3vh, 0) scale(1.05) rotate(5deg); }
-  68% { opacity: 0; transform: translate3d(133vw, 20vh, 0) scale(.64) rotate(17deg); }
-  100% { opacity: 0; transform: translate3d(133vw, 20vh, 0) scale(.64) rotate(17deg); }
+@keyframes motionWindCurrent {
+  0%, 9% { opacity: 0; transform: translate3d(-6vw, 5vh, 0) scaleX(.2) rotate(-10deg); }
+  17% { opacity: .25; }
+  39% { opacity: .58; transform: translate3d(42vw, var(--particle-drift-half), 0) scaleX(1) rotate(-13deg); }
+  62% { opacity: .33; transform: translate3d(78vw, var(--particle-drift-opposite), 0) scaleX(.78) rotate(-17deg); }
+  78%, 100% { opacity: 0; transform: translate3d(116vw, -22vh, 0) scaleX(.35) rotate(-20deg); }
 }
-@keyframes chapterDinnerApparition {
-  0%, 9% { opacity: 0; transform: translate3d(4vw, 16vh, 0) scale(.5) rotate(7deg); }
-  16% { opacity: .75; }
-  30% { opacity: .94; transform: translate3d(-7vw, -13vh, 0) scale(.91) rotate(1deg); }
-  48% { opacity: .91; transform: translate3d(-18vw, -24vh, 0) scale(1.02) rotate(-3deg); }
-  62% { opacity: 0; transform: translate3d(-28vw, -45vh, 0) scale(.68) rotate(-8deg); }
-  100% { opacity: 0; transform: translate3d(-28vw, -45vh, 0) scale(.68) rotate(-8deg); }
+@keyframes compassTraceWake {
+  0%, 12%, 100% { opacity: 0; transform: rotate(-10deg) scale(.82); }
+  26% { opacity: .45; }
+  48% { opacity: .82; transform: rotate(4deg) scale(1.03); }
+  68% { opacity: .25; transform: rotate(12deg) scale(.94); }
 }
-@keyframes chapterLetterArrival {
-  0%, 10% { opacity: 0; transform: translate3d(34vw, -8vh, 0) scale(.58) rotate(10deg); }
-  17% { opacity: .77; }
-  31% { opacity: .94; transform: translate3d(-5vw, 5vh, 0) scale(.94) rotate(1deg); }
-  47% { opacity: .94; transform: translate3d(-18vw, 9vh, 0) scale(1.03) rotate(-3deg); }
-  57% { opacity: .86; transform: translate3d(-22vw, 7vh, 0) scale(1) rotate(-1deg); }
-  69% { opacity: 0; transform: translate3d(-45vw, -30vh, 0) scale(.66) rotate(-13deg); }
-  100% { opacity: 0; transform: translate3d(-45vw, -30vh, 0) scale(.66) rotate(-13deg); }
+@keyframes soundNotePhrase {
+  0%, 12%, 100% { opacity: 0; transform: translate3d(-18px, 12px, 0) scale(var(--particle-scale-small)) rotate(-8deg); }
+  24% { opacity: .28; }
+  46% { opacity: .66; transform: translate3d(9px, -7px, 0) scale(var(--particle-scale)) rotate(2deg); }
+  68% { opacity: .32; transform: translate3d(31px, -18px, 0) scale(var(--particle-scale)) rotate(8deg); }
+  82% { opacity: 0; }
 }
-@keyframes chapterShadowBreathe {
-  0%, 100% { opacity: .28; transform: rotate(-5deg) scale(.78); }
-  50% { opacity: .52; transform: rotate(-3deg) scale(1.08); }
+@keyframes sparkleConstellation {
+  0%, 17%, 100% { opacity: 0; transform: scale(var(--particle-scale-small)) rotate(0); }
+  26% { opacity: .9; transform: scale(var(--particle-scale-large)) rotate(28deg); }
+  34% { opacity: .18; transform: scale(var(--particle-scale-small)) rotate(49deg); }
+  44% { opacity: .82; transform: scale(var(--particle-scale)) rotate(73deg); }
+  57%, 84% { opacity: 0; transform: scale(var(--particle-scale-small)) rotate(108deg); }
 }
-@keyframes chapterHaloBreathe {
-  0%, 100% { opacity: .34; transform: scale(.76) rotate(-7deg); }
-  48% { opacity: .74; transform: scale(1.12) rotate(5deg); }
+@keyframes tasteLanternRise {
+  0%, 11% { opacity: 0; transform: translate3d(0, 5vh, 0) scale(var(--particle-scale-small)); }
+  22% { opacity: .55; }
+  44% { opacity: .9; transform: translate3d(var(--particle-drift-half), -31vh, 0) scale(var(--particle-scale)); }
+  68% { opacity: .42; transform: translate3d(var(--particle-drift-opposite), -62vh, 0) scale(var(--particle-scale)); }
+  82%, 100% { opacity: 0; transform: translate3d(var(--particle-drift), -94vh, 0) scale(var(--particle-scale-small)); }
 }
-@keyframes chapterOrbitSpin { to { transform: rotate(360deg); } }
-@keyframes chapterOrbitCounterSpin { to { transform: rotate(-360deg); } }
-@keyframes chapterRelicSheen {
-  0%, 19% { opacity: 0; transform: translateX(-120%) skewX(-13deg); }
-  31% { opacity: .62; }
-  48%, 100% { opacity: 0; transform: translateX(120%) skewX(-13deg); }
-}
-@keyframes chapterWakePulse {
-  0%, 100% { opacity: 0; transform: scaleX(.28); }
-  42% { opacity: .5; transform: scaleX(1); }
-  76% { opacity: .15; transform: scaleX(.72); }
-}
-@keyframes chapterFragmentDrift {
-  0%, 100% { opacity: 0; transform: translate3d(0, 13px, 0) scale(var(--fragment-scale)) rotate(var(--fragment-spin)); }
-  19% { opacity: .62; }
-  54% { opacity: .92; }
-  82% { opacity: 0; transform: translate3d(24px, -31px, 0) scale(var(--fragment-scale)) rotate(calc(var(--fragment-spin) + 84deg)); }
-}
-@keyframes chapterSparkOrbit {
-  0% { opacity: 0; transform: rotate(0deg) translateX(38px) scale(.4); }
-  18% { opacity: .9; }
-  62% { opacity: .56; }
-  100% { opacity: 0; transform: rotate(320deg) translateX(108px) scale(1.15); }
-}
-@keyframes botanicalSway {
-  0%, 100% { transform: translate3d(-2px, 4px, 0) rotate(-3deg) scale(.96); }
-  45% { transform: translate3d(4px, -7px, 0) rotate(3deg) scale(1.035); }
-}
-@keyframes wheelCompassFloat {
-  0%, 100% { transform: translate3d(0, 5px, 0) rotate(-4deg); }
-  50% { transform: translate3d(0, -6px, 0) rotate(5deg); }
-}
-@keyframes vinylLevitate {
-  0%, 100% { transform: translate3d(-3px, 5px, 0) rotate(-3deg) scale(.97); }
-  50% { transform: translate3d(4px, -8px, 0) rotate(4deg) scale(1.035); }
-}
-@keyframes jewelConstellationFloat {
-  0%, 100% { transform: translate3d(-2px, 4px, 0) rotate(-4deg) scale(.96); filter: brightness(.94); }
-  48% { transform: translate3d(3px, -7px, 0) rotate(4deg) scale(1.045); filter: brightness(1.12); }
-}
-@keyframes clocheLevitate {
-  0%, 100% { transform: translate3d(0, 6px, 0) rotate(2deg) scale(.96); }
-  50% { transform: translate3d(0, -9px, 0) rotate(-2deg) scale(1.035); }
-}
-@keyframes letterKeepsakeFloat {
-  0%, 100% { transform: translate3d(2px, 5px, 0) rotate(2deg) scale(.97); }
-  50% { transform: translate3d(-3px, -7px, 0) rotate(-3deg) scale(1.03); }
-}
-@keyframes jewelFragmentTwinkle {
-  0%, 100% { opacity: 0; transform: scale(var(--fragment-scale)) rotate(var(--fragment-spin)); }
-  27% { opacity: 1; }
-  48% { transform: translate3d(7px, -10px, 0) scale(var(--fragment-scale)) rotate(calc(var(--fragment-spin) + 70deg)); }
-  72% { opacity: .48; }
-}
-@keyframes fireflyLanternRise {
-  0%, 100% { opacity: 0; transform: translate3d(0, 14px, 0) scale(.42); }
-  25% { opacity: .96; }
-  56% { opacity: .65; transform: translate3d(11px, -12px, 0) scale(1.18); }
-  81% { opacity: 0; transform: translate3d(-8px, -43px, 0) scale(.72); }
-}
-@keyframes paperHeartDrift {
-  0%, 100% { opacity: 0; transform: translate3d(0, 9px, 0) scale(var(--fragment-scale)) rotate(var(--fragment-spin)); }
-  18% { opacity: .72; }
-  54% { opacity: .95; transform: translate3d(13px, -19px, 0) scale(var(--fragment-scale)) rotate(calc(var(--fragment-spin) + 54deg)); }
-  82% { opacity: 0; transform: translate3d(-9px, -47px, 0) scale(var(--fragment-scale)) rotate(calc(var(--fragment-spin) + 116deg)); }
+@keyframes lovePaperDrift {
+  0%, 8% { opacity: 0; transform: translate3d(-4vw, 7vh, 0) scale(var(--particle-scale-small)) rotate(-18deg); }
+  17% { opacity: .24; }
+  39% { opacity: .6; transform: translate3d(39vw, var(--particle-drift), 0) scale(var(--particle-scale)) rotate(var(--particle-spin-soft)); }
+  62% { opacity: .72; transform: translate3d(73vw, var(--particle-drift-opposite), 0) scale(var(--particle-scale)) rotate(var(--particle-spin-mid)); }
+  83%, 100% { opacity: 0; transform: translate3d(111vw, var(--particle-drift-half), 0) scale(var(--particle-scale-small)) rotate(var(--particle-spin)); }
 }
 @keyframes goalBeacon { 0%, 100% { filter: drop-shadow(0 0 2px #f1c96d); transform: scale(.94); } 50% { filter: drop-shadow(0 0 8px #f1c96d); transform: scale(1.14); } }
 @keyframes statusStar { 0%, 100% { opacity: .36; transform: rotate(0) scale(.8); } 50% { opacity: 1; transform: rotate(180deg) scale(1.16); } }
@@ -1275,6 +1143,6 @@ h1, h2, h3, blockquote, .display-type {
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
-  .theme-messenger, .map-owl-flight, .courier-owl, .falling-feather, .owl-flight-shadow, .owl-wind-lanes, .owl-feather-burst { display: none !important; }
+  .theme-ambient, .map-owl-flight, .courier-owl, .falling-feather, .owl-flight-shadow, .owl-wind-lanes, .owl-feather-burst { display: none !important; }
   .ambient-motes i { opacity: .35; }
 }
