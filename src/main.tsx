@@ -24,10 +24,13 @@ if ("serviceWorker" in navigator) {
 const params = new URLSearchParams(window.location.search);
 const mode = params.get("mode");
 const nearbyMode = mode === "nearby";
-const fullTestNamespace =
+const runNamespace = params.get("run")?.replace(/[^a-zA-Z0-9-]/g, "-").slice(0, 32);
+const storageNamespace =
   mode === "fulltest"
-    ? `fulltest-${params.get("run")?.replace(/[^a-zA-Z0-9-]/g, "-").slice(0, 32) || "default"}`
-    : "formal";
+    ? `fulltest-${runNamespace || "default"}`
+    : runNamespace
+      ? `formal-${runNamespace}`
+      : "formal";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -35,7 +38,7 @@ createRoot(document.getElementById("root")!).render(
       <NearbyRehearsal />
     ) : (
       <ExplorationApp
-        storageNamespace={fullTestNamespace}
+        storageNamespace={storageNamespace}
         storyZones={mode === "fulltest" ? fullTestZones : undefined}
       />
     )}

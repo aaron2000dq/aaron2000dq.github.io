@@ -401,6 +401,27 @@ test("restores the current unlocked checkpoint after a refresh", async ({ page, 
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
+test("isolates a named formal preview run from previously saved formal progress", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
+
+  await page.goto("/?run=e2e-formal-isolated");
+  await expect(page.locator(".intro-screen")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute(
+    "href",
+    "/assets/maps/caihe-motion-v3.jpg",
+  );
+
+  expect(await page.evaluate(async () => {
+    const databases = await indexedDB.databases();
+    return databases.map((database) => database.name);
+  })).toContain("exploration-atlas-formal-e2e-formal-isolated");
+});
+
 test("recovers safely from corrupted local progress", async ({ page }) => {
   await page.goto("/?mode=fulltest&run=e2e-corrupt-progress");
   await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
