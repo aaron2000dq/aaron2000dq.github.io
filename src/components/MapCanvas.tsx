@@ -19,9 +19,9 @@ type Props = {
 
 const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> = {
   arcade: "/assets/maps/qianjiang-scent-v3.jpg",
-  garden: "/assets/maps/caihe-motion-v2.jpg",
-  vinyl: "/assets/maps/jingwei-sound-v2.jpg",
-  city: "/assets/maps/qianjiang-grand-v2.jpg",
+  garden: "/assets/maps/caihe-motion-v3.jpg",
+  vinyl: "/assets/maps/jingwei-sound-v3.jpg",
+  city: "/assets/maps/qianjiang-grand-v3.jpg",
 };
 
 function pendingCoordinateCopy(count: number) {

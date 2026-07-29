@@ -22,11 +22,11 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.25766, longitude: 120.1958 },
       { latitude: 30.257345, longitude: 120.195869 },
     ],
-    svgPath: "M110 420 L180 390 L230 342 L320 330 L390 280 L465 250 L520 192 L575 150 L630 116",
+    svgPath: "M110 420 L175 398 L235 350 L300 320 L365 270 L430 240 L490 190 L530 150 L560 120",
     maxLocationAccuracyM: 200,
     accent: "#4c5636",
     mapKind: "garden",
-    illustratedMapAsset: "/assets/maps/caihe-motion-v2.jpg",
+    illustratedMapAsset: "/assets/maps/caihe-motion-v3.jpg",
     checkpoints: [
       {
         id: "liv-motion",
@@ -45,7 +45,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "从这一页开始，二十九岁的路不必只靠双脚。第一个出现在新一岁的魔法，是让通勤也变成自由旅行的动力。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 630, y: 116 },
+        mapPoint: { x: 560, y: 120 },
       },
     ],
   },
@@ -64,11 +64,11 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.32491, longitude: 120.18838 },
       { latitude: 30.3251, longitude: 120.18866 },
     ],
-    svgPath: "M108 420 L170 385 L230 370 L300 330 L382 300 L455 250 L515 210 L560 165 L602 122",
+    svgPath: "M108 420 L170 385 L230 360 L300 325 L370 285 L435 235 L490 190 L525 150 L555 118",
     maxLocationAccuracyM: 200,
     accent: "#3f354a",
     mapKind: "vinyl",
-    illustratedMapAsset: "/assets/maps/jingwei-sound-v2.jpg",
+    illustratedMapAsset: "/assets/maps/jingwei-sound-v3.jpg",
     checkpoints: [
       {
         id: "vinyl-sound",
@@ -87,7 +87,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十八岁的回声，会在二十九岁的房间里继续旋转。第二个出现在新一岁的魔法，是唱针落下时我在你的身边。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 602, y: 122 },
+        mapPoint: { x: 555, y: 118 },
       },
     ],
   },
@@ -113,11 +113,11 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.251737, longitude: 120.207682 },
     ],
     svgPath:
-      "M130 365 L210 335 L300 270 L390 210 L505 135 L550 160 L610 190 L670 338 L635 395 L555 395 L475 345 L375 330 L300 335 L230 330",
+      "M130 365 L210 335 L300 270 L390 210 L432 120 L480 135 L535 190 L590 330 L540 390 L460 380 L370 355 L290 350 L210 360",
     maxLocationAccuracyM: 200,
     accent: "#274554",
     mapKind: "city",
-    illustratedMapAsset: "/assets/maps/qianjiang-grand-v2.jpg",
+    illustratedMapAsset: "/assets/maps/qianjiang-grand-v3.jpg",
     checkpoints: [
       {
         id: "aesop-scent",
@@ -136,7 +136,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十八岁的最后一阵风，被装进你亲自挑选的香气里。第三个出现在二十九岁的魔法，是低头时就能闻到爱的味道。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 505, y: 135 },
+        mapPoint: { x: 432, y: 120 },
       },
       {
         id: "dior-sparkle",
@@ -155,7 +155,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "这是入学前最后一夜里，专门留给你的光。第四个魔法，是把自己装扮好看的闪亮时刻。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 550, y: 160 },
+        mapPoint: { x: 480, y: 135 },
       },
       {
         id: "balcony-taste",
@@ -174,7 +174,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十九岁的无限可能顺利开启，请前往探索属于你的精彩一岁。第五个魔法，是在麻瓜世界的背后总有人等着你一起分享今天的晚餐。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 670, y: 338 },
+        mapPoint: { x: 590, y: 330 },
       },
       {
         id: "hidden-love",
@@ -193,7 +193,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "前面的五个魔法，会陪你走进二十九岁；最后这一份不用拿在手里，读完这封信，二十八岁的故事合上，过去的地图已经无法抵达。但在今天和地图尚未画出的未来里，你都会被我好好地爱着。那么，准备好入学面对新的一切了吗，拥有魔法的天才饼饼？",
         photoPrompt: "不需要复刻。请打开最后一封信。",
-        mapPoint: { x: 230, y: 330 },
+        mapPoint: { x: 210, y: 360 },
       },
     ],
   },

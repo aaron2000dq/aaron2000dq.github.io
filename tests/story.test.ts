@@ -25,6 +25,22 @@ describe("formal story route", () => {
       .toEqual(["Aesop", "Dior", "城市阳台"]);
     expect(zones[2].mysterySubtitle).toContain("三枚坐标");
   });
+
+  it("uses one new illustrated map for each of the three formal walking areas", () => {
+    expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
+      "/assets/maps/caihe-motion-v3.jpg",
+      "/assets/maps/jingwei-sound-v3.jpg",
+      "/assets/maps/qianjiang-grand-v3.jpg",
+    ]);
+  });
+
+  it("keeps every active goal clear of the floating quest panel", () => {
+    for (const zone of zones) {
+      for (const checkpoint of zone.checkpoints) {
+        expect(checkpoint.mapPoint.x).toBeLessThanOrEqual(590);
+      }
+    }
+  });
 });
 
 describe("full rehearsal story route", () => {

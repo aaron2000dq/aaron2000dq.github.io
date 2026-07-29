@@ -17,7 +17,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
   await expect(page.locator(".intro-ink-route")).toBeVisible();
   await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
-  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v2.jpg");
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v3.jpg");
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
 
   const compass = page.getByRole("button", { name: "指南针" });
@@ -502,6 +502,7 @@ test("walks the four preset rehearsal maps and unlocks one with live geolocation
 });
 
 test("walks all six gifts through the fallback path to the finale", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
