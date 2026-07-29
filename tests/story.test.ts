@@ -14,7 +14,7 @@ describe("formal story route", () => {
 
   it("starts each map at the intended parking area", () => {
     expect(zones.map((zone) => zone.parkingLabel)).toEqual([
-      "庆春发展大厦停车场 · 庆春东路 66 号",
+      "外海商厦立体停车场 · 庆春东路 58 号",
       "经纬国际创意产业园停车场 · 石桥路 279 号",
       "杭州来福士中心 · T1 停车区",
     ]);

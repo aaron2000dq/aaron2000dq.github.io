@@ -12,14 +12,14 @@ export const zones: ExplorationZone[] = [
     subtitle: "庆春东路与采荷街区 · 寻找移动的方式",
     mysteryTitle: "XXVIII · THE FIRST PASSAGE",
     mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
-    parkingLabel: "庆春发展大厦停车场 · 庆春东路 66 号",
+    parkingLabel: "外海商厦立体停车场 · 庆春东路 58 号",
     parkingMapPoint: { x: 110, y: 420 },
-    center: { latitude: 30.25746, longitude: 120.19576 },
+    center: { latitude: 30.25765, longitude: 120.19582 },
     routeGeo: [
       // The parking coordinate is an approximate route anchor. Capture the
       // exact pedestrian exit during the final survey before locking the build.
-      { latitude: 30.25755, longitude: 120.19562 },
-      { latitude: 30.25745, longitude: 120.19574 },
+      { latitude: 30.25796, longitude: 120.19578 },
+      { latitude: 30.25766, longitude: 120.1958 },
       { latitude: 30.257345, longitude: 120.195869 },
     ],
     svgPath: "M110 420 L180 390 L230 342 L320 330 L390 280 L465 250 L520 192 L575 150 L630 116",
