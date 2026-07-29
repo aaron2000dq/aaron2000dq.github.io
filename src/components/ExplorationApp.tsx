@@ -24,15 +24,6 @@ const giftNames = {
   love: "好爱的",
 };
 
-const giftOrder = {
-  scent: 1,
-  motion: 2,
-  sound: 3,
-  sparkle: 4,
-  taste: 5,
-  love: 6,
-};
-
 type ExplorationAppProps = {
   storageNamespace?: string;
   storyZones?: ExplorationZone[];
@@ -113,7 +104,11 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   );
   const arrived = progress.arrivedCheckpointIds.includes(checkpoint.id);
   const locationReliable = Boolean(position && position.accuracy <= zone.maxLocationAccuracyM);
-  const coordinateNumber = giftOrder[checkpoint.giftType];
+  const checkpointSequence = storyZones.flatMap((item) => item.checkpoints);
+  const coordinateNumber = Math.max(
+    1,
+    checkpointSequence.findIndex((item) => item.id === checkpoint.id) + 1,
+  );
   const concealedTitle = checkpoint.mysteryTitle ?? `第${coordinateNumber}枚未知坐标`;
   const concealedLabel = checkpoint.mysteryLabel ?? "答案尚在雾中";
   const displayedZoneTitle = arrived
@@ -177,7 +172,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     setDeviceStatus((current) => ({
       ...current,
-      label: isIPad ? "iPad 已识别" : "桌面彩排模式",
+      label: isIPad ? "活点地图开启" : "桌面彩排模式",
       location: "geolocation" in navigator,
       camera: "FileReader" in window,
     }));
@@ -483,7 +478,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
               <div className="intro-opening-fog fog-a"/><div className="intro-opening-fog fog-b"/>
               <div className="intro-opening-copy" role="status" aria-live="polite">
                 <span>FROM XXVIII TO XXIX</span>
-                <strong>二十八岁的最后一页正在翻动</strong>
+                <strong>世界上仅你可见的惊喜，被投入了麻瓜的世界中</strong>
                 <small>PAGE I · PAGE II · PAGE III · PAGE IV · PAGE V · EPILOGUE</small>
               </div>
             </div>
@@ -493,16 +488,16 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
               <div className="envelope-letter-content">
                 <div className="eyebrow">PRIVATE DELIVERY · TO THE EXPLORER</div>
                 <h1>Exploration <em>Atlas</em></h1>
-                <p>今天，是二十八岁的最后一页。</p>
-                <blockquote>杭州替你藏起了五枚坐标。每找到一枚，<br/>就把旧一岁的某束光，装进二十九岁的行囊。</blockquote>
+                <p>今天，是天才巫师饼饼的入学日。</p>
+                <blockquote>杭州这座城市，正在因为你而暗潮涌动。<br/>在不知名的某处地方，将翻转出特殊的惊喜。</blockquote>
                 <div className="device-readiness" aria-label="设备就绪状态">
                   <span className="ready">{deviceStatus.label}</span>
-                  <span className={deviceStatus.location ? "ready" : "warning"}>{deviceStatus.location ? "定位可用" : "定位需暗门兜底"}</span>
-                  <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "相册可用" : "照片读取不可用"}</span>
-                  <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "离线地图已缓存" : "正在缓存"}</span>
+                  <span className={deviceStatus.location ? "ready" : "warning"}>{deviceStatus.location ? "麻瓜定位中" : "定位需暗门兜底"}</span>
+                  <span className={deviceStatus.camera ? "ready" : "warning"}>{deviceStatus.camera ? "显影水已生效" : "照片读取不可用"}</span>
+                  <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "猫头鹰缓存中" : "正在缓存"}</span>
                 </div>
               </div>
-              <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "按下火漆 · 接收探索地图"}</b></button>
+              <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "打开信封 · 接收探索地图"}</b></button>
               <div className="envelope-wind-fold" aria-hidden="true" />
             </div>
             <footer>FROM XXVIII TO XXIX · 2026 BIRTHDAY EDITION</footer>
@@ -512,7 +507,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {progress.phase === "fog" && (
           <motion.section className="fog-screen" key="fog" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="fog-layer one"/><div className="fog-layer two"/>
-            <div className="fog-content"><div className="spinning-compass">✦</div><span>TURNING THE PAGE · XXVIII → XXIX</span><h2>{fogMessages[(zone.order - 1) % fogMessages.length]}</h2><p>请使用正常导航驾车。停稳并下车后，再让下一页从云雾中显形。</p><button className="primary-button" onClick={arriveNextZone}>我已停车，翻开下一页</button></div>
+            <div className="fog-content"><div className="spinning-compass">✦</div><span>TURNING THE PAGE · XXVIII → XXIX</span><h2>{fogMessages[(zone.order - 1) % fogMessages.length]}</h2><p>请使用正常导航驾驶飞行扫帚。停稳并下车后，再让下一页从云雾中显形。</p><button className="primary-button" onClick={arriveNextZone}>我已停车，翻开下一页</button></div>
           </motion.section>
         )}
 
@@ -538,7 +533,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                 {checkpoint.giftType === "love" ? (
                   <button className="primary-button" onClick={() => completeCheckpoint()}>打开最后一封信</button>
                 ) : !progress.zoneStarted ? (
-                  <button className="primary-button" onClick={startExploration}>停车完毕，开始探索</button>
+                  <button className="primary-button" onClick={startExploration}>飞行扫帚已抵达，开始探索</button>
                 ) : arrived ? (
                   <button className="primary-button" onClick={() => setCameraOpen(true)}>开启照片复刻</button>
                 ) : (
@@ -553,7 +548,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           <motion.section className="finale-screen" key="finale" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="finale-generated-rune" aria-hidden="true" />
             <div className="finale-content">
-              <div className="final-heart" aria-hidden="true"><i/><span>♡</span></div><span>XXVIII HAS BEEN KEPT · XXIX NOW BEGINS</span><h1>Exploration<br/>Completed</h1><blockquote>二十八岁的故事，已经被好好收藏。<br/>现在，请翻开二十九岁的第一章。<br/>地图走完了，我们的探索还会继续很多很多年。<br/><b>Happy 29th Birthday, bb.</b></blockquote>
+              <div className="final-heart" aria-hidden="true"><i/><span>♡</span></div><span>XXVIII HAS BEEN KEPT · XXIX NOW BEGINS</span><h1>Exploration<br/>Completed</h1><blockquote>二十八岁的故事，已经被好好收藏。<br/>现在，请翻开二十九岁的第一章，今年的主题是探索。<br/>无论是麻瓜还是巫师，我们都会一起探索这个好玩的世界，学习用爱编织的魔法。<br/><b>Happy 29th Birthday, bb.</b></blockquote>
               <div className="gallery-strip">{photos.length ? photos.map((photo) => <button key={photo.id} onClick={() => sharePhoto(photo)}><img src={photo.dataUrl} alt="探索复刻照片"/><span>{photo.score} 分 · 保存</span></button>) : <p>完成照片关卡后，探索相册会出现在这里。</p>}</div>
               <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>
             </div>
@@ -568,7 +563,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           <motion.div className="unlock-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.section className="unlock-card" initial={{ scale: 0.7, rotate: -3 }} animate={{ scale: 1, rotate: 0 }}>
               <div className="unlock-generated-rune" aria-hidden="true" />
-              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>PAGE {String(coordinateNumber).padStart(2, "0")} · REVEALED</span><h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>{checkpoint.storyBeat && <blockquote className="unlock-story-beat">{checkpoint.storyBeat}</blockquote>}<p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "翻开二十九岁的第一章" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "寻找下一枚未知坐标" : "带着这一页返回载具"}</button>
+              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>PAGE {String(coordinateNumber).padStart(2, "0")} · REVEALED</span><h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>{checkpoint.storyBeat && <blockquote className="unlock-story-beat">{checkpoint.storyBeat}</blockquote>}<p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "翻开二十九岁的第一章" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "寻找下一枚未知坐标" : "带着这一页返回飞行扫帚"}</button>
             </motion.section>
           </motion.div>
         )}

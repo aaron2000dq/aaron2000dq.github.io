@@ -24,6 +24,12 @@ const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> 
   city: "/assets/maps/qianjiang-grand-v2.jpg",
 };
 
+function pendingCoordinateCopy(count: number) {
+  if (count <= 1) return "还藏着最后一枚坐标";
+  const chinese = ["零", "一", "两", "三", "四", "五"][count] ?? String(count);
+  return `还藏着${chinese}枚坐标`;
+}
+
 function Road({
   d,
   label,
@@ -208,7 +214,7 @@ function DistrictBlueprint({ kind }: { kind: ExplorationZone["mapKind"] }) {
       </g>
       <g className="landmark mixc" transform="translate(438 90)">
         <path d="M0 72V12h142v60M8 20h126M18 30h30v31H18zM56 30h30v31H56zM94 30h30v31H94z" />
-        <path d="M-8 72h158M18 9 70-5l54 14" /><text x="70" y="88">MIXC · DIOR</text>
+        <path d="M-8 72h158M18 9 70-5l54 14" /><text x="70" y="88">MIXC · AESOP · DIOR</text>
       </g>
       <g className="landmark civic" transform="translate(500 350)">
         <ellipse cx="34" cy="24" rx="38" ry="22" /><path d="M-1 24q35-58 70 0M4 24h60M18 5v38M50 5v38" />
@@ -239,9 +245,16 @@ export function MapCanvas({
   const displayedTitle = arrived
     ? zone.title
     : zone.mysteryTitle ?? `XXVIII · PAGE ${String(zone.order).padStart(2, "0")}`;
+  const pendingCoordinates = zone.checkpoints.filter(
+    (item) => item.giftType !== "love" && !completedIds.includes(item.id),
+  ).length;
+  const concealedSubtitle = (zone.mysterySubtitle ?? "成为巫师的下一步 · 坐标仍在雾中").replace(
+    /还藏着(?:最后)?[一二三四五六七八九十\d]+枚坐标/,
+    pendingCoordinateCopy(pendingCoordinates),
+  );
   const displayedSubtitle = arrived
     ? zone.subtitle
-    : zone.mysterySubtitle ?? "二十八岁的最后一页 · 坐标仍在雾中";
+    : concealedSubtitle;
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
   const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
