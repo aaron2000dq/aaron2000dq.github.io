@@ -46,6 +46,10 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".courier-owl")).toHaveCount(1);
   await expect(page.locator(".envelope-prop")).toBeVisible();
   await expect(page.locator(".intro-wax-trigger")).toBeVisible();
+  await expect(page.locator(".opening-letter > .magic-micro-vine")).toBeVisible();
+  expect(
+    await page.locator(".micro-vine-stem").evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("microVineGrow");
   await expect(page.locator(".owl-flight-shadow")).toHaveCount(1);
   await expect(page.locator(".owl-wind-lanes i")).toHaveCount(4);
   await expect(page.locator(".owl-feather-burst i")).toHaveCount(6);
@@ -73,6 +77,10 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
   await expect(page.locator(".route-path-aura")).toBeVisible();
   await expect(page.locator(".quest-medallion")).toBeVisible();
+  await expect(page.locator(".quest-card > .magic-micro-ripple")).toBeVisible();
+  expect(
+    await page.locator(".micro-ripple-ring").first().evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("microWaterRipple");
   await expect(page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight)).toBe(false);
@@ -164,6 +172,7 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
   await expect(page.locator(".owl-feather-burst")).toHaveCSS("display", "none");
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-stage")).toBeVisible();
+  await expect(page.locator(".quest-card > .magic-micro-effect")).toHaveCSS("display", "none");
   await expect(page.locator(".theme-ambient")).toHaveCSS("display", "none");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" })).toBeEnabled();
@@ -568,6 +577,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
     await openCartographer(page);
     await page.getByRole("button", { name: "强制过关" }).click();
     await expect(page.locator(".unlock-card h2")).toContainText(gift);
+    await expect(page.locator(".unlock-card > .magic-micro-star-trail")).toBeVisible();
     await page.getByRole("button", { name: "带着这一页返回飞行扫帚" }).click();
     await page.getByRole("button", { name: "我已停车，翻开下一页" }).click();
   }
@@ -651,6 +661,7 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await page.getByRole("button", { name: "开启照片复刻" }).click();
 
   await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toBeVisible();
+  await expect(page.locator(".photo-panel > .magic-micro-wave")).toHaveCount(2);
   await expect(page.locator("video")).toHaveCount(0);
   const uploadInput = page.locator("input[data-role='capture-photo']").first();
   await uploadInput.waitFor({ state: "attached" });

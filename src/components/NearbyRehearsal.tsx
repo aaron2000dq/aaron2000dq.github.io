@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapCanvas } from "./MapCanvas";
 import { MagicAtmosphere } from "./MagicAtmosphere";
+import { MagicMicroEffect } from "./MagicMicroEffect";
 import { rehearsalZones } from "@/src/config/rehearsal";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
@@ -109,6 +110,7 @@ export function NearbyRehearsal() {
         <section className="intro-screen">
           <div className="intro-map-lines" />
           <div className="sealed-letter nearby-letter">
+            <MagicMicroEffect variant="vine" />
             <span className="eyebrow">FIXED REHEARSAL ROUTE</span>
             <h1>Nearby<em>固定路线彩排</em></h1>
             <p>四枚坐标集中在同一栋建筑周边：富力中心北区东门、南门、西门、北门。</p>
@@ -163,6 +165,7 @@ export function NearbyRehearsal() {
             data-target-latitude={checkpoint.location.latitude}
             data-target-longitude={checkpoint.location.longitude}
           >
+            <MagicMicroEffect variant="ripple" />
             <div className="quest-medallion" aria-hidden="true"><span className="quest-number">{String(activeIndex + 1).padStart(2, "0")}</span></div>
             <span className="eyebrow">PRESET TEST COORDINATE</span>
             <h2>{checkpoint.label}<small>附近固定地点 {activeIndex + 1}/4</small></h2>

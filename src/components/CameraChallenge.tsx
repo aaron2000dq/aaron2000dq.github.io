@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { MagicMicroEffect } from "./MagicMicroEffect";
 import type { Checkpoint, MatchResult } from "@/src/types";
 import { resizePhotoFile, scorePhoto, warmPhotoMatcher } from "@/src/lib/photoMatch";
 import { getReference, saveReference } from "@/src/lib/storage";
@@ -137,6 +138,7 @@ export function CameraChallenge({
       <div className={`photo-comparison ${scoring ? "is-scanning-memory" : ""}`}>
         <div className="memory-scan-beam" aria-hidden="true" />
         <section className="photo-panel reference-photo-panel">
+          <MagicMicroEffect variant="wave" />
           <header><span>01</span><div><b>参考照片</b><small>由制图人提前拍摄</small></div></header>
           <div className="photo-stage">
             <img src={reference} alt="制图人预先拍摄的模特参考照片" />
@@ -153,6 +155,7 @@ export function CameraChallenge({
         <div className="comparison-seal" aria-hidden="true">≈</div>
 
         <section className="photo-panel capture-photo-panel">
+          <MagicMicroEffect variant="wave" />
           <header><span>02</span><div><b>你的复刻</b><small>从照片 App 中选择</small></div></header>
           <div className={`photo-stage ${capture ? "has-photo" : "empty-photo-stage"}`}>
             {capture ? (
@@ -176,6 +179,7 @@ export function CameraChallenge({
 
         {result && (
           <motion.div className={`score-card ${result.score >= checkpoint.passScore ? "passed" : ""}`} initial={{ scale: 0.86 }} animate={{ scale: 1 }}>
+            <MagicMicroEffect variant="rune" />
             <b>{result.score}</b><span>匹配度</span><p>{result.message}</p>
             <small>场景 {result.sceneScore} · 姿势 {result.poseScore ?? "未识别"} · 位置 {result.subjectScore}</small>
           </motion.div>

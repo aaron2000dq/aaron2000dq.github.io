@@ -1,6 +1,7 @@
 "use client";
 
 import type { ExplorationZone, PositionSample, StoryProgress } from "@/src/types";
+import { MagicMicroEffect } from "./MagicMicroEffect";
 
 type Props = {
   zone: ExplorationZone;
@@ -48,6 +49,7 @@ export function GmPanel({
   return (
     <div className="gm-backdrop">
       <section className="gm-panel" aria-label="制图人控制台">
+        <MagicMicroEffect variant="rune" />
         <header><div><span>THE CARTOGRAPHER</span><h2>制图人控制台</h2></div><button onClick={onClose}>关闭</button></header>
         <p>当前区域：{zone.title}<br/>当前关卡：{progress.activeCheckpointId}</p>
         <div className="gm-grid">

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { CameraChallenge } from "./CameraChallenge";
 import { CelebrationLayer, type CelebrationKind } from "./CelebrationLayer";
 import { GmPanel } from "./GmPanel";
+import { MagicMicroEffect } from "./MagicMicroEffect";
 import { MapCanvas } from "./MapCanvas";
 import { MagicAtmosphere } from "./MagicAtmosphere";
 import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
@@ -466,6 +467,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
             <div className="sealed-letter opening-letter">
               <div className="envelope-prop" aria-hidden="true" />
+              <MagicMicroEffect variant="vine" />
               <div className="envelope-letter-content">
                 <div className="eyebrow">PRIVATE DELIVERY · TO THE EXPLORER</div>
                 <h1>Exploration <em>Atlas</em></h1>
@@ -505,6 +507,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             <div className="map-layout">
               <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={position?.heading ?? deviceHeading.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
               <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
+                <MagicMicroEffect variant="ripple" />
                 <button
                   className="quest-panel-toggle"
                   type="button"
@@ -550,6 +553,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {unlockOpen && (
           <motion.div className="unlock-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.section className="unlock-card" initial={{ scale: 0.7, rotate: -3 }} animate={{ scale: 1, rotate: 0 }}>
+              <MagicMicroEffect variant="star-trail" />
               <div className="unlock-generated-rune" aria-hidden="true" />
               <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>PAGE {String(coordinateNumber).padStart(2, "0")} · REVEALED</span><h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>{checkpoint.storyBeat && <blockquote className="unlock-story-beat">{checkpoint.storyBeat}</blockquote>}<p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "翻开二十九岁的第一章" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "寻找下一枚未知坐标" : "带着这一页返回飞行扫帚"}</button>
             </motion.section>
@@ -557,7 +561,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         )}
       </AnimatePresence>
 
-      {gmPinOpen && <div className="gm-backdrop"><form className="pin-card" onSubmit={submitPin}><span>CARTOGRAPHER ONLY</span><h2>输入制图人口令</h2><input autoFocus inputMode="numeric" maxLength={4} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}/>{pinError && <p>墨迹没有认出这个口令。</p>}<div><button type="button" onClick={() => setGmPinOpen(false)}>取消</button><button className="primary-button">进入</button></div></form></div>}
+      {gmPinOpen && <div className="gm-backdrop"><form className="pin-card" onSubmit={submitPin}><MagicMicroEffect variant="rune" /><span>CARTOGRAPHER ONLY</span><h2>输入制图人口令</h2><input autoFocus inputMode="numeric" maxLength={4} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}/>{pinError && <p>墨迹没有认出这个口令。</p>}<div><button type="button" onClick={() => setGmPinOpen(false)}>取消</button><button className="primary-button">进入</button></div></form></div>}
       {gmOpen && <GmPanel zone={zone} progress={progress} position={position} surveyMode={surveyMode} onSurveyMode={setSurveyMode} onClose={() => setGmOpen(false)} onForceArrive={forceArrive} onForcePass={forcePass} onPrevious={previousCheckpoint} onReset={resetAll} onMockPosition={() => { setMockPosition({ ...checkpoint.location, accuracy: 12, timestamp: Date.now() }); setGmOpen(false); }}/>} 
     </main>
   );
