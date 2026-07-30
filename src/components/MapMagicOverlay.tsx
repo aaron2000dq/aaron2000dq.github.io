@@ -184,7 +184,6 @@ export function MapMagicOverlay({
 }) {
   return (
     <div className="map-magic-overlay" data-gift={revealed ? giftType : "mystery"} aria-hidden="true">
-      <div className="map-reveal-veil" />
       <div className="map-arcane-fog map-arcane-fog-a" />
       <div className="map-arcane-fog map-arcane-fog-b" />
       <div className="map-candle-bloom" />

@@ -15,7 +15,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
-  await expect(page.locator(".intro-ink-route")).toBeVisible();
+  await expect(page.locator(".intro-map-sheet")).toHaveCount(0);
   await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v3.jpg");
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
@@ -56,7 +56,8 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
 
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-magic-overlay")).toBeVisible({ timeout: 7_000 });
-  await expect(page.locator(".map-reveal-veil")).toBeVisible();
+  await expect(page.locator(".map-reveal-veil")).toHaveCount(0);
+  await expect(page.locator(".map-illustration-loading")).toHaveCount(0);
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
   await expect(page.locator(".theme-ambient")).toHaveCount(1);
   await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "motion");
@@ -108,9 +109,8 @@ test("loads the self-hosted Chinese and English atlas type system", async ({ pag
 test("keeps the first-play delivery cinematic geometrically stable", async ({ page }) => {
   await page.goto("/?mode=fulltest&run=e2e-intro-compositor-stability");
   await expect(page.locator(".atlas-shell")).toHaveAttribute("data-intro-assets", "ready");
-  await expect(page.locator(".intro-map-sheet img")).toHaveJSProperty("complete", true);
-  await expect(page.locator(".intro-map-sheet")).toHaveCSS("clip-path", "none");
-  await expect(page.locator(".intro-map-sheet")).toHaveCSS("filter", "none");
+  await expect(page.locator(".intro-map-sheet")).toHaveCount(0);
+  await expect(page.locator(".intro-atlas-reveal")).toHaveCount(0);
   await expect(page.locator(".opening-letter")).toHaveCSS("filter", "none");
 
   const intro = page.locator(".intro-screen");
@@ -121,19 +121,38 @@ test("keeps the first-play delivery cinematic geometrically stable", async ({ pa
   const heights: number[] = [];
   const widths: number[] = [];
   const tops: number[] = [];
-  for (let index = 0; index < 28; index += 1) {
-    await page.waitForTimeout(100);
-    const box = await intro.boundingBox();
-    expect(box).not.toBeNull();
-    heights.push(box!.height);
-    widths.push(box!.width);
-    tops.push(box!.y);
+  for (let index = 0; index < 12; index += 1) {
+    await page.waitForTimeout(50);
+    const frame = await page.evaluate(() => {
+      const introElement = document.querySelector<HTMLElement>(".intro-screen");
+      const letter = document.querySelector<HTMLElement>(".opening-letter");
+      const map = document.querySelector<SVGImageElement>("image.illustrated-base-map");
+      const visible = (element: Element | null) => {
+        if (!element) return false;
+        const style = getComputedStyle(element);
+        const bounds = element.getBoundingClientRect();
+        return style.display !== "none" && Number(style.opacity) > .1 && bounds.width > 0 && bounds.height > 0;
+      };
+      const bounds = introElement?.getBoundingClientRect();
+      return {
+        hasVisibleContent: visible(letter) || visible(map),
+        introBounds: bounds ? { height: bounds.height, width: bounds.width, top: bounds.top } : null,
+      };
+    });
+    expect(frame.hasVisibleContent).toBe(true);
+    if (frame.introBounds) {
+      heights.push(frame.introBounds.height);
+      widths.push(frame.introBounds.width);
+      tops.push(frame.introBounds.top);
+    }
   }
 
+  expect(heights.length).toBeGreaterThan(3);
   expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(1);
   expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
   expect(Math.max(...tops) - Math.min(...tops)).toBeLessThan(1);
   await expect(page.locator(".map-stage")).toBeVisible({ timeout: 7_000 });
+  await expect(page.locator("image.illustrated-base-map")).toHaveCSS("opacity", "1");
 });
 
 test("keeps the magical interface usable with reduced motion", async ({ page }) => {
@@ -530,10 +549,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
       nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/?mode=fulltest&run=e2e-complete");
-  await expect(page.locator(".intro-map-sheet img")).toHaveAttribute(
-    "src",
-    "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png",
-  );
+  await expect(page.locator(".intro-map-sheet")).toHaveCount(0);
   await page.getByRole("button", { name: "开启地图" }).click();
 
   for (const [mystery, gift, asset, theme, particleAnimation] of [
@@ -557,6 +573,9 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   }
 
   await expect(page.locator(".quest-card h2")).toContainText("第三枚未知坐标");
+  await page.locator(".exploration-screen").evaluate((element) => {
+    element.setAttribute("data-e2e-map-instance", "keep");
+  });
   await expect(page.locator(".map-cartouche .map-subtitle")).toContainText("还藏着三枚坐标");
   await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "scent");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
@@ -566,6 +585,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "寻找下一枚未知坐标" }).click();
 
   await expect(page.locator(".quest-card h2")).toContainText("第四枚未知坐标");
+  await expect(page.locator(".exploration-screen")).toHaveAttribute("data-e2e-map-instance", "keep");
   await expect(page.locator(".map-cartouche .map-subtitle")).toContainText("还藏着两枚坐标");
   await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "sparkle");
   await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);

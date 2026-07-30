@@ -130,6 +130,9 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   }, [checkpoint.id, arrived]);
 
   useEffect(() => {
+    const mapAssets = storyZones
+      .map((storyZone) => storyZone.illustratedMapAsset)
+      .filter((asset): asset is string => Boolean(asset));
     const introAssets = [
       "/assets/magic/parchment-cinematic-v1.jpg",
       "/assets/magic/explorer-envelope-open-v3.png",
@@ -137,15 +140,15 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       "/assets/magic/owl-courier-sprite-v1.png",
       "/assets/magic/gilded-atlas-frame-v2.png",
       "/assets/magic/constellation-veins-v2.png",
-      storyZones[0].illustratedMapAsset ?? "/assets/maps/qianjiang-scent-v3.jpg",
+      ...mapAssets,
     ];
     Promise.all([
       loadProgress(storageNamespace, storyInitialProgress),
       getPhotos(storageNamespace),
     ]).then(async ([saved, savedPhotos]) => {
-      if (saved.phase === "intro") {
-        await Promise.all(introAssets.map((src) => decodeIntroImage(src)));
-      }
+      await Promise.all(
+        (saved.phase === "intro" ? introAssets : mapAssets).map((src) => decodeIntroImage(src)),
+      );
       const checkpointExists = storyZones.some((item) =>
         item.checkpoints.some((candidate) => candidate.id === saved.activeCheckpointId),
       );
@@ -370,7 +373,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
       () => setProgress((current) => ({ ...current, phase: "map" })),
-      reducedMotion ? 250 : 3650,
+      reducedMotion ? 80 : 420,
     );
   }
 
@@ -442,7 +445,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   return (
     <main className="atlas-shell" data-intro-assets="ready">
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
-      <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} awake={progress.phase !== "intro" || introOpening} />
+      <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} awake={progress.phase !== "intro"} />
       <button
         className={`compass-secret ${compassHolding ? "is-holding" : ""}`}
         aria-label="指南针"
@@ -456,32 +459,10 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
       </AnimatePresence>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="sync" initial={false}>
         {progress.phase === "intro" && (
-          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .32 }}>
+          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }}>
             <div className="intro-map-lines" />
-
-            <div className="intro-atlas-reveal" aria-hidden={!introOpening}>
-              <div className="intro-map-sheet">
-                <img src={storyZones[0].illustratedMapAsset ?? "/assets/maps/qianjiang-scent-v3.jpg"} alt="" />
-                <div className="intro-generated-ink-bloom" />
-                <div className="intro-map-crease vertical"/><div className="intro-map-crease horizontal"/>
-                <svg viewBox="0 0 800 500" preserveAspectRatio="none">
-                  <path className="intro-ink-route" d="M96 405 C160 370 182 315 252 306 S345 275 398 226 S482 180 535 144 S628 118 694 82"/>
-                  {[{ x: 252, y: 306 }, { x: 398, y: 226 }, { x: 535, y: 144 }, { x: 628, y: 118 }, { x: 694, y: 82 }].map((point, index) => (
-                    <g key={index} className={`intro-coordinate intro-coordinate-${index + 1}`} transform={`translate(${point.x} ${point.y})`}>
-                      <circle r="13"/><text y="4">{index + 1}</text>
-                    </g>
-                  ))}
-                </svg>
-              </div>
-              <div className="intro-opening-fog fog-a"/><div className="intro-opening-fog fog-b"/>
-              <div className="intro-opening-copy" role="status" aria-live="polite">
-                <span>FROM XXVIII TO XXIX</span>
-                <strong>世界上仅你可见的惊喜，被投入了麻瓜的世界中</strong>
-                <small>PAGE I · PAGE II · PAGE III · PAGE IV · PAGE V · EPILOGUE</small>
-              </div>
-            </div>
 
             <div className="sealed-letter opening-letter">
               <div className="envelope-prop" aria-hidden="true" />
@@ -512,7 +493,14 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         )}
 
         {progress.phase === "map" && (
-          <motion.section className="exploration-screen" key={`${zone.id}-${checkpoint.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.section
+            className="exploration-screen"
+            key="map"
+            initial={{ opacity: .92 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: .92 }}
+            transition={{ duration: .24, ease: "easeOut" }}
+          >
             <header className="topbar"><div><i className="topbar-sigil" aria-hidden="true"/><span>THE EXPLORATION ATLAS · XXVIII → XXIX</span><b>{displayedZoneTitle}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已揭晓" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
               <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={position?.heading ?? deviceHeading.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>

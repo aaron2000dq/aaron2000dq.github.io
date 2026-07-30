@@ -256,7 +256,6 @@ export function MapCanvas({
     ? zone.subtitle
     : concealedSubtitle;
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
-  const [loadedAsset, setLoadedAsset] = useState<string | null>(null);
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
   const hasIllustratedBase = Boolean(illustratedMap && failedAsset !== illustratedMap);
   const [marker, setMarker] = useState(zone.parkingMapPoint);
@@ -412,7 +411,6 @@ export function MapCanvas({
               width="804"
               height="504"
               preserveAspectRatio="none"
-              onLoad={() => setLoadedAsset(illustratedMap)}
               onError={() => setFailedAsset(illustratedMap)}
             />
           )}
@@ -497,12 +495,6 @@ export function MapCanvas({
         </svg>
         <MapMagicOverlay giftType={checkpoint.giftType} revealed={arrived} />
       </motion.div>
-      {illustratedMap && loadedAsset !== illustratedMap && failedAsset !== illustratedMap && (
-        <div className="map-illustration-loading" role="status">
-          <span className="ink-loader" />
-          <b>正在显影高清地图…</b>
-        </div>
-      )}
       {illustratedMap && failedAsset === illustratedMap && (
         <div className="map-illustration-fallback">高清底图暂未载入，已切换线稿模式</div>
       )}
