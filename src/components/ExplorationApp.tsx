@@ -374,7 +374,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
       () => setProgress((current) => ({ ...current, phase: "map" })),
-      reducedMotion ? 80 : 2700,
+      reducedMotion ? 80 : 4650,
     );
   }
 

@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 type MagicMicroEffectVariant = "vine" | "ripple" | "star-trail" | "rune" | "wave";
 
 type Props = {
@@ -6,6 +8,8 @@ type Props = {
 };
 
 export function MagicMicroEffect({ variant, className = "" }: Props) {
+  const vineMaskId = `vine-growth-${useId().replace(/:/g, "")}`;
+
   if (variant === "ripple") {
     return (
       <div className={`magic-micro-effect magic-micro-ripple ${className}`} aria-hidden="true">
@@ -73,7 +77,54 @@ export function MagicMicroEffect({ variant, className = "" }: Props) {
 
   return (
     <div className={`magic-micro-effect magic-micro-vine ${className}`} aria-hidden="true">
-      <i className="micro-vine-generated-art" />
+      <svg className="micro-vine-growth-art" viewBox="0 0 1686 933" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <mask id={vineMaskId} maskUnits="userSpaceOnUse" x="0" y="0" width="1686" height="933">
+            <rect width="1686" height="933" fill="black" />
+            <path
+              className="vine-reveal-path vine-reveal-up"
+              pathLength="1"
+              d="M150 785 C92 702 82 566 120 414 C158 276 272 174 423 145 C575 116 716 101 843 100"
+            />
+            <path
+              className="vine-reveal-path vine-reveal-right"
+              pathLength="1"
+              d="M150 785 C348 751 575 763 835 805 C1075 790 1328 755 1510 665 C1583 548 1592 410 1531 302 C1436 198 1288 151 1142 126 C1014 104 910 98 843 100"
+            />
+          </mask>
+          <filter id={`${vineMaskId}-glow`} x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <image
+          className="micro-vine-completed-art"
+          href="/assets/magic/vine-growth-frame-v1.png"
+          width="1686"
+          height="933"
+          preserveAspectRatio="xMidYMid meet"
+        />
+        <image
+          className="micro-vine-generated-art"
+          href="/assets/magic/vine-growth-frame-v1.png"
+          width="1686"
+          height="933"
+          preserveAspectRatio="xMidYMid meet"
+          mask={`url(#${vineMaskId})`}
+        />
+        <path
+          className="vine-growth-trace vine-growth-trace-up"
+          pathLength="1"
+          filter={`url(#${vineMaskId}-glow)`}
+          d="M150 785 C92 702 82 566 120 414 C158 276 272 174 423 145 C575 116 716 101 843 100"
+        />
+        <path
+          className="vine-growth-trace vine-growth-trace-right"
+          pathLength="1"
+          filter={`url(#${vineMaskId}-glow)`}
+          d="M150 785 C348 751 575 763 835 805 C1075 790 1328 755 1510 665 C1583 548 1592 410 1531 302 C1436 198 1288 151 1142 126 C1014 104 910 98 843 100"
+        />
+      </svg>
       <i className="micro-vine-seed-burst"><b /><b /><b /></i>
       <i className="micro-vine-awakening-glow" />
     </div>
