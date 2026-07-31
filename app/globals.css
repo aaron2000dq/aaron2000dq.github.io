@@ -905,51 +905,76 @@ h1, h2, h3, blockquote, .display-type {
 .intro-screen.is-opening .intro-wax-trigger span { animation: waxSealRelease .38s cubic-bezier(.18,.82,.24,1) forwards; }
 .intro-screen.is-opening .intro-wax-trigger b { opacity: 0; transform: translateY(8px); }
 
-/* Quiet card-scale magic: one restrained living detail per surface. */
-.magic-micro-effect { position: absolute; z-index: 3; display: block; pointer-events: none; color: #70482e; opacity: .72; overflow: visible; contain: layout paint; }
+/* Living card magic: visibly animated, finely drawn, and never interactive. */
+.magic-micro-effect { position: absolute; z-index: 3; display: block; pointer-events: none; color: #674429; opacity: .9; overflow: visible; contain: layout paint; }
 .magic-micro-effect svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
-.magic-micro-vine { width: 46%; height: 38px; }
-.opening-letter > .magic-micro-vine { z-index: 3; left: 27%; top: 13.3%; color: #765035; }
-.nearby-letter > .magic-micro-vine { left: 7%; top: 8px; width: 46%; color: #795138; }
-.micro-vine-stem { fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-dasharray: 360; stroke-dashoffset: 360; filter: drop-shadow(0 0 2px #d8ad63); animation: microVineGrow 8.8s cubic-bezier(.22,.68,.28,1) infinite; }
-.micro-vine-leaf { fill: currentColor; opacity: 0; transform-box: fill-box; transform-origin: center bottom; animation: microLeafUnfurl 8.8s ease-in-out infinite; }
-.micro-vine-leaf.leaf-two { animation-delay: .16s; }
-.micro-vine-leaf.leaf-three { animation-delay: .32s; }
-.micro-vine-leaf.leaf-four { animation-delay: .48s; }
-.micro-vine-bloom { fill: #9b673d; opacity: 0; filter: drop-shadow(0 0 4px #e4b762); animation: microBloomBreathe 8.8s ease-in-out infinite; }
+.magic-micro-vine { width: 59%; height: 58px; }
+.opening-letter > .magic-micro-vine { z-index: 3; left: 20.5%; top: 10.8%; color: #536238; filter: drop-shadow(0 1px 0 #f1d595) drop-shadow(0 0 5px #c39a4b55); }
+.nearby-letter > .magic-micro-vine { left: 5%; top: 4px; width: 62%; color: #58633a; }
+.micro-vine-ghost { fill: none; stroke: #5b4229; stroke-width: 2; stroke-linecap: round; opacity: .24; }
+.micro-vine-stem-glow { fill: none; stroke: #e4c16f; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 420; opacity: .1; filter: blur(4px); animation: microVineGlow 7.6s ease-in-out infinite; }
+.micro-vine-stem { fill: none; stroke: currentColor; stroke-width: 2.15; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: 420; filter: drop-shadow(0 0 2px #e0b75f); animation: microVineGrow 7.6s cubic-bezier(.18,.74,.24,1) infinite; }
+.micro-vine-tendril { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-dasharray: 70; stroke-dashoffset: 70; opacity: .72; animation: microTendrilCurl 7.6s ease-in-out infinite; }
+.micro-vine-tendril.tendril-two { animation-delay: .34s; }
+.micro-vine-leaf { fill: currentColor; stroke: #efe0aa; stroke-width: .35; opacity: .2; transform-box: fill-box; transform-origin: center bottom; animation: microLeafUnfurl 7.6s ease-in-out infinite; }
+.micro-vine-leaf.leaf-two { animation-delay: .14s; }
+.micro-vine-leaf.leaf-three { animation-delay: .28s; }
+.micro-vine-leaf.leaf-four { animation-delay: .42s; }
+.micro-vine-vein { fill: none; stroke: #e8d59b; stroke-width: .7; stroke-linecap: round; opacity: .18; animation: microLeafVein 7.6s ease-in-out infinite; }
+.micro-vine-vein.vein-two { animation-delay: .14s; }
+.micro-vine-vein.vein-three { animation-delay: .28s; }
+.micro-vine-vein.vein-four { animation-delay: .42s; }
+.micro-vine-blossom { fill: #9a6540; opacity: .3; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 4px #e0ad53); animation: microBlossomOpen 7.6s ease-in-out infinite; }
+.micro-vine-blossom.blossom-two { animation-delay: .42s; }
+.micro-vine-blossom .blossom-heart { fill: #e3b65e; }
 
-.magic-micro-ripple { right: 12px; bottom: 10px; width: 64px; height: 64px; opacity: .54; }
-.quest-card > .magic-micro-ripple { top: 70px; bottom: auto; }
-.micro-ripple-core { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px #ddad58; transform: translate(-50%, -50%); animation: microRippleCore 5.6s ease-in-out infinite; }
-.micro-ripple-ring { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; border: 1px solid currentColor; border-radius: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.35); animation: microWaterRipple 5.6s cubic-bezier(.2,.58,.3,1) infinite; }
-.micro-ripple-ring.ring-two { animation-delay: .48s; }
-.micro-ripple-ring.ring-three { animation-delay: .96s; }
+.magic-micro-ripple { right: 8px; top: 58px; bottom: auto; width: 92px; height: 92px; opacity: .76; color: #745036; }
+.micro-ripple-halo { position: absolute; inset: 17%; border-radius: 50%; background: radial-gradient(circle, #e9bd6752, #a5713421 42%, transparent 69%); filter: blur(4px); animation: microRippleHalo 4.8s ease-in-out infinite; }
+.micro-ripple-core { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: #865936; box-shadow: 0 0 4px #f2d28d, 0 0 13px #d49b41; transform: translate(-50%, -50%); animation: microRippleCore 4.8s ease-in-out infinite; }
+.micro-ripple-ring { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; border: 1.4px solid currentColor; border-radius: 50%; opacity: 0; box-shadow: 0 0 4px #d9a9534a, inset 0 0 4px #d9a9532e; transform: translate(-50%, -50%) scale(.35); animation: microWaterRipple 4.8s cubic-bezier(.18,.62,.28,1) infinite; }
+.micro-ripple-ring.ring-two { animation-delay: .38s; }
+.micro-ripple-ring.ring-three { animation-delay: .76s; }
+.micro-ripple-ring.ring-four { animation-delay: 1.14s; }
+.micro-ripple-drop { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #8b5d38; box-shadow: 0 0 5px #e4b45b; opacity: 0; animation: microRippleDrop 4.8s ease-out infinite; }
+.micro-ripple-drop.drop-one { left: 12%; top: 35%; --drop-x: -9px; --drop-y: -8px; }
+.micro-ripple-drop.drop-two { right: 8%; top: 57%; --drop-x: 10px; --drop-y: 4px; animation-delay: .3s; }
+.micro-ripple-drop.drop-three { left: 36%; bottom: 5%; --drop-x: -2px; --drop-y: 10px; animation-delay: .6s; }
 
-.magic-micro-wave { left: 50%; bottom: 8px; width: 44%; height: 28px; color: #d4aa62; opacity: .42; transform: translateX(-50%); }
+.magic-micro-wave { left: 50%; bottom: 7px; width: 66%; height: 34px; color: #d6a955; opacity: .78; transform: translateX(-50%); filter: drop-shadow(0 0 4px #d8a64d4a); }
 .photo-panel > .magic-micro-effect { position: absolute; z-index: 2; }
-.micro-wave-line { fill: none; stroke: currentColor; stroke-width: 1.05; stroke-linecap: round; stroke-dasharray: 280; stroke-dashoffset: 280; animation: microWaveTravel 7.2s ease-in-out infinite; }
-.micro-wave-line.wave-two { opacity: .46; animation-delay: .34s; }
-.micro-wave-glint { fill: #f2d38d; opacity: 0; filter: drop-shadow(0 0 4px #f0bd59); animation: microWaveGlint 7.2s ease-in-out infinite; }
+.micro-wave-line { fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-dasharray: 300; stroke-dashoffset: 300; animation: microWaveTravel 6.2s ease-in-out infinite; }
+.micro-wave-line.wave-ghost { stroke: #d7ae62; stroke-width: .7; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .28; animation: microWaveGhost 4.2s ease-in-out infinite; }
+.micro-wave-line.wave-two { opacity: .58; animation-delay: .25s; }
+.micro-wave-line.wave-three { opacity: .42; animation-delay: .5s; }
+.micro-wave-glint { fill: #f8dfa0; opacity: 0; filter: drop-shadow(0 0 5px #f1bd55); animation: microWaveGlint 6.2s ease-in-out infinite; }
+.micro-wave-glint.glint-two { animation-delay: .36s; }
+.micro-wave-glint.glint-three { animation-delay: .72s; }
 
-.magic-micro-star-trail { left: 11%; right: 11%; top: 12px; height: 34px; color: #70472d; opacity: .56; }
-.micro-star-path, .micro-star-echo { fill: none; stroke: currentColor; stroke-linecap: round; }
-.micro-star-path { stroke-width: 1.2; stroke-dasharray: 330; stroke-dashoffset: 330; animation: microStarTrace 7.8s ease-in-out infinite; }
-.micro-star-echo { stroke-width: 4; opacity: 0; filter: blur(4px); animation: microStarEcho 7.8s ease-in-out infinite; }
-.micro-star-comet { fill: #946039; opacity: 0; filter: drop-shadow(0 0 5px #e6b866); animation: microCometPulse 7.8s ease-in-out infinite; }
-.micro-star-spark { fill: #865633; opacity: 0; transform-box: fill-box; transform-origin: center; animation: microStarSpark 7.8s ease-in-out infinite; }
-.micro-star-spark.spark-two { animation-delay: .38s; }
+.magic-micro-star-trail { left: 7%; right: 7%; top: 10px; height: 40px; color: #714326; opacity: .82; filter: drop-shadow(0 0 4px #d8a34d61); }
+.micro-star-baseline, .micro-star-path, .micro-star-echo { fill: none; stroke-linecap: round; }
+.micro-star-baseline { stroke: #74452a; stroke-width: .9; opacity: .42; }
+.micro-star-path { stroke: #c48836; stroke-width: 1.75; stroke-dasharray: 330; stroke-dashoffset: 330; filter: drop-shadow(0 0 2px #f0c779) drop-shadow(0 0 5px #c7842f); animation: microStarTrace 6.8s ease-in-out infinite; }
+.micro-star-echo { stroke: #e6b65c; stroke-width: 5; opacity: 0; filter: blur(4px); animation: microStarEcho 6.8s ease-in-out infinite; }
+.micro-star-comet { fill: #f1c76f; opacity: .9; filter: drop-shadow(0 0 3px #f5d78f) drop-shadow(0 0 8px #d59032); }
+.micro-star-node { fill: #d6a049; stroke: #f6dfa2; stroke-width: .65; filter: drop-shadow(0 0 3px #e9b65c); animation: microStarNode 3.8s ease-in-out infinite; }
+.micro-star-node.node-two { animation-delay: .5s; }
+.micro-star-node.node-three { animation-delay: 1s; }
+.micro-star-spark { fill: #c98a38; opacity: .38; filter: drop-shadow(0 0 3px #efc875); transform-box: fill-box; transform-origin: center; animation: microStarSpark 6.8s ease-in-out infinite; }
+.micro-star-spark.spark-two { animation-delay: .35s; }
 
-.magic-micro-rune { right: 14px; top: 12px; width: 52px; height: 52px; opacity: .42; color: #7a5031; }
+.magic-micro-rune { right: 12px; top: 10px; width: 68px; height: 68px; opacity: .7; color: #75482b; filter: drop-shadow(0 0 5px #d5a24f4f); }
 .gm-panel, .pin-card { position: relative; isolation: isolate; }
-.gm-panel > .magic-micro-rune { color: #d3a85f; opacity: .46; }
+.gm-panel > .magic-micro-rune { color: #d8aa5a; opacity: .78; }
 .score-card > .magic-micro-rune { left: 12px; right: auto; top: 12px; color: #71472d; }
-.micro-rune-ring { position: absolute; inset: 5px; border: 1px solid currentColor; border-radius: 50%; box-shadow: inset 0 0 8px #d8a8553d, 0 0 8px #d8a85533; animation: microRuneTurn 13s linear infinite; }
+.micro-rune-ring { position: absolute; inset: 11px; border: 1.4px solid currentColor; border-radius: 50%; box-shadow: inset 0 0 10px #d8a8554d, 0 0 10px #d8a85542; animation: microRuneTurn 10s linear infinite; }
+.micro-rune-ring-outer { inset: 3px; border-style: double; border-width: 3px; opacity: .55; animation-direction: reverse; animation-duration: 17s; }
 .micro-rune-ring::before, .micro-rune-ring::after { content: ""; position: absolute; left: 50%; top: -4px; width: 4px; height: 4px; border: 1px solid currentColor; transform: translateX(-50%) rotate(45deg); }
 .micro-rune-ring::after { top: auto; bottom: -4px; }
-.micro-rune-star { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; font-style: normal; text-shadow: 0 0 7px #e2b55f; animation: microRuneBreathe 4.8s ease-in-out infinite; }
-.micro-rune-ray { position: absolute; left: 50%; top: 50%; width: 1px; height: 78%; background: linear-gradient(transparent, currentColor, transparent); transform: translate(-50%, -50%) rotate(45deg); opacity: .36; }
+.micro-rune-star { position: absolute; inset: 0; display: grid; place-items: center; font-size: 16px; font-style: normal; color: #99633a; text-shadow: 0 0 4px #f3d897, 0 0 10px #d39331; animation: microRuneBreathe 4.2s ease-in-out infinite; }
+.micro-rune-ray { position: absolute; left: 50%; top: 50%; width: 1px; height: 84%; background: linear-gradient(transparent, currentColor, transparent); transform: translate(-50%, -50%) rotate(45deg); opacity: .52; }
 .micro-rune-ray.ray-two { transform: translate(-50%, -50%) rotate(-45deg); }
+.micro-rune-glyphs { position: absolute; left: 50%; top: 50%; width: 112%; color: currentColor; font: 8px/1 var(--font-inscription); font-style: normal; letter-spacing: .16em; text-align: center; transform: translate(-50%, -50%) rotate(-28deg); opacity: .58; animation: microRuneGlyphDrift 12s linear infinite reverse; }
 
 .owl-flight-shadow,
 .owl-wind-lanes,
@@ -1149,70 +1174,102 @@ h1, h2, h3, blockquote, .display-type {
 @keyframes cannonKick { 0% { opacity: 0; scale: .72; } 22% { opacity: 1; scale: 1.08; } 100% { opacity: 1; scale: 1; } }
 @keyframes cannonFlare { 0% { opacity: 0; transform: scale(.2); } 28% { opacity: 1; transform: scale(2.2); } 100% { opacity: 0; transform: scale(5.5); } }
 @keyframes microVineGrow {
-  0%, 9% { opacity: 0; stroke-dashoffset: 360; }
-  17% { opacity: .28; }
-  42%, 68% { opacity: .72; stroke-dashoffset: 0; }
-  90%, 100% { opacity: 0; stroke-dashoffset: 0; }
+  0%, 5% { opacity: .16; stroke-dashoffset: 420; }
+  16% { opacity: .72; }
+  38%, 82% { opacity: 1; stroke-dashoffset: 0; }
+  94%, 100% { opacity: .52; stroke-dashoffset: 0; }
+}
+@keyframes microVineGlow {
+  0%, 8% { opacity: .05; stroke-dashoffset: 420; }
+  34% { opacity: .42; stroke-dashoffset: 0; }
+  56% { opacity: .16; }
+  74% { opacity: .4; }
+  100% { opacity: .08; stroke-dashoffset: -100; }
+}
+@keyframes microTendrilCurl {
+  0%, 16% { opacity: .12; stroke-dashoffset: 70; }
+  36%, 82% { opacity: .82; stroke-dashoffset: 0; }
+  100% { opacity: .42; stroke-dashoffset: 0; }
 }
 @keyframes microLeafUnfurl {
-  0%, 24% { opacity: 0; transform: scale(.15) rotate(-22deg); }
-  39%, 69% { opacity: .64; transform: scale(1) rotate(0); }
-  89%, 100% { opacity: 0; transform: scale(.82) rotate(5deg); }
+  0%, 13% { opacity: .18; transform: scale(.28) rotate(-26deg); }
+  31%, 77% { opacity: .88; transform: scale(1) rotate(0); }
+  88% { opacity: .68; transform: scale(.94) rotate(4deg); }
+  100% { opacity: .38; transform: scale(.78) rotate(-4deg); }
 }
-@keyframes microBloomBreathe {
-  0%, 35% { opacity: 0; transform: scale(.25); }
-  47% { opacity: .9; transform: scale(1.25); }
-  61%, 70% { opacity: .56; transform: scale(1); }
-  91%, 100% { opacity: 0; transform: scale(.45); }
+@keyframes microLeafVein {
+  0%, 16% { opacity: .08; }
+  36%, 82% { opacity: .7; }
+  100% { opacity: .26; }
+}
+@keyframes microBlossomOpen {
+  0%, 23% { opacity: .22; transform: scale(.32) rotate(-20deg); }
+  43% { opacity: 1; transform: scale(1.22) rotate(8deg); }
+  57%, 82% { opacity: .86; transform: scale(1) rotate(0); }
+  100% { opacity: .48; transform: scale(.76) rotate(16deg); }
+}
+@keyframes microRippleHalo {
+  0%, 100% { opacity: .28; transform: scale(.72); }
+  48% { opacity: .8; transform: scale(1.14); }
 }
 @keyframes microRippleCore {
-  0%, 16%, 82%, 100% { opacity: .24; transform: translate(-50%, -50%) scale(.72); }
-  34%, 58% { opacity: .78; transform: translate(-50%, -50%) scale(1.12); }
+  0%, 100% { opacity: .48; transform: translate(-50%, -50%) scale(.78); }
+  44% { opacity: 1; transform: translate(-50%, -50%) scale(1.28); }
 }
 @keyframes microWaterRipple {
-  0%, 13% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
-  22% { opacity: .56; }
-  63% { opacity: .08; transform: translate(-50%, -50%) scale(3.55); }
-  64%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(3.55); }
+  0%, 8% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
+  18% { opacity: .82; }
+  69% { opacity: .08; transform: translate(-50%, -50%) scale(4.25); }
+  70%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(4.25); }
+}
+@keyframes microRippleDrop {
+  0%, 27% { opacity: 0; transform: translate3d(0,0,0) scale(.4); }
+  38% { opacity: .9; }
+  64% { opacity: .18; transform: translate3d(var(--drop-x),var(--drop-y),0) scale(1); }
+  65%, 100% { opacity: 0; transform: translate3d(var(--drop-x),var(--drop-y),0) scale(.6); }
 }
 @keyframes microWaveTravel {
-  0%, 11% { opacity: 0; stroke-dashoffset: 280; }
-  22% { opacity: .55; }
-  52%, 72% { opacity: .78; stroke-dashoffset: 0; }
-  91%, 100% { opacity: 0; stroke-dashoffset: -80; }
+  0%, 6% { opacity: .15; stroke-dashoffset: 300; }
+  21% { opacity: .9; }
+  50%, 78% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: .28; stroke-dashoffset: -140; }
+}
+@keyframes microWaveGhost {
+  0%, 100% { opacity: .18; transform: translateY(1px); }
+  50% { opacity: .54; transform: translateY(-1px); }
 }
 @keyframes microWaveGlint {
-  0%, 34% { opacity: 0; transform: scale(.2); }
-  46%, 61% { opacity: .9; transform: scale(1.2); }
-  80%, 100% { opacity: 0; transform: scale(.3); }
+  0%, 25% { opacity: .12; transform: scale(.35); }
+  43%, 67% { opacity: 1; transform: scale(1.55); }
+  86%, 100% { opacity: .18; transform: scale(.5); }
 }
 @keyframes microStarTrace {
-  0%, 12% { opacity: 0; stroke-dashoffset: 330; }
-  23% { opacity: .4; }
-  55%, 72% { opacity: .82; stroke-dashoffset: 0; }
-  92%, 100% { opacity: 0; stroke-dashoffset: -70; }
+  0%, 7% { opacity: .18; stroke-dashoffset: 330; }
+  19% { opacity: .84; }
+  52%, 82% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: .35; stroke-dashoffset: -90; }
 }
 @keyframes microStarEcho {
-  0%, 31% { opacity: 0; }
-  53% { opacity: .24; }
-  78%, 100% { opacity: 0; }
+  0%, 23% { opacity: .04; }
+  49% { opacity: .42; }
+  82%, 100% { opacity: .08; }
 }
-@keyframes microCometPulse {
-  0%, 12% { opacity: 0; transform: scale(.25); }
-  24%, 42% { opacity: .9; transform: scale(1.3); }
-  70%, 100% { opacity: 0; transform: scale(.4); }
+@keyframes microStarNode {
+  0%, 100% { opacity: .36; transform: scale(.65); }
+  50% { opacity: 1; transform: scale(1.45); }
 }
 @keyframes microStarSpark {
-  0%, 41% { opacity: 0; transform: scale(.2) rotate(0); }
-  52% { opacity: .9; transform: scale(1.22) rotate(40deg); }
-  71% { opacity: .4; transform: scale(.82) rotate(90deg); }
-  90%, 100% { opacity: 0; transform: scale(.2) rotate(130deg); }
+  0%, 31% { opacity: .24; transform: scale(.45) rotate(0); }
+  49% { opacity: 1; transform: scale(1.45) rotate(42deg); }
+  73% { opacity: .52; transform: scale(.92) rotate(94deg); }
+  100% { opacity: .24; transform: scale(.45) rotate(142deg); }
 }
 @keyframes microRuneTurn { to { transform: rotate(360deg); } }
 @keyframes microRuneBreathe {
-  0%, 100% { opacity: .28; transform: scale(.72) rotate(-12deg); }
-  50% { opacity: .95; transform: scale(1.12) rotate(12deg); }
+  0%, 100% { opacity: .46; transform: scale(.78) rotate(-14deg); }
+  50% { opacity: 1; transform: scale(1.18) rotate(14deg); }
 }
+@keyframes microRuneGlyphDrift { to { transform: translate(-50%, -50%) rotate(332deg); } }
 
 @media (orientation: portrait) and (max-width: 900px) {
   .atlas-shell > :not(.rotate-notice) { display: none !important; }
