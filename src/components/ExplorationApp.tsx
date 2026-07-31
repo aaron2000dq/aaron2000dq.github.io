@@ -374,7 +374,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
       () => setProgress((current) => ({ ...current, phase: "map" })),
-      reducedMotion ? 80 : 420,
+      reducedMotion ? 80 : 2700,
     );
   }
 
@@ -467,7 +467,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
             <div className="sealed-letter opening-letter">
               <div className="envelope-prop" aria-hidden="true" />
-              <MagicMicroEffect variant="vine" />
+              <MagicMicroEffect variant="vine" className={introOpening ? "is-active" : ""} />
               <div className="envelope-letter-content">
                 <div className="eyebrow">PRIVATE DELIVERY · TO THE EXPLORER</div>
                 <h1>Exploration <em>Atlas</em></h1>

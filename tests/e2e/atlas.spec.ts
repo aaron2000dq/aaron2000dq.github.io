@@ -46,10 +46,14 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".courier-owl")).toHaveCount(1);
   await expect(page.locator(".envelope-prop")).toBeVisible();
   await expect(page.locator(".intro-wax-trigger")).toBeVisible();
-  await expect(page.locator(".opening-letter > .magic-micro-vine")).toBeVisible();
+  const openingVine = page.locator(".opening-letter > .magic-micro-vine");
+  await expect(openingVine).not.toHaveClass(/is-active/);
+  await expect(page.locator(".micro-vine-generated-art")).toHaveCSS("opacity", "0");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(openingVine).toHaveClass(/is-active/);
   expect(
-    await page.locator(".micro-vine-stem").evaluate((element) => getComputedStyle(element).animationName),
-  ).toBe("microVineGrow");
+    await page.locator(".micro-vine-generated-art").evaluate((element) => getComputedStyle(element).animationName),
+  ).toContain("generatedVineGrow");
   await expect(page.locator(".owl-flight-shadow")).toHaveCount(1);
   await expect(page.locator(".owl-wind-lanes i")).toHaveCount(4);
   await expect(page.locator(".owl-feather-burst i")).toHaveCount(6);
@@ -58,7 +62,6 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".atlas-gilded-frame")).toBeVisible();
   await expect(page.locator(".atlas-constellation-veil")).toHaveCount(2);
 
-  await page.getByRole("button", { name: "开启地图" }).click();
   await expect(page.locator(".map-magic-overlay")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator(".map-reveal-veil")).toHaveCount(0);
   await expect(page.locator(".map-illustration-loading")).toHaveCount(0);

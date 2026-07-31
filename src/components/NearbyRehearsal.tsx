@@ -110,7 +110,7 @@ export function NearbyRehearsal() {
         <section className="intro-screen">
           <div className="intro-map-lines" />
           <div className="sealed-letter nearby-letter">
-            <MagicMicroEffect variant="vine" />
+            <MagicMicroEffect variant="vine" className="is-active" />
             <span className="eyebrow">FIXED REHEARSAL ROUTE</span>
             <h1>Nearby<em>固定路线彩排</em></h1>
             <p>四枚坐标集中在同一栋建筑周边：富力中心北区东门、南门、西门、北门。</p>

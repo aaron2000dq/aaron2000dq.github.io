@@ -73,27 +73,9 @@ export function MagicMicroEffect({ variant, className = "" }: Props) {
 
   return (
     <div className={`magic-micro-effect magic-micro-vine ${className}`} aria-hidden="true">
-      <svg viewBox="0 0 320 62" preserveAspectRatio="none">
-        <path className="micro-vine-ghost" d="M4 44 C36 6 67 53 102 29 S164 8 201 33 S269 53 316 13" />
-        <path className="micro-vine-stem-glow" d="M4 44 C36 6 67 53 102 29 S164 8 201 33 S269 53 316 13" />
-        <path className="micro-vine-stem" d="M4 44 C36 6 67 53 102 29 S164 8 201 33 S269 53 316 13" />
-        <path className="micro-vine-tendril tendril-one" d="M102 29 C86 17 81 4 94 2 C107 0 111 15 102 29" />
-        <path className="micro-vine-tendril tendril-two" d="M201 33 C218 17 222 4 209 2 C197 1 193 17 201 33" />
-        <path className="micro-vine-leaf leaf-one" d="M61 35 C50 25 52 18 65 20 C71 27 68 33 61 35Z" />
-        <path className="micro-vine-leaf leaf-two" d="M115 24 C116 13 124 9 132 16 C130 24 123 27 115 24Z" />
-        <path className="micro-vine-leaf leaf-three" d="M201 33 C191 23 193 16 205 18 C211 25 208 31 201 33Z" />
-        <path className="micro-vine-leaf leaf-four" d="M268 40 C269 29 277 25 286 32 C283 40 276 43 268 40Z" />
-        <path className="micro-vine-vein vein-one" d="M61 35 64 21" />
-        <path className="micro-vine-vein vein-two" d="M115 24 130 16" />
-        <path className="micro-vine-vein vein-three" d="M201 33 204 19" />
-        <path className="micro-vine-vein vein-four" d="M268 40 284 32" />
-        <g className="micro-vine-blossom blossom-one" transform="translate(94 11)">
-          <circle cx="0" cy="-4" r="2.7" /><circle cx="4" cy="0" r="2.7" /><circle cx="0" cy="4" r="2.7" /><circle cx="-4" cy="0" r="2.7" /><circle className="blossom-heart" r="1.9" />
-        </g>
-        <g className="micro-vine-blossom blossom-two" transform="translate(307 15)">
-          <circle cx="0" cy="-4" r="2.7" /><circle cx="4" cy="0" r="2.7" /><circle cx="0" cy="4" r="2.7" /><circle cx="-4" cy="0" r="2.7" /><circle className="blossom-heart" r="1.9" />
-        </g>
-      </svg>
+      <i className="micro-vine-generated-art" />
+      <i className="micro-vine-seed-burst"><b /><b /><b /></i>
+      <i className="micro-vine-awakening-glow" />
     </div>
   );
 }

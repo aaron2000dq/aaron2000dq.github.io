@@ -909,25 +909,21 @@ h1, h2, h3, blockquote, .display-type {
 .magic-micro-effect { position: absolute; z-index: 3; display: block; pointer-events: none; color: #674429; opacity: .9; overflow: visible; contain: layout paint; }
 .magic-micro-effect svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
-.magic-micro-vine { width: 59%; height: 58px; }
-.opening-letter > .magic-micro-vine { z-index: 3; left: 20.5%; top: 10.8%; color: #536238; filter: drop-shadow(0 1px 0 #f1d595) drop-shadow(0 0 5px #c39a4b55); }
-.nearby-letter > .magic-micro-vine { left: 5%; top: 4px; width: 62%; color: #58633a; }
-.micro-vine-ghost { fill: none; stroke: #5b4229; stroke-width: 2; stroke-linecap: round; opacity: .24; }
-.micro-vine-stem-glow { fill: none; stroke: #e4c16f; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 420; opacity: .1; filter: blur(4px); animation: microVineGlow 7.6s ease-in-out infinite; }
-.micro-vine-stem { fill: none; stroke: currentColor; stroke-width: 2.15; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: 420; filter: drop-shadow(0 0 2px #e0b75f); animation: microVineGrow 7.6s cubic-bezier(.18,.74,.24,1) infinite; }
-.micro-vine-tendril { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-dasharray: 70; stroke-dashoffset: 70; opacity: .72; animation: microTendrilCurl 7.6s ease-in-out infinite; }
-.micro-vine-tendril.tendril-two { animation-delay: .34s; }
-.micro-vine-leaf { fill: currentColor; stroke: #efe0aa; stroke-width: .35; opacity: .2; transform-box: fill-box; transform-origin: center bottom; animation: microLeafUnfurl 7.6s ease-in-out infinite; }
-.micro-vine-leaf.leaf-two { animation-delay: .14s; }
-.micro-vine-leaf.leaf-three { animation-delay: .28s; }
-.micro-vine-leaf.leaf-four { animation-delay: .42s; }
-.micro-vine-vein { fill: none; stroke: #e8d59b; stroke-width: .7; stroke-linecap: round; opacity: .18; animation: microLeafVein 7.6s ease-in-out infinite; }
-.micro-vine-vein.vein-two { animation-delay: .14s; }
-.micro-vine-vein.vein-three { animation-delay: .28s; }
-.micro-vine-vein.vein-four { animation-delay: .42s; }
-.micro-vine-blossom { fill: #9a6540; opacity: .3; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 4px #e0ad53); animation: microBlossomOpen 7.6s ease-in-out infinite; }
-.micro-vine-blossom.blossom-two { animation-delay: .42s; }
-.micro-vine-blossom .blossom-heart { fill: #e3b65e; }
+.magic-micro-vine { width: 72%; height: 62%; opacity: 0; color: #536238; overflow: visible; }
+.opening-letter > .magic-micro-vine { z-index: 5; left: 14%; top: 7.5%; filter: drop-shadow(0 1px 0 #f1d595) drop-shadow(0 0 5px #c39a4b55); }
+.nearby-letter > .magic-micro-vine { left: 14%; top: 5%; width: 72%; height: 67%; color: #58633a; }
+.magic-micro-vine.is-active { opacity: 1; }
+.micro-vine-generated-art { position: absolute; z-index: 2; inset: 0; display: block; opacity: 0; clip-path: circle(0 at 50% 96%); background: url('/assets/magic/vine-growth-frame-v1.png') center/contain no-repeat; filter: sepia(.08) saturate(.9) drop-shadow(0 2px 1px #34201270) drop-shadow(0 0 7px #c89a4554); transform: translateZ(0) scale(.88); transform-origin: 50% 96%; will-change: clip-path, opacity, transform, filter; }
+.micro-vine-awakening-glow { position: absolute; z-index: 1; inset: 2% 4% -1%; display: block; opacity: 0; border-radius: 48%; background: radial-gradient(ellipse at 50% 93%, #efc971bf 0 2%, #d6a44870 7%, transparent 23%), radial-gradient(ellipse at 50% 40%, transparent 36%, #d8ad5a35 68%, transparent 81%); filter: blur(7px); transform: scale(.72); }
+.micro-vine-seed-burst { position: absolute; z-index: 4; left: 50%; top: 91%; width: 22px; height: 22px; display: block; opacity: 0; border-radius: 50%; background: radial-gradient(circle, #fff1b8 0 7%, #e0af4f 18%, #99652d 36%, transparent 67%); box-shadow: 0 0 8px #f0cd7b, 0 0 26px #c18a36, 0 0 54px #9c642d; transform: translate(-50%, -50%) scale(.2); }
+.micro-vine-seed-burst b { position: absolute; left: 50%; top: 50%; width: 2px; height: 60px; border-radius: 50%; background: linear-gradient(transparent, #f1d58da8, transparent); transform-origin: 50% 0; opacity: 0; }
+.micro-vine-seed-burst b:nth-child(1) { transform: rotate(18deg); }
+.micro-vine-seed-burst b:nth-child(2) { transform: rotate(78deg); }
+.micro-vine-seed-burst b:nth-child(3) { transform: rotate(138deg); }
+.magic-micro-vine.is-active .micro-vine-generated-art { animation: generatedVineGrow 2.14s cubic-bezier(.18,.68,.18,1) .2s both; }
+.magic-micro-vine.is-active .micro-vine-awakening-glow { animation: generatedVineAwakening 2.35s ease-out .12s both; }
+.magic-micro-vine.is-active .micro-vine-seed-burst { animation: vineSeedBurst 1.05s cubic-bezier(.16,.75,.18,1) .06s both; }
+.magic-micro-vine.is-active .micro-vine-seed-burst b { animation: vineSeedRay .92s ease-out .12s both; }
 
 .magic-micro-ripple { right: 8px; top: 58px; bottom: auto; width: 92px; height: 92px; opacity: .76; color: #745036; }
 .micro-ripple-halo { position: absolute; inset: 17%; border-radius: 50%; background: radial-gradient(circle, #e9bd6752, #a5713421 42%, transparent 69%); filter: blur(4px); animation: microRippleHalo 4.8s ease-in-out infinite; }
@@ -1173,40 +1169,29 @@ h1, h2, h3, blockquote, .display-type {
 @keyframes confettiFlight { 0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0) scale(.55); } 8% { opacity: 1; } 48% { opacity: 1; transform: translate3d(var(--confetti-apex-x), var(--confetti-apex-y), 0) rotate(var(--confetti-apex-rotate)) scale(1); } 78% { opacity: 1; } 100% { opacity: 0; transform: translate3d(var(--confetti-end-x), var(--confetti-end-y), 0) rotate(var(--confetti-rotate)) scale(.82); } }
 @keyframes cannonKick { 0% { opacity: 0; scale: .72; } 22% { opacity: 1; scale: 1.08; } 100% { opacity: 1; scale: 1; } }
 @keyframes cannonFlare { 0% { opacity: 0; transform: scale(.2); } 28% { opacity: 1; transform: scale(2.2); } 100% { opacity: 0; transform: scale(5.5); } }
-@keyframes microVineGrow {
-  0%, 5% { opacity: .16; stroke-dashoffset: 420; }
-  16% { opacity: .72; }
-  38%, 82% { opacity: 1; stroke-dashoffset: 0; }
-  94%, 100% { opacity: .52; stroke-dashoffset: 0; }
+@keyframes generatedVineGrow {
+  0% { opacity: 0; clip-path: circle(0 at 50% 96%); transform: translateZ(0) scale(.86); filter: sepia(.08) saturate(.72) blur(3px) drop-shadow(0 0 0 transparent); }
+  10% { opacity: .5; }
+  38% { clip-path: circle(28% at 50% 96%); }
+  72% { opacity: .92; clip-path: circle(72% at 50% 96%); filter: sepia(.05) saturate(1.02) blur(.2px) drop-shadow(0 0 8px #d5a54b6b); }
+  100% { opacity: .96; clip-path: circle(122% at 50% 96%); transform: translateZ(0) scale(1); filter: sepia(.08) saturate(.9) blur(0) drop-shadow(0 2px 1px #34201270) drop-shadow(0 0 7px #c89a4554); }
 }
-@keyframes microVineGlow {
-  0%, 8% { opacity: .05; stroke-dashoffset: 420; }
-  34% { opacity: .42; stroke-dashoffset: 0; }
-  56% { opacity: .16; }
-  74% { opacity: .4; }
-  100% { opacity: .08; stroke-dashoffset: -100; }
+@keyframes generatedVineAwakening {
+  0% { opacity: 0; transform: scale(.68); }
+  34% { opacity: .88; transform: scale(.9); }
+  72% { opacity: .4; transform: scale(1.04); }
+  100% { opacity: .12; transform: scale(1.08); }
 }
-@keyframes microTendrilCurl {
-  0%, 16% { opacity: .12; stroke-dashoffset: 70; }
-  36%, 82% { opacity: .82; stroke-dashoffset: 0; }
-  100% { opacity: .42; stroke-dashoffset: 0; }
+@keyframes vineSeedBurst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.16); }
+  24% { opacity: 1; transform: translate(-50%, -50%) scale(1.38); }
+  58% { opacity: .82; transform: translate(-50%, -50%) scale(.9); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
 }
-@keyframes microLeafUnfurl {
-  0%, 13% { opacity: .18; transform: scale(.28) rotate(-26deg); }
-  31%, 77% { opacity: .88; transform: scale(1) rotate(0); }
-  88% { opacity: .68; transform: scale(.94) rotate(4deg); }
-  100% { opacity: .38; transform: scale(.78) rotate(-4deg); }
-}
-@keyframes microLeafVein {
-  0%, 16% { opacity: .08; }
-  36%, 82% { opacity: .7; }
-  100% { opacity: .26; }
-}
-@keyframes microBlossomOpen {
-  0%, 23% { opacity: .22; transform: scale(.32) rotate(-20deg); }
-  43% { opacity: 1; transform: scale(1.22) rotate(8deg); }
-  57%, 82% { opacity: .86; transform: scale(1) rotate(0); }
-  100% { opacity: .48; transform: scale(.76) rotate(16deg); }
+@keyframes vineSeedRay {
+  0% { opacity: 0; scale: 1 .15; }
+  28% { opacity: .86; }
+  100% { opacity: 0; scale: 1 1.2; }
 }
 @keyframes microRippleHalo {
   0%, 100% { opacity: .28; transform: scale(.72); }
