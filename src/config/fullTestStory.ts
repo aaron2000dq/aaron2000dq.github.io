@@ -47,6 +47,10 @@ export const fullTestZones: ExplorationZone[] = [
       ...rehearsalZones[2].routeGeo,
       ...rehearsalZones[3].routeGeo.slice(1),
     ],
+    mapRoutePoints: [
+      ...rehearsalZones[2].mapRoutePoints!,
+      ...rehearsalZones[3].mapRoutePoints!.slice(1),
+    ],
     svgPath: "M401 323 C340 325 276 308 274 264 C274 210 321 174 377 174",
     checkpoints: [
       testCheckpoint(formalZones[2].checkpoints[0], rehearsalZones[2].checkpoints[0], {

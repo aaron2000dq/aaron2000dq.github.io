@@ -10,7 +10,9 @@ import {
   projectPositionToMap,
   smoothPositionSample,
 } from "../src/lib/geo";
+import { gcj02ToWgs84Approx, wgs84ToGcj02 } from "../src/lib/coordinateTransform";
 import { rehearsalZones } from "../src/config/rehearsal";
+import { zones } from "../src/config/story";
 
 describe("geographic matching", () => {
   const route = [
@@ -78,21 +80,39 @@ describe("geographic matching", () => {
     expect(holdLastReliablePosition(null, { ...previous, accuracy: 500 })).toBeNull();
   });
 
-  it("projects live coordinates in two dimensions instead of snapping to route progress", () => {
+  it("projects paired WGS route anchors onto the illustrated route", () => {
     const zone = rehearsalZones[0];
     const checkpoint = zone.checkpoints[0];
-    const first = projectPositionToMap(
-      { latitude: 30.2748, longitude: 119.9904 },
+    const first = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
+    const second = projectPositionToMap(zone.routeGeo[1], zone, checkpoint);
+    expect(first.x).toBeCloseTo(zone.mapRoutePoints![0].x, 5);
+    expect(first.y).toBeCloseTo(zone.mapRoutePoints![0].y, 5);
+    expect(second.x).toBeCloseTo(zone.mapRoutePoints![1].x, 5);
+    expect(second.y).toBeCloseTo(zone.mapRoutePoints![1].y, 5);
+  });
+
+  it("uses the same registered-route projection in formal and nearby maps", () => {
+    for (const zone of [...zones, ...rehearsalZones]) {
+      expect(zone.coordinateSystem).toBe("wgs84");
+      expect(zone.mapRoutePoints).toHaveLength(zone.routeGeo.length);
+      const checkpoint = zone.checkpoints[0];
+      const start = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
+      expect(start.x).toBeCloseTo(zone.mapRoutePoints![0].x, 5);
+      expect(start.y).toBeCloseTo(zone.mapRoutePoints![0].y, 5);
+    }
+  });
+
+  it("does not pin a far or wrong-system sample to a map corner", () => {
+    const zone = zones[0];
+    const point = projectPositionToMap(
+      { latitude: 30.257345, longitude: 120.195869 },
       zone,
-      checkpoint,
+      zone.checkpoints[0],
     );
-    const second = projectPositionToMap(
-      { latitude: 30.2750, longitude: 119.9904 },
-      zone,
-      checkpoint,
-    );
-    expect(Math.abs(second.y - first.y)).toBeGreaterThan(10);
-    expect(Math.abs(second.x - first.x)).toBeLessThan(1);
+    expect(point.x).toBeGreaterThan(16);
+    expect(point.x).toBeLessThan(784);
+    expect(point.y).toBeGreaterThan(16);
+    expect(point.y).toBeLessThan(484);
   });
 
   it("keeps the four-gate map aligned to its real OSM bounds", () => {
@@ -109,5 +129,37 @@ describe("geographic matching", () => {
     expect(smoothed.latitude).toBeGreaterThan(30.27515);
     expect(smoothed.timestamp).toBe(2);
     expect(smoothed.heading).toBeUndefined();
+  });
+});
+
+describe("offline coordinate preparation", () => {
+  it("reproduces the known local Fuli reference within the geofence margin", () => {
+    const converted = gcj02ToWgs84Approx({ latitude: 30.272938, longitude: 119.994665 });
+    const osmReference = { latitude: 30.27548, longitude: 119.9901 };
+    expect(haversineDistance(converted, osmReference)).toBeLessThan(15);
+  });
+
+  it("places the former AMap bicycle destination on the expected local roads", () => {
+    const destination = gcj02ToWgs84Approx({ latitude: 30.257345, longitude: 120.195869 });
+    const configured = zones[0].checkpoints[0].location;
+    const shuanglingRoadReference = { latitude: 30.259743, longitude: 120.1910573 };
+    const qingchunRoadReference = { latitude: 30.2599455, longitude: 120.1912823 };
+    expect(haversineDistance(destination, configured)).toBeLessThan(1);
+    expect(haversineDistance(destination, shuanglingRoadReference)).toBeLessThan(25);
+    expect(haversineDistance(destination, qingchunRoadReference)).toBeLessThan(25);
+    expect(
+      haversineDistance(wgs84ToGcj02(configured), {
+        latitude: 30.257345,
+        longitude: 120.195869,
+      }),
+    ).toBeLessThan(1);
+  });
+
+  it("uses the new Zǐ'ǒucūn start and keeps the first walk short", () => {
+    const convertedStart = gcj02ToWgs84Approx({ latitude: 30.257323, longitude: 120.197675 });
+    const configuredStart = zones[0].routeGeo[0];
+    expect(haversineDistance(convertedStart, configuredStart)).toBeLessThan(1);
+    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeGreaterThan(150);
+    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeLessThan(220);
   });
 });

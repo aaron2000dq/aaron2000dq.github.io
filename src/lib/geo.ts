@@ -46,6 +46,84 @@ function mercatorLatitude(latitude: number) {
   return Math.log(Math.tan(Math.PI / 4 + radians / 2));
 }
 
+function segmentProjection(
+  point: { x: number; y: number },
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const lengthSq = dx * dx + dy * dy;
+  const t = lengthSq
+    ? Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / lengthSq))
+    : 0;
+  const x = a.x + t * dx;
+  const y = a.y + t * dy;
+  return { t, x, y, distance: Math.hypot(point.x - x, point.y - y) };
+}
+
+function projectLocationToRegisteredRoute(
+  point: LatLng,
+  route: LatLng[],
+  mapRoutePoints: Array<{ x: number; y: number }>,
+) {
+  const origin = route[0];
+  const live = toMeters(point, origin);
+  const routeMeters = route.map((item) => toMeters(item, origin));
+  let best:
+    | {
+        segmentIndex: number;
+        t: number;
+        signedDistanceM: number;
+        distanceM: number;
+      }
+    | undefined;
+
+  for (let index = 0; index < routeMeters.length - 1; index += 1) {
+    const start = routeMeters[index];
+    const end = routeMeters[index + 1];
+    const projection = segmentProjection(live, start, end);
+    if (!best || projection.distance < best.distanceM) {
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const signedDistanceM =
+        (dx * (live.y - projection.y) - dy * (live.x - projection.x)) / length;
+      best = {
+        segmentIndex: index,
+        t: projection.t,
+        signedDistanceM,
+        distanceM: projection.distance,
+      };
+    }
+  }
+
+  if (!best) return mapRoutePoints[0];
+  const mapStart = mapRoutePoints[best.segmentIndex];
+  const mapEnd = mapRoutePoints[best.segmentIndex + 1];
+  const mapDx = mapEnd.x - mapStart.x;
+  const mapDy = mapEnd.y - mapStart.y;
+  const mapLength = Math.hypot(mapDx, mapDy) || 1;
+  const geoStart = routeMeters[best.segmentIndex];
+  const geoEnd = routeMeters[best.segmentIndex + 1];
+  const geoLength = Math.hypot(geoEnd.x - geoStart.x, geoEnd.y - geoStart.y) || 1;
+  const routePoint = {
+    x: mapStart.x + mapDx * best.t,
+    y: mapStart.y + mapDy * best.t,
+  };
+  // A small signed cross-track component keeps the dot genuinely two
+  // dimensional while preventing a bad first fix from pinning it to a corner.
+  const lateralPixels = Math.max(
+    -56,
+    Math.min(56, best.signedDistanceM * (mapLength / geoLength)),
+  );
+  const mapLeftNormal = { x: mapDy / mapLength, y: -mapDx / mapLength };
+  return {
+    x: Math.max(16, Math.min(784, routePoint.x + mapLeftNormal.x * lateralPixels)),
+    y: Math.max(16, Math.min(484, routePoint.y + mapLeftNormal.y * lateralPixels)),
+  };
+}
+
 export function projectLocationToBounds(
   point: LatLng,
   bounds: MapBounds,
@@ -72,6 +150,13 @@ export function projectPositionToMap(
   zone: ExplorationZone,
   checkpoint: Checkpoint,
 ) {
+  if (
+    zone.mapRoutePoints &&
+    zone.routeGeo.length >= 2 &&
+    zone.mapRoutePoints.length === zone.routeGeo.length
+  ) {
+    return projectLocationToRegisteredRoute(point, zone.routeGeo, zone.mapRoutePoints);
+  }
   if (zone.mapBounds) return projectLocationToBounds(point, zone.mapBounds);
 
   const originGeo = zone.routeGeo[0] ?? zone.center;
@@ -131,22 +216,6 @@ export function holdLastReliablePosition(
     timestamp: rejected.timestamp,
     heading: Number.isFinite(rejected.heading) ? rejected.heading : previous.heading,
   };
-}
-
-function segmentProjection(
-  point: { x: number; y: number },
-  a: { x: number; y: number },
-  b: { x: number; y: number },
-) {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const lengthSq = dx * dx + dy * dy;
-  const t = lengthSq
-    ? Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / lengthSq))
-    : 0;
-  const x = a.x + t * dx;
-  const y = a.y + t * dy;
-  return { t, distance: Math.hypot(point.x - x, point.y - y) };
 }
 
 export function matchPositionToRoute(

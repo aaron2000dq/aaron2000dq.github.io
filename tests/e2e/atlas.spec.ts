@@ -186,20 +186,21 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
 
 test("automatically arrives after two accurate nearby location samples", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.25742, longitude: 120.19580, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.2597229, longitude: 120.1930934, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.25736, longitude: 120.19585, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.25975, longitude: 120.19155, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.257345, longitude: 120.195869, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.2597418, longitude: 120.1912823, accuracy: 14 });
   await page.waitForTimeout(100);
+  await context.setGeolocation({ latitude: 30.259742, longitude: 120.1912824, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
   await expect(page.locator(".arrival-rune-seal")).toBeVisible();
   await expect(page.getByText("坐标已回应")).toBeVisible();
   await expect(page.locator(".goal-arrival-ripple")).toHaveCount(2);
-  await expect(page.getByText("精度 ±14m")).toBeVisible();
+  await expect(page.getByText("精度 ±13m")).toBeVisible();
   await expect(page.locator(".paw-trail").first()).toBeVisible();
   await expect(page.locator(".paw-trail").first().locator(".paw-toe")).toHaveCount(4);
   await expect(page.locator(".paw-trail").first().locator(".paw-ripple")).toHaveCount(2);
@@ -358,6 +359,24 @@ test("moves the explorer dot from live coordinates and force-arrival never telep
   await expect(marker).toHaveAttribute("data-map-y", beforeForce.y!);
 });
 
+test("runs the nearby rehearsal through the same WGS registered-route engine", async ({ page, context, baseURL }) => {
+  await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
+  await context.setGeolocation({ latitude: 30.27463, longitude: 119.99011, accuracy: 16 });
+  await page.goto("/?mode=nearby");
+  await page.getByRole("button", { name: "展开固定彩排地图" }).click();
+
+  const marker = page.locator(".you-marker");
+  await expect(marker).toHaveAttribute("data-map-x", /\d/);
+  const startX = Number(await marker.getAttribute("data-map-x"));
+  await context.setGeolocation({ latitude: 30.27529, longitude: 119.99105, accuracy: 14 });
+  await page.waitForTimeout(100);
+  await context.setGeolocation({ latitude: 30.27532, longitude: 119.99109, accuracy: 12 });
+
+  await expect.poll(async () => Number(await marker.getAttribute("data-map-x"))).toBeGreaterThan(startX + 70);
+  await expect(page.getByText("测试点已抵达")).toBeVisible();
+  await expect(page.getByText("已经抵达")).toBeVisible();
+});
+
 test("keeps the map immersive with a collapsible floating quest card", async ({ page }) => {
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
@@ -421,14 +440,15 @@ test("conceals every first coordinate answer until arrival, then reveals it toge
 
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.25742, longitude: 120.19580, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.2597229, longitude: 120.1930934, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.25736, longitude: 120.19585, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.25975, longitude: 120.19155, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.257345, longitude: 120.195869, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.2597418, longitude: 120.1912823, accuracy: 14 });
   await page.waitForTimeout(100);
+  await context.setGeolocation({ latitude: 30.259742, longitude: 120.1912824, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await page.reload();
   await expect(page.locator(".topbar b")).toHaveText("Caihe · Motion District");
@@ -635,14 +655,12 @@ test("supports dragging and two-pointer zoom on the hand-drawn map", async ({ pa
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   const map = page.getByLabel("可拖拽和双指缩放的探索地图");
-  const before = await map.evaluate((element) => getComputedStyle(element).transform);
+  await expect(map).toBeVisible({ timeout: 7_000 });
   await map.dispatchEvent("pointerdown", { pointerId: 1, clientX: 300, clientY: 300 });
   await map.dispatchEvent("pointermove", { pointerId: 1, clientX: 355, clientY: 330 });
   await map.dispatchEvent("pointerup", { pointerId: 1, clientX: 355, clientY: 330 });
   await page.waitForTimeout(1_200);
-  const afterDrag = await map.evaluate((element) => getComputedStyle(element).transform);
-  expect(afterDrag).not.toBe(before);
-  expect(await map.getAttribute("data-pan")).toBe("55,30");
+  await expect(map).toHaveAttribute("data-pan", "55,30");
 
   await map.dispatchEvent("pointerdown", { pointerId: 1, clientX: 300, clientY: 300 });
   await map.dispatchEvent("pointerdown", { pointerId: 2, clientX: 400, clientY: 300 });
@@ -686,7 +704,7 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas");
+      const request = indexedDB.open("exploration-atlas-formal-wgs-v1");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();

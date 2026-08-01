@@ -2,8 +2,9 @@ import type { ExplorationZone, StoryProgress } from "@/src/types";
 
 export const GM_PIN = "1104";
 
-// Formal route anchors. The survey tool can still refine the exact parking exits
-// and photo spots after the final on-site rehearsal.
+// Formal runtime coordinates are WGS-84, matching browser Geolocation. The
+// original GCJ-02 POIs were converted only during data preparation and checked
+// against nearby OSM road/building geometry; they are never mixed at runtime.
 export const zones: ExplorationZone[] = [
   {
     id: "motion-district",
@@ -12,15 +13,21 @@ export const zones: ExplorationZone[] = [
     subtitle: "庆春东路与采荷街区 · 寻找移动的方式",
     mysteryTitle: "XXVIII · THE FIRST PASSAGE",
     mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
-    parkingLabel: "外海商厦立体停车场 · 庆春东路 58 号",
+    parkingLabel: "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
     parkingMapPoint: { x: 110, y: 420 },
-    center: { latitude: 30.25765, longitude: 120.19582 },
+    center: { latitude: 30.2598, longitude: 120.19218 },
+    coordinateSystem: "wgs84",
     routeGeo: [
-      // The parking coordinate is an approximate route anchor. Capture the
-      // exact pedestrian exit during the final survey before locking the build.
-      { latitude: 30.25796, longitude: 120.19578 },
-      { latitude: 30.25766, longitude: 120.1958 },
-      { latitude: 30.257345, longitude: 120.195869 },
+      { latitude: 30.2597229, longitude: 120.1930934 },
+      { latitude: 30.259855, longitude: 120.19306 },
+      { latitude: 30.259855, longitude: 120.19152 },
+      { latitude: 30.2597418, longitude: 120.1912823 },
+    ],
+    mapRoutePoints: [
+      { x: 110, y: 420 },
+      { x: 190, y: 360 },
+      { x: 455, y: 205 },
+      { x: 560, y: 120 },
     ],
     svgPath: "M110 420 L175 398 L235 350 L300 320 L365 270 L430 240 L490 190 L530 150 L560 120",
     maxLocationAccuracyM: 200,
@@ -35,7 +42,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "答案藏在下一段路",
         storyBeat: "找到你要前进的方式。",
         giftType: "motion",
-        location: { latitude: 30.257345, longitude: 120.195869 },
+        location: { latitude: 30.2597418, longitude: 120.1912823 },
         unlockRadiusM: 30,
         referenceImage: "/references/motion.svg",
         matchMode: "pose-scene",
@@ -58,11 +65,17 @@ export const zones: ExplorationZone[] = [
     mysterySubtitle: "成为巫师的第二步 · 被时间保存的一小段",
     parkingLabel: "经纬国际创意产业园停车场 · 石桥路 279 号",
     parkingMapPoint: { x: 108, y: 420 },
-    center: { latitude: 30.32472, longitude: 120.18808 },
+    center: { latitude: 30.32729, longitude: 120.18376 },
+    coordinateSystem: "wgs84",
     routeGeo: [
-      { latitude: 30.32472, longitude: 120.18808 },
-      { latitude: 30.32491, longitude: 120.18838 },
-      { latitude: 30.3251, longitude: 120.18866 },
+      { latitude: 30.3270953, longitude: 120.1834653 },
+      { latitude: 30.3272858, longitude: 120.1837661 },
+      { latitude: 30.3274763, longitude: 120.1840469 },
+    ],
+    mapRoutePoints: [
+      { x: 108, y: 420 },
+      { x: 370, y: 285 },
+      { x: 555, y: 118 },
     ],
     svgPath: "M108 420 L170 385 L230 360 L300 325 L370 285 L435 235 L490 190 L525 150 L555 118",
     maxLocationAccuracyM: 200,
@@ -77,7 +90,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "答案绕着时间旋转",
         storyBeat: "记忆的回声藏起故事。",
         giftType: "sound",
-        location: { latitude: 30.3251, longitude: 120.18866 },
+        location: { latitude: 30.3274763, longitude: 120.1840469 },
         unlockRadiusM: 30,
         referenceImage: "/references/sound.svg",
         matchMode: "pose-scene",
@@ -100,17 +113,27 @@ export const zones: ExplorationZone[] = [
     mysterySubtitle: "入学前的最后一程 · 还藏着三枚坐标",
     parkingLabel: "杭州来福士中心 · T1 停车区",
     parkingMapPoint: { x: 130, y: 365 },
-    center: { latitude: 30.251737, longitude: 120.207682 },
+    center: { latitude: 30.2541536, longitude: 120.2031277 },
+    coordinateSystem: "wgs84",
     routeGeo: [
-      { latitude: 30.2515, longitude: 120.2073 },
-      { latitude: 30.2522, longitude: 120.2109 },
-      { latitude: 30.252806, longitude: 120.214476 },
-      { latitude: 30.251561, longitude: 120.21563 },
+      { latitude: 30.2539161, longitude: 120.2027447 },
+      { latitude: 30.2546214, longitude: 120.2063537 },
+      { latitude: 30.2552323, longitude: 120.2099383 },
+      { latitude: 30.253989, longitude: 120.2110951 },
       // City Balcony POI center. Replace with the exact reference-photo
       // standing point after the final night-time survey.
-      { latitude: 30.241827, longitude: 120.216803 },
-      { latitude: 30.2478, longitude: 120.21 },
-      { latitude: 30.251737, longitude: 120.207682 },
+      { latitude: 30.2442573, longitude: 120.2122716 },
+      { latitude: 30.2502204, longitude: 120.2054519 },
+      { latitude: 30.2541536, longitude: 120.2031277 },
+    ],
+    mapRoutePoints: [
+      { x: 130, y: 365 },
+      { x: 300, y: 270 },
+      { x: 432, y: 120 },
+      { x: 480, y: 135 },
+      { x: 590, y: 330 },
+      { x: 370, y: 355 },
+      { x: 210, y: 360 },
     ],
     svgPath:
       "M130 365 L210 335 L300 270 L390 210 L432 120 L480 135 L535 190 L590 330 L540 390 L460 380 L370 355 L290 350 L210 360",
@@ -126,7 +149,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "答案尚在风里",
         storyBeat: "留意风吹来的方向。",
         giftType: "scent",
-        location: { latitude: 30.252806, longitude: 120.214476 },
+        location: { latitude: 30.2552323, longitude: 120.2099383 },
         unlockRadiusM: 30,
         referenceImage: "/references/scent.svg",
         matchMode: "pose-scene",
@@ -145,7 +168,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "答案正在夜色里发光",
         storyBeat: "收下一束只属于你的光。",
         giftType: "sparkle",
-        location: { latitude: 30.251561, longitude: 120.21563 },
+        location: { latitude: 30.253989, longitude: 120.2110951 },
         unlockRadiusM: 30,
         referenceImage: "/references/sparkle.svg",
         matchMode: "pose-scene",
@@ -164,7 +187,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "答案比城市更接近天空",
         storyBeat: "新世界的大门已为你打开，天才巫师的惊喜坐标均已解锁。",
         giftType: "taste",
-        location: { latitude: 30.241827, longitude: 120.216803 },
+        location: { latitude: 30.2442573, longitude: 120.2122716 },
         unlockRadiusM: 30,
         referenceImage: "/references/taste.svg",
         matchMode: "scene-only",
@@ -183,7 +206,7 @@ export const zones: ExplorationZone[] = [
         mysteryLabel: "它从来不需要坐标",
         storyBeat: "读完这封信，二十八岁的故事合上，二十九岁的第一章正式开始。",
         giftType: "love",
-        location: { latitude: 30.251737, longitude: 120.207682 },
+        location: { latitude: 30.2541536, longitude: 120.2031277 },
         unlockRadiusM: 30,
         referenceImage: "/references/love.svg",
         matchMode: "scene-only",

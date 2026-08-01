@@ -48,7 +48,11 @@ export type ExplorationZone = {
   parkingLabel: string;
   parkingMapPoint: { x: number; y: number };
   center: LatLng;
+  /** Browser geolocation and every runtime checkpoint must use WGS-84. */
+  coordinateSystem: "wgs84";
   routeGeo: LatLng[];
+  /** Hand-drawn map control points paired one-to-one with routeGeo. */
+  mapRoutePoints?: Array<{ x: number; y: number }>;
   svgPath: string;
   maxLocationAccuracyM: number;
   accent: string;

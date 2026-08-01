@@ -14,10 +14,18 @@ describe("formal story route", () => {
 
   it("starts each map at the intended parking area", () => {
     expect(zones.map((zone) => zone.parkingLabel)).toEqual([
-      "外海商厦立体停车场 · 庆春东路 58 号",
+      "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
       "经纬国际创意产业园停车场 · 石桥路 279 号",
       "杭州来福士中心 · T1 停车区",
     ]);
+  });
+
+  it("keeps browser positioning, checkpoints and illustrated anchors registered together", () => {
+    for (const zone of zones) {
+      expect(zone.coordinateSystem).toBe("wgs84");
+      expect(zone.mapRoutePoints).toHaveLength(zone.routeGeo.length);
+      expect(zone.routeGeo.at(-1)).toEqual(zone.checkpoints.at(-1)?.location);
+    }
   });
 
   it("keeps Aesop, Dior and City Balcony on the same walking route", () => {
