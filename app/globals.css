@@ -910,7 +910,7 @@ h1, h2, h3, blockquote, .display-type {
 .magic-micro-effect svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
 .magic-micro-vine { width: 72%; height: 62%; opacity: 0; color: #536238; overflow: visible; }
-.opening-letter > .magic-micro-vine { z-index: 5; left: 14%; top: 7.5%; filter: drop-shadow(0 1px 0 #f1d595) drop-shadow(0 0 5px #c39a4b55); }
+.opening-letter > .magic-micro-vine { z-index: 5; left: 11%; top: 0; width: 78%; height: 100%; filter: drop-shadow(0 1px 0 #f1d595) drop-shadow(0 0 5px #c39a4b55); }
 .nearby-letter > .magic-micro-vine { left: 14%; top: 5%; width: 72%; height: 67%; color: #58633a; }
 .magic-micro-vine.is-active { opacity: 1; }
 .micro-vine-growth-art { position: absolute; z-index: 2; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; overflow: visible; filter: sepia(.08) saturate(.9) drop-shadow(0 2px 1px #34201270) drop-shadow(0 0 7px #c89a4554); transform: translateZ(0) scale(.985); transform-origin: 10% 84%; will-change: opacity, transform, filter; }
@@ -918,8 +918,8 @@ h1, h2, h3, blockquote, .display-type {
 .micro-vine-completed-art { opacity: 0; }
 .vine-reveal-path { fill: none; stroke: white; stroke-width: 128; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
 .vine-growth-trace { fill: none; stroke: #f0cd7d; stroke-width: 12; stroke-linecap: round; stroke-dasharray: .038 .962; stroke-dashoffset: 0; opacity: 0; }
-.micro-vine-awakening-glow { position: absolute; z-index: 1; inset: 2% 4% -1%; display: block; opacity: 0; border-radius: 48%; background: radial-gradient(ellipse at 10% 84%, #efc971df 0 2%, #d6a4487d 7%, transparent 23%), radial-gradient(ellipse at 48% 48%, transparent 37%, #d8ad5a2e 70%, transparent 83%); filter: blur(7px); transform: scale(.72); transform-origin: 10% 84%; }
-.micro-vine-seed-burst { position: absolute; z-index: 4; left: 9%; top: 84%; width: 22px; height: 22px; display: block; opacity: 0; border-radius: 50%; background: radial-gradient(circle, #fff1b8 0 7%, #e0af4f 18%, #99652d 36%, transparent 67%); box-shadow: 0 0 8px #f0cd7b, 0 0 26px #c18a36, 0 0 54px #9c642d; transform: translate(-50%, -50%) scale(.2); }
+.micro-vine-awakening-glow { position: absolute; z-index: 1; inset: 2% 4% -1%; display: block; opacity: 0; border-radius: 48%; background: radial-gradient(ellipse at 10% 89%, #efc971df 0 2%, #d6a4487d 7%, transparent 23%), radial-gradient(ellipse at 48% 48%, transparent 37%, #d8ad5a2e 70%, transparent 83%); filter: blur(7px); transform: scale(.72); transform-origin: 10% 89%; }
+.micro-vine-seed-burst { position: absolute; z-index: 4; left: 9%; top: 89%; width: 22px; height: 22px; display: block; opacity: 0; border-radius: 50%; background: radial-gradient(circle, #fff1b8 0 7%, #e0af4f 18%, #99652d 36%, transparent 67%); box-shadow: 0 0 8px #f0cd7b, 0 0 26px #c18a36, 0 0 54px #9c642d; transform: translate(-50%, -50%) scale(.2); }
 .micro-vine-seed-burst b { position: absolute; left: 50%; top: 50%; width: 2px; height: 60px; border-radius: 50%; background: linear-gradient(transparent, #f1d58da8, transparent); transform-origin: 50% 0; opacity: 0; }
 .micro-vine-seed-burst b:nth-child(1) { transform: rotate(18deg); }
 .micro-vine-seed-burst b:nth-child(2) { transform: rotate(78deg); }

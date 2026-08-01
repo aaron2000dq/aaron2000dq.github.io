@@ -77,18 +77,20 @@ export function MagicMicroEffect({ variant, className = "" }: Props) {
 
   return (
     <div className={`magic-micro-effect magic-micro-vine ${className}`} aria-hidden="true">
-      <svg className="micro-vine-growth-art" viewBox="0 0 1686 933" preserveAspectRatio="xMidYMid meet">
+      <svg className="micro-vine-growth-art" viewBox="0 0 1686 933" preserveAspectRatio="none">
         <defs>
           <mask id={vineMaskId} maskUnits="userSpaceOnUse" x="0" y="0" width="1686" height="933">
             <rect width="1686" height="933" fill="black" />
             <path
               className="vine-reveal-path vine-reveal-up"
               pathLength="1"
+              transform="translate(0 -22) scale(1 1.08)"
               d="M150 785 C92 702 82 566 120 414 C158 276 272 174 423 145 C575 116 716 101 843 100"
             />
             <path
               className="vine-reveal-path vine-reveal-right"
               pathLength="1"
+              transform="translate(0 -22) scale(1 1.08)"
               d="M150 785 C348 751 575 763 835 805 C1075 790 1328 755 1510 665 C1583 548 1592 410 1531 302 C1436 198 1288 151 1142 126 C1014 104 910 98 843 100"
             />
           </mask>
@@ -102,26 +104,30 @@ export function MagicMicroEffect({ variant, className = "" }: Props) {
           href="/assets/magic/vine-growth-frame-v1.png"
           width="1686"
           height="933"
-          preserveAspectRatio="xMidYMid meet"
+          preserveAspectRatio="none"
+          transform="translate(0 -22) scale(1 1.08)"
         />
         <image
           className="micro-vine-generated-art"
           href="/assets/magic/vine-growth-frame-v1.png"
           width="1686"
           height="933"
-          preserveAspectRatio="xMidYMid meet"
+          preserveAspectRatio="none"
           mask={`url(#${vineMaskId})`}
+          transform="translate(0 -22) scale(1 1.08)"
         />
         <path
           className="vine-growth-trace vine-growth-trace-up"
           pathLength="1"
           filter={`url(#${vineMaskId}-glow)`}
+          transform="translate(0 -22) scale(1 1.08)"
           d="M150 785 C92 702 82 566 120 414 C158 276 272 174 423 145 C575 116 716 101 843 100"
         />
         <path
           className="vine-growth-trace vine-growth-trace-right"
           pathLength="1"
           filter={`url(#${vineMaskId}-glow)`}
+          transform="translate(0 -22) scale(1 1.08)"
           d="M150 785 C348 751 575 763 835 805 C1075 790 1328 755 1510 665 C1583 548 1592 410 1531 302 C1436 198 1288 151 1142 126 C1014 104 910 98 843 100"
         />
       </svg>
