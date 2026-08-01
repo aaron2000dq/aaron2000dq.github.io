@@ -44,7 +44,7 @@ export const zones: ExplorationZone[] = [
         giftType: "motion",
         location: { latitude: 30.2597418, longitude: 120.1912823 },
         unlockRadiusM: 30,
-        referenceImage: "/references/motion.svg",
+        referenceImage: "/references/motion-official-v1.jpg",
         matchMode: "pose-scene",
         passScore: 72,
         clue:

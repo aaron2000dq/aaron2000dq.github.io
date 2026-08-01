@@ -29,6 +29,7 @@ export default defineConfig({
         "apple-touch-icon.png",
         "assets/*.png",
         "references/*.svg",
+        "references/*.jpg",
         "workers/*.js",
         "models/*.task",
         "mediapipe/wasm/*",

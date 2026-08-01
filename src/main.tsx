@@ -30,7 +30,7 @@ const storageNamespace =
     ? `fulltest-${runNamespace || "default"}`
     : runNamespace
       ? `formal-${runNamespace}`
-      : "formal-wgs-v1";
+      : "formal-wgs-photo-v2";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -42,6 +42,10 @@ describe("formal story route", () => {
     ]);
   });
 
+  it("uses the real first-checkpoint pose photo instead of a placeholder", () => {
+    expect(zones[0].checkpoints[0].referenceImage).toBe("/references/motion-official-v1.jpg");
+  });
+
   it("keeps every active goal clear of the floating quest panel", () => {
     for (const zone of zones) {
       for (const checkpoint of zone.checkpoints) {

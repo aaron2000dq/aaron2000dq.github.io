@@ -685,11 +685,16 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await page.getByRole("button", { name: "开启照片复刻" }).click();
 
   await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toBeVisible();
+  await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toHaveAttribute(
+    "src",
+    "/references/motion-official-v1.jpg",
+  );
+  await expect(page.locator(".reference-pending")).toHaveCount(0);
   await expect(page.locator(".photo-panel > .magic-micro-wave")).toHaveCount(2);
   await expect(page.locator("video")).toHaveCount(0);
   const uploadInput = page.locator("input[data-role='capture-photo']").first();
   await uploadInput.waitFor({ state: "attached" });
-  await uploadInput.setInputFiles("public/references/motion.svg");
+  await uploadInput.setInputFiles("public/references/motion-official-v1.jpg");
   const startedAt = Date.now();
   await page.getByRole("button", { name: "开始匹配" }).click();
   await expect(page.locator(".memory-scan-beam")).toBeVisible();
@@ -704,7 +709,7 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas-formal-wgs-v1");
+      const request = indexedDB.open("exploration-atlas-formal-wgs-photo-v2");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();
@@ -736,8 +741,7 @@ test("reports an unreadable photo without trapping the explorer", async ({ page 
   await expect(page.locator(".map-stage")).toBeVisible();
 });
 
-test("falls back to scene matching when the pose model cannot load", async ({ page }) => {
-  await page.route("**/models/pose_landmarker_lite.task", (route) => route.abort());
+test("falls back to scene matching when a full pose cannot be detected", async ({ page }) => {
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
@@ -747,8 +751,10 @@ test("falls back to scene matching when the pose model cannot load", async ({ pa
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
   await openCartographer(page);
+  await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "强制抵达" }).click();
   await page.getByRole("button", { name: "开启照片复刻" }).click();
+  await page.locator("input[data-role='reference-photo']").setInputFiles("public/references/motion.svg");
   const uploadInput = page.locator("input[data-role='capture-photo']").first();
   await uploadInput.setInputFiles("public/references/motion.svg");
   const startedAt = Date.now();
@@ -786,6 +792,7 @@ test("stores the complete atlas and local vision model for offline use", async (
       "mediapipe/wasm/vision_wasm_internal.js",
       "mediapipe/wasm/vision_wasm_internal.wasm",
       "workers/photo-score.js",
+      "references/motion-official-v1.jpg",
       "assets/magic/parchment-cinematic-v1.jpg",
       "assets/magic/arcane-fog-field-v1.jpg",
       "assets/magic/rune-seal-burst-v1.png",
