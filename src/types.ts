@@ -57,6 +57,8 @@ export type ExplorationZone = {
   maxLocationAccuracyM: number;
   accent: string;
   mapKind: "arcade" | "garden" | "vinyl" | "city";
+  /** Formal maps use a fixed geographic north-up projection. */
+  mapOrientation?: "north-up" | "illustrated-route";
   mapBounds?: MapBounds;
   illustratedMapAsset?: string;
   checkpoints: Checkpoint[];

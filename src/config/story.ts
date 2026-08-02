@@ -18,7 +18,7 @@ export const zones: ExplorationZone[] = [
     // test: 紫藕邨 is east of the canal; the bicycle shop is west of the canal
     // on the south side of 庆春东路. These page anchors deliberately preserve
     // that relationship instead of mirroring it for visual composition.
-    parkingMapPoint: { x: 650, y: 290 },
+    parkingMapPoint: { x: 558.9, y: 255 },
     center: { latitude: 30.2598, longitude: 120.19218 },
     coordinateSystem: "wgs84",
     routeGeo: [
@@ -28,15 +28,22 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.2597418, longitude: 120.1912823 },
     ],
     mapRoutePoints: [
-      { x: 650, y: 290 },
-      { x: 640, y: 260 },
-      { x: 330, y: 215 },
-      { x: 280, y: 225 },
+      { x: 558.9, y: 255 },
+      { x: 553.6, y: 230.6 },
+      { x: 307.2, y: 230.6 },
+      { x: 269.2, y: 251.5 },
     ],
-    svgPath: "M650 290 L640 260 L585 250 L525 235 L465 222 L400 215 L330 215 L280 225",
+    svgPath: "M558.9 255 L553.6 230.6 L307.2 230.6 L269.2 251.5",
     maxLocationAccuracyM: 200,
     accent: "#4c5636",
     mapKind: "garden",
+    mapOrientation: "north-up",
+    mapBounds: {
+      north: 30.2611,
+      south: 30.2584,
+      west: 120.1896,
+      east: 120.1946,
+    },
     illustratedMapAsset: "/assets/maps/caihe-motion-v3.jpg",
     checkpoints: [
       {
@@ -56,7 +63,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "从这一页开始，二十九岁的路不必只靠双脚。第一个出现在新一岁的魔法，是让通勤也变成自由旅行的动力。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 280, y: 225 },
+        mapPoint: { x: 269.2, y: 251.5 },
       },
     ],
   },
@@ -68,7 +75,7 @@ export const zones: ExplorationZone[] = [
     mysteryTitle: "XXVIII · THE SECOND ECHO",
     mysterySubtitle: "成为巫师的第二步 · 被时间保存的一小段",
     parkingLabel: "经纬国际创意产业园停车场 · 石桥路 279 号",
-    parkingMapPoint: { x: 108, y: 420 },
+    parkingMapPoint: { x: 307, y: 320.5 },
     center: { latitude: 30.32729, longitude: 120.18376 },
     coordinateSystem: "wgs84",
     routeGeo: [
@@ -77,14 +84,21 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.3274763, longitude: 120.1840469 },
     ],
     mapRoutePoints: [
-      { x: 108, y: 420 },
-      { x: 370, y: 285 },
-      { x: 555, y: 118 },
+      { x: 307, y: 320.5 },
+      { x: 403.2, y: 250.1 },
+      { x: 493.1, y: 179.6 },
     ],
-    svgPath: "M108 420 L170 385 L230 360 L300 325 L370 285 L435 235 L490 190 L525 150 L555 118",
+    svgPath: "M307 320.5 L403.2 250.1 L493.1 179.6",
     maxLocationAccuracyM: 200,
     accent: "#3f354a",
     mapKind: "vinyl",
+    mapOrientation: "north-up",
+    mapBounds: {
+      north: 30.327962,
+      south: 30.32661,
+      west: 120.182506,
+      east: 120.185006,
+    },
     illustratedMapAsset: "/assets/maps/jingwei-sound-v3.jpg",
     checkpoints: [
       {
@@ -104,7 +118,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十八岁的回声，会在二十九岁的房间里继续旋转。第二个出现在新一岁的魔法，是唱针落下时我在你的身边。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 555, y: 118 },
+        mapPoint: { x: 493.1, y: 179.6 },
       },
     ],
   },
@@ -116,7 +130,7 @@ export const zones: ExplorationZone[] = [
     mysteryTitle: "XXVIII · THE GRAND ATLAS",
     mysterySubtitle: "入学前的最后一程 · 还藏着三枚坐标",
     parkingLabel: "杭州来福士中心 · T1 停车区",
-    parkingMapPoint: { x: 130, y: 365 },
+    parkingMapPoint: { x: 172.4, y: 134.8 },
     center: { latitude: 30.2541536, longitude: 120.2031277 },
     coordinateSystem: "wgs84",
     routeGeo: [
@@ -131,20 +145,27 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.2541536, longitude: 120.2031277 },
     ],
     mapRoutePoints: [
-      { x: 130, y: 365 },
-      { x: 300, y: 270 },
-      { x: 432, y: 120 },
-      { x: 480, y: 135 },
-      { x: 590, y: 330 },
-      { x: 370, y: 355 },
-      { x: 210, y: 360 },
+      { x: 172.4, y: 134.8 },
+      { x: 330.2, y: 114.1 },
+      { x: 486.9, y: 96.1 },
+      { x: 537.5, y: 132.7 },
+      { x: 588.9, y: 418.9 },
+      { x: 290.8, y: 243.5 },
+      { x: 189.2, y: 127.8 },
     ],
     svgPath:
-      "M130 365 L210 335 L300 270 L390 210 L432 120 L480 135 L535 190 L590 330 L540 390 L460 380 L370 355 L290 350 L210 360",
+      "M172.4 134.8 L330.2 114.1 L486.9 96.1 L537.5 132.7 L588.9 418.9 L290.8 243.5 L189.2 127.8",
     maxLocationAccuracyM: 200,
     accent: "#274554",
     mapKind: "city",
-    illustratedMapAsset: "/assets/maps/qianjiang-grand-v3.jpg",
+    mapOrientation: "north-up",
+    mapBounds: {
+      north: 30.2585,
+      south: 30.2415,
+      west: 120.1988,
+      east: 120.2171,
+    },
+    illustratedMapAsset: "/assets/maps/qianjiang-grand-north-v4.png",
     checkpoints: [
       {
         id: "aesop-scent",
@@ -163,7 +184,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十八岁的最后一阵风，被装进你亲自挑选的香气里。第三个出现在二十九岁的魔法，是低头时就能闻到爱的味道。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 432, y: 120 },
+        mapPoint: { x: 486.9, y: 96.1 },
       },
       {
         id: "dior-sparkle",
@@ -182,7 +203,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "这是入学前最后一夜里，专门留给你的光。第四个魔法，是把自己装扮好看的闪亮时刻。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 480, y: 135 },
+        mapPoint: { x: 537.5, y: 132.7 },
       },
       {
         id: "balcony-taste",
@@ -201,7 +222,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "二十九岁的无限可能顺利开启，请前往探索属于你的精彩一岁。第五个魔法，是在麻瓜世界的背后总有人等着你一起分享今天的晚餐。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 590, y: 330 },
+        mapPoint: { x: 588.9, y: 418.9 },
       },
       {
         id: "hidden-love",
@@ -220,7 +241,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "前面的五个魔法，会陪你走进二十九岁；最后这一份不用拿在手里，读完这封信，二十八岁的故事合上，过去的地图已经无法抵达。但在今天和地图尚未画出的未来里，你都会被我好好地爱着。那么，准备好入学面对新的一切了吗，拥有魔法的天才饼饼？",
         photoPrompt: "不需要复刻。请打开最后一封信。",
-        mapPoint: { x: 210, y: 360 },
+        mapPoint: { x: 189.2, y: 127.8 },
       },
     ],
   },

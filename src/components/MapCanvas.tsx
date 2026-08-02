@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { projectHeadingToMap, projectPositionToMap } from "@/src/lib/geo";
+import { projectHeadingToMap, projectLocationToBounds, projectPositionToMap } from "@/src/lib/geo";
 import type { Checkpoint, ExplorationZone, PositionSample } from "@/src/types";
 import { MapMagicOverlay } from "./MapMagicOverlay";
 
@@ -21,7 +21,7 @@ const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> 
   arcade: "/assets/maps/qianjiang-scent-v3.jpg",
   garden: "/assets/maps/caihe-motion-v3.jpg",
   vinyl: "/assets/maps/jingwei-sound-v3.jpg",
-  city: "/assets/maps/qianjiang-grand-v3.jpg",
+  city: "/assets/maps/qianjiang-grand-north-v4.png",
 };
 
 function pendingCoordinateCopy(count: number) {
@@ -258,7 +258,24 @@ export function MapCanvas({
   const illustratedMap = zone.illustratedMapAsset ?? illustratedMapAssets[zone.mapKind];
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
   const hasIllustratedBase = Boolean(illustratedMap && failedAsset !== illustratedMap);
-  const [marker, setMarker] = useState(zone.parkingMapPoint);
+  const startMapPoint = useMemo(
+    () => projectPositionToMap(zone.routeGeo[0] ?? zone.center, zone, checkpoint),
+    [zone, checkpoint],
+  );
+  const goalMapPoint = useMemo(
+    () => projectPositionToMap(checkpoint.location, zone, checkpoint),
+    [zone, checkpoint],
+  );
+  const displayedRoutePath = useMemo(() => {
+    if (zone.mapOrientation !== "north-up" || !zone.mapBounds) return zone.svgPath;
+    return zone.routeGeo
+      .map((point, index) => {
+        const projected = projectLocationToBounds(point, zone.mapBounds!);
+        return `${index ? "L" : "M"}${projected.x.toFixed(1)} ${projected.y.toFixed(1)}`;
+      })
+      .join(" ");
+  }, [zone]);
+  const [marker, setMarker] = useState(startMapPoint);
   const mappedHeading = useMemo(
     () =>
       position
@@ -275,7 +292,7 @@ export function MapCanvas({
     angle: number;
     side: number;
   }>>([]);
-  const lastTrailPoint = useRef(zone.parkingMapPoint);
+  const lastTrailPoint = useRef(startMapPoint);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({
     distance: 0,
@@ -314,10 +331,10 @@ export function MapCanvas({
 
   useEffect(() => {
     setPawTrail([]);
-    const start = position ? projectPositionToMap(position, zone, checkpoint) : zone.parkingMapPoint;
+    const start = position ? projectPositionToMap(position, zone, checkpoint) : startMapPoint;
     setMarker(start);
     lastTrailPoint.current = start;
-  }, [zone.id, checkpoint.id, zone.parkingMapPoint.x, zone.parkingMapPoint.y]);
+  }, [zone.id, checkpoint.id, startMapPoint.x, startMapPoint.y]);
 
   function pointerCenter() {
     const values = [...pointers.current.values()];
@@ -423,8 +440,8 @@ export function MapCanvas({
           )}
           <AtlasFurniture />
           <g className="legacy-blueprint"><DistrictBlueprint kind={zone.mapKind} /></g>
-          <path className="route-path route-path-aura" d={zone.svgPath} aria-hidden="true" />
-          <path className="route-path" d={zone.svgPath} />
+          <path className="route-path route-path-aura" d={displayedRoutePath} aria-hidden="true" />
+          <path className="route-path" d={displayedRoutePath} />
           {pawTrail.map((point) => {
             return (
               <g
@@ -445,10 +462,10 @@ export function MapCanvas({
             );
           })}
           <g
-            transform={`translate(${checkpoint.mapPoint.x} ${checkpoint.mapPoint.y})`}
+            transform={`translate(${goalMapPoint.x} ${goalMapPoint.y})`}
             className={`atlas-point goal-point ${arrived ? "arrived" : ""}`}
-            data-map-x={checkpoint.mapPoint.x.toFixed(1)}
-            data-map-y={checkpoint.mapPoint.y.toFixed(1)}
+            data-map-x={goalMapPoint.x.toFixed(1)}
+            data-map-y={goalMapPoint.y.toFixed(1)}
             role="img"
             aria-label={arrived ? `目的地 ${checkpoint.label}` : "尚未揭晓的目的地"}
           >

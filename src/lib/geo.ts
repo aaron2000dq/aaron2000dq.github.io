@@ -164,6 +164,9 @@ export function projectPositionToMap(
   zone: ExplorationZone,
   checkpoint: Checkpoint,
 ) {
+  if (zone.mapOrientation === "north-up" && zone.mapBounds) {
+    return projectLocationToBounds(point, zone.mapBounds);
+  }
   if (
     zone.mapRoutePoints &&
     zone.routeGeo.length >= 2 &&
@@ -236,6 +239,11 @@ export function projectHeadingToMap(
   checkpoint: Checkpoint,
 ) {
   if (!Number.isFinite(headingDegrees)) return 0;
+  // A north-up page shares the compass coordinate system directly: north is
+  // screen-up and east is screen-right. No decorative-map rotation is allowed.
+  if (zone.mapOrientation === "north-up") {
+    return ((headingDegrees % 360) + 360) % 360;
+  }
   const start = projectPositionToMap(point, zone, checkpoint);
   const ahead = projectPositionToMap(
     destinationPoint(point, 6, headingDegrees),

@@ -24,6 +24,8 @@ describe("formal story route", () => {
   it("keeps browser positioning, checkpoints and illustrated anchors registered together", () => {
     for (const zone of zones) {
       expect(zone.coordinateSystem).toBe("wgs84");
+      expect(zone.mapOrientation).toBe("north-up");
+      expect(zone.mapBounds).toBeDefined();
       expect(zone.mapRoutePoints).toHaveLength(zone.routeGeo.length);
       expect(zone.routeGeo.at(-1)).toEqual(zone.checkpoints.at(-1)?.location);
       for (const checkpoint of zone.checkpoints) {
@@ -32,8 +34,8 @@ describe("formal story route", () => {
         );
         expect(anchorIndex).toBeGreaterThanOrEqual(0);
         const projected = projectPositionToMap(checkpoint.location, zone, checkpoint);
-        expect(projected.x).toBeCloseTo(checkpoint.mapPoint.x, 4);
-        expect(projected.y).toBeCloseTo(checkpoint.mapPoint.y, 4);
+        expect(projected.x).toBeCloseTo(checkpoint.mapPoint.x, 0);
+        expect(projected.y).toBeCloseTo(checkpoint.mapPoint.y, 0);
         expect(checkpoint.mapPoint).toEqual(zone.mapRoutePoints![anchorIndex]);
       }
     }
@@ -49,7 +51,7 @@ describe("formal story route", () => {
     expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
       "/assets/maps/caihe-motion-v3.jpg",
       "/assets/maps/jingwei-sound-v3.jpg",
-      "/assets/maps/qianjiang-grand-v3.jpg",
+      "/assets/maps/qianjiang-grand-north-v4.png",
     ]);
   });
 

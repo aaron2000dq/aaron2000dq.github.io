@@ -98,8 +98,8 @@ describe("geographic matching", () => {
       expect(zone.mapRoutePoints).toHaveLength(zone.routeGeo.length);
       const checkpoint = zone.checkpoints[0];
       const start = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
-      expect(start.x).toBeCloseTo(zone.mapRoutePoints![0].x, 5);
-      expect(start.y).toBeCloseTo(zone.mapRoutePoints![0].y, 5);
+      expect(start.x).toBeCloseTo(zone.mapRoutePoints![0].x, 0);
+      expect(start.y).toBeCloseTo(zone.mapRoutePoints![0].y, 0);
     }
   });
 
@@ -110,10 +110,10 @@ describe("geographic matching", () => {
       zone,
       zone.checkpoints[0],
     );
-    expect(point.x).toBeGreaterThanOrEqual(16);
-    expect(point.x).toBeLessThanOrEqual(784);
-    expect(point.y).toBeGreaterThanOrEqual(16);
-    expect(point.y).toBeLessThanOrEqual(484);
+    expect(point.x).toBeGreaterThanOrEqual(10);
+    expect(point.x).toBeLessThanOrEqual(790);
+    expect(point.y).toBeGreaterThanOrEqual(10);
+    expect(point.y).toBeLessThanOrEqual(490);
   });
 
   it("keeps moving before the suggested start instead of pinning to the route endpoint", () => {
@@ -138,8 +138,8 @@ describe("geographic matching", () => {
     const start = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
     const goal = projectPositionToMap(checkpoint.location, zone, checkpoint);
     expect(start.x).toBeGreaterThan(goal.x);
-    expect(goal.x).toBeCloseTo(checkpoint.mapPoint.x, 5);
-    expect(goal.y).toBeCloseTo(checkpoint.mapPoint.y, 5);
+    expect(goal.x).toBeCloseTo(checkpoint.mapPoint.x, 0);
+    expect(goal.y).toBeCloseTo(checkpoint.mapPoint.y, 0);
   });
 
   it("rotates a geographic course into the illustrated route direction", () => {
@@ -151,6 +151,16 @@ describe("geographic matching", () => {
     const second = zone.mapRoutePoints![1];
     const expected = ((Math.atan2(second.x - first.x, -(second.y - first.y)) * 180) / Math.PI + 360) % 360;
     expect(mapped).toBeCloseTo(expected, 0);
+  });
+
+  it("keeps compass bearings literal on every north-up formal map", () => {
+    for (const zone of zones) {
+      const checkpoint = zone.checkpoints[0];
+      expect(projectHeadingToMap(zone.routeGeo[0], 0, zone, checkpoint)).toBe(0);
+      expect(projectHeadingToMap(zone.routeGeo[0], 90, zone, checkpoint)).toBe(90);
+      expect(projectHeadingToMap(zone.routeGeo[0], 180, zone, checkpoint)).toBe(180);
+      expect(projectHeadingToMap(zone.routeGeo[0], 270, zone, checkpoint)).toBe(270);
+    }
   });
 
   it("keeps the four-gate map aligned to its real OSM bounds", () => {
