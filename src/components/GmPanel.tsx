@@ -10,6 +10,7 @@ type Props = {
   position: PositionSample | null;
   distanceToCheckpointM: number;
   headingCorrection: number;
+  headingSource: string;
   surveyMode: boolean;
   onSurveyMode(value: boolean): void;
   onClose(): void;
@@ -28,6 +29,7 @@ export function GmPanel({
   position,
   distanceToCheckpointM,
   headingCorrection,
+  headingSource,
   surveyMode,
   onSurveyMode,
   onClose,
@@ -64,7 +66,7 @@ export function GmPanel({
           <button onClick={onForceArrive}>强制抵达</button>
           <button onClick={onForcePass}>强制过关</button>
           <button onClick={onMockPosition}>模拟当前目标坐标</button>
-          <button onClick={onToggleHeadingCorrection}>方向翻转 180°</button>
+          <button onClick={onToggleHeadingCorrection}>方向翻转 180°并返回地图</button>
           <button onClick={onPrevious}>退回上一关</button>
           <button onClick={exportSurvey}>导出当前勘测点</button>
           <label className="gm-toggle"><input type="checkbox" checked={surveyMode} onChange={(event) => onSurveyMode(event.target.checked)}/><span>现场勘测模式</span></label>
@@ -77,7 +79,7 @@ export function GmPanel({
           <b>目标校验</b>
           <code>{checkpoint.location.latitude.toFixed(6)}, {checkpoint.location.longitude.toFixed(6)}</code>
           <span>WGS‑84 直线距离：{Number.isFinite(distanceToCheckpointM) ? `${Math.round(distanceToCheckpointM)}m` : "等待定位"}</span>
-          <span>设备方向补偿：{headingCorrection}°</span>
+          <span>方向来源：{headingSource} · 当前总补偿：{headingCorrection}°</span>
         </div>
         <footer>
           <button className="danger-text" onClick={() => onReset(true)}>保留照片并重置进度</button>

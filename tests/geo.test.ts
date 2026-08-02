@@ -203,11 +203,11 @@ describe("offline coordinate preparation", () => {
     ).toBeLessThan(1);
   });
 
-  it("uses the new Zǐ'ǒucūn start and keeps the first walk short", () => {
-    const convertedStart = gcj02ToWgs84Approx({ latitude: 30.257323, longitude: 120.197675 });
+  it("uses the field-tested start east of Caihe Science Park", () => {
+    const convertedStart = gcj02ToWgs84Approx({ latitude: 30.256131, longitude: 120.197919 });
     const configuredStart = zones[0].routeGeo[0];
     expect(haversineDistance(convertedStart, configuredStart)).toBeLessThan(1);
     expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeGreaterThan(150);
-    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeLessThan(220);
+    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeLessThan(250);
   });
 });

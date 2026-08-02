@@ -13,27 +13,27 @@ export const zones: ExplorationZone[] = [
     subtitle: "庆春东路与采荷街区 · 寻找移动的方式",
     mysteryTitle: "XXVIII · THE FIRST PASSAGE",
     mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
-    parkingLabel: "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
+    parkingLabel: "采荷科普园东侧 · 五安路附近",
     // The formal page is registered to the real scene shown during the field
     // 紫藕邨 is southeast of the bicycle shop. The blue water belongs only to
     // 采荷科普园 and ends south of 庆春东路; the suggested walk goes around its
     // dry northern end and never crosses water.
-    parkingMapPoint: { x: 558.9, y: 255 },
+    parkingMapPoint: { x: 598.1, y: 475.7 },
     center: { latitude: 30.2598, longitude: 120.19218 },
     coordinateSystem: "wgs84",
     routeGeo: [
-      { latitude: 30.2597229, longitude: 120.1930934 },
-      { latitude: 30.259855, longitude: 120.19306 },
-      { latitude: 30.259855, longitude: 120.19152 },
+      { latitude: 30.2585314152, longitude: 120.1933381931 },
+      { latitude: 30.25957, longitude: 120.19334 },
+      { latitude: 30.25981, longitude: 120.19162 },
       { latitude: 30.2597418, longitude: 120.1912823 },
     ],
     mapRoutePoints: [
-      { x: 558.9, y: 255 },
-      { x: 553.6, y: 230.6 },
-      { x: 307.2, y: 230.6 },
+      { x: 598.1, y: 475.7 },
+      { x: 598.4, y: 283.3 },
+      { x: 323.2, y: 238.9 },
       { x: 269.2, y: 251.5 },
     ],
-    svgPath: "M558.9 255 L553.6 230.6 L307.2 230.6 L269.2 251.5",
+    svgPath: "M598.1 475.7 L598.4 283.3 L323.2 238.9 L269.2 251.5",
     maxLocationAccuracyM: 200,
     accent: "#4c5636",
     mapKind: "garden",

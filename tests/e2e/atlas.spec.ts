@@ -17,7 +17,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
   await expect(page.locator(".intro-map-sheet")).toHaveCount(0);
   await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
-  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v3.jpg");
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v4.png");
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
 
   const compass = page.getByRole("button", { name: "指南针" });
@@ -186,7 +186,7 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
 
 test("automatically arrives after two accurate nearby location samples", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.2597229, longitude: 120.1930934, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.2585314, longitude: 120.1933382, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
@@ -307,6 +307,9 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
         value: class DeviceOrientationEvent extends Event {},
       });
     }
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 3_000 ? 30 : timeout, ...arguments_)) as typeof window.setTimeout;
   });
   await page.goto("/?mode=fulltest&run=e2e-point-markers");
   await page.getByRole("button", { name: "开启地图" }).click();
@@ -329,6 +332,12 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   });
   await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "303");
   await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(303)");
+
+  await openCartographer(page);
+  await expect(page.getByText("方向来源：设备罗盘 · 当前总补偿：180°")).toBeVisible();
+  await page.getByRole("button", { name: "方向翻转 180°并返回地图" }).click();
+  await expect(page.getByRole("heading", { name: "制图人控制台" })).toHaveCount(0);
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "123");
 });
 
 test("compensates the compass for an iPad landscape screen", async ({ page }) => {
@@ -525,7 +534,7 @@ test("conceals every first coordinate answer until arrival, then reveals it toge
 
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.2597229, longitude: 120.1930934, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.2585314, longitude: 120.1933382, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();

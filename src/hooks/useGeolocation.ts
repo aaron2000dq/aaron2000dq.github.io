@@ -53,7 +53,10 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp,
-          heading: Number.isFinite(position.coords.heading) ? Number(position.coords.heading) : undefined,
+          // Safari's coords.heading has been observed pointing along the
+          // reverse course on the target Wi-Fi iPad. Always derive walking
+          // course from successive WGS-84 positions instead.
+          heading: undefined,
         };
         if (!Number.isFinite(next.accuracy) || next.accuracy < 0 || next.accuracy > maxAccuracy) {
           setSample(holdLastReliablePosition(sampleRef.current, next));
@@ -62,29 +65,22 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           return;
         }
         const previous = sampleRef.current;
-        if (Number.isFinite(next.heading)) {
-          stableCourseRef.current = smoothCourse(stableCourseRef.current, Number(next.heading));
-          next.heading = stableCourseRef.current;
+        const anchor = courseAnchorRef.current;
+        if (!anchor) {
           courseAnchorRef.current = next;
         } else {
-          const anchor = courseAnchorRef.current;
-          if (!anchor) {
+          // Accumulate several small Safari fixes against a stable anchor.
+          // The resulting bearing is deterministic and cannot inherit an
+          // implementation-specific reversed heading from iPadOS.
+          const movedM = haversineDistance(anchor, next);
+          const courseThresholdM = Math.max(3, Math.min(6, next.accuracy * 0.16));
+          if (movedM >= courseThresholdM) {
+            const course = bearingDegrees(anchor, next);
+            stableCourseRef.current = smoothCourse(stableCourseRef.current, course);
+            next.heading = stableCourseRef.current;
             courseAnchorRef.current = next;
-          } else {
-            // Accumulate several small Safari fixes against a stable anchor.
-            // Comparing only with the immediately previous sample meant a user
-            // could walk continuously without any individual step crossing the
-            // old 6-12 m threshold, so a walking course was never produced.
-            const movedM = haversineDistance(anchor, next);
-            const courseThresholdM = Math.max(3, Math.min(6, next.accuracy * 0.16));
-            if (movedM >= courseThresholdM) {
-              const course = bearingDegrees(anchor, next);
-              stableCourseRef.current = smoothCourse(stableCourseRef.current, course);
-              next.heading = stableCourseRef.current;
-              courseAnchorRef.current = next;
-            } else if (Number.isFinite(stableCourseRef.current)) {
-              next.heading = stableCourseRef.current;
-            }
+          } else if (Number.isFinite(stableCourseRef.current)) {
+            next.heading = stableCourseRef.current;
           }
         }
         const smoothed = smoothPositionSample(sampleRef.current, next);

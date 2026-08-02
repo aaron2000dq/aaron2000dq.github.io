@@ -15,7 +15,7 @@ describe("formal story route", () => {
 
   it("starts each map at the intended parking area", () => {
     expect(zones.map((zone) => zone.parkingLabel)).toEqual([
-      "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
+      "采荷科普园东侧 · 五安路附近",
       "经纬国际创意产业园停车场 · 石桥路 279 号",
       "杭州来福士中心 · T1 停车区",
     ]);
