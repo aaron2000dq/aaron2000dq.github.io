@@ -20,12 +20,13 @@ function currentScreenAngle() {
   const legacyValue = Number.isFinite(legacyAngle) ? normalize(Number(legacyAngle)) : null;
   const isLandscape = window.matchMedia?.("(orientation: landscape)").matches;
 
-  // iPadOS Safari can expose a finite but stale screen.orientation.angle=0
-  // after rotating. In landscape, prefer whichever API actually reports a
-  // quarter turn; in portrait, both APIs normally settle back to zero.
+  // iPadOS Safari can leave screen.orientation.angle on the previous landscape
+  // side. window.orientation still distinguishes the two physical ways the
+  // user can hold an iPad (90 vs 270), so it must win when both report a
+  // quarter turn. Choosing the stale screen value flips the arrow by 180°.
   if (isLandscape) {
-    if (screenValue === 90 || screenValue === 270) return screenValue;
     if (legacyValue === 90 || legacyValue === 270) return legacyValue;
+    if (screenValue === 90 || screenValue === 270) return screenValue;
   }
   return screenValue ?? legacyValue ?? 0;
 }
