@@ -11,6 +11,7 @@ type Props = {
   distanceToCheckpointM: number;
   headingCorrection: number;
   headingSource: string;
+  headingVisible: boolean;
   surveyMode: boolean;
   onSurveyMode(value: boolean): void;
   onClose(): void;
@@ -20,6 +21,7 @@ type Props = {
   onReset(keepPhotos: boolean): void;
   onMockPosition(): void;
   onToggleHeadingCorrection(): void;
+  onToggleHeadingVisibility(): void;
 };
 
 export function GmPanel({
@@ -30,6 +32,7 @@ export function GmPanel({
   distanceToCheckpointM,
   headingCorrection,
   headingSource,
+  headingVisible,
   surveyMode,
   onSurveyMode,
   onClose,
@@ -39,6 +42,7 @@ export function GmPanel({
   onReset,
   onMockPosition,
   onToggleHeadingCorrection,
+  onToggleHeadingVisibility,
 }: Props) {
   function exportSurvey() {
     const data = {
@@ -67,6 +71,7 @@ export function GmPanel({
           <button onClick={onForcePass}>强制过关</button>
           <button onClick={onMockPosition}>模拟当前目标坐标</button>
           <button onClick={onToggleHeadingCorrection}>方向翻转 180°并返回地图</button>
+          <button onClick={onToggleHeadingVisibility}>{headingVisible ? "关闭方向指示并返回地图" : "恢复方向指示并返回地图"}</button>
           <button onClick={onPrevious}>退回上一关</button>
           <button onClick={exportSurvey}>导出当前勘测点</button>
           <label className="gm-toggle"><input type="checkbox" checked={surveyMode} onChange={(event) => onSurveyMode(event.target.checked)}/><span>现场勘测模式</span></label>

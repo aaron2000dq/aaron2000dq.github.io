@@ -338,6 +338,11 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
   await page.getByRole("button", { name: "方向翻转 180°并返回地图" }).click();
   await expect(page.getByRole("heading", { name: "制图人控制台" })).toHaveCount(0);
   await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "123");
+
+  await openCartographer(page);
+  await page.getByRole("button", { name: "关闭方向指示并返回地图" }).click();
+  await expect(page.locator(".you-marker")).toBeVisible();
+  await expect(page.locator(".you-heading-arrow")).toHaveCount(0);
 });
 
 test("compensates the compass for an iPad landscape screen", async ({ page }) => {

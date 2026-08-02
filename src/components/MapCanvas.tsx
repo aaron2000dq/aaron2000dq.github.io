@@ -14,12 +14,13 @@ type Props = {
   arrived: boolean;
   completedIds: string[];
   heading?: number;
+  showHeading?: boolean;
   onMapFocus?: () => void;
 };
 
 const illustratedMapAssets: Partial<Record<ExplorationZone["mapKind"], string>> = {
   arcade: "/assets/maps/qianjiang-scent-v3.jpg",
-  garden: "/assets/maps/caihe-motion-v3.jpg",
+  garden: "/assets/maps/caihe-motion-v4.png",
   vinyl: "/assets/maps/jingwei-sound-v3.jpg",
   city: "/assets/maps/qianjiang-grand-north-v4.png",
 };
@@ -240,6 +241,7 @@ export function MapCanvas({
   arrived,
   completedIds,
   heading = 0,
+  showHeading = true,
   onMapFocus,
 }: Props) {
   const displayedTitle = arrived
@@ -506,9 +508,11 @@ export function MapCanvas({
               <circle cx="-12" cy="6" r="1.2" />
               <path d="M0-14A14 14 0 0 1 11 8M11 8A14 14 0 0 1-12 6M-12 6A14 14 0 0 1 0-14" />
             </g>
-            <g className="you-heading-arrow" transform={`rotate(${mappedHeading})`}>
-              <path d="M0-25 10-9 3-11 0-8-3-11-10-9Z" />
-            </g>
+            {showHeading && (
+              <g className="you-heading-arrow" transform={`rotate(${mappedHeading})`}>
+                <path d="M0-25 10-9 3-11 0-8-3-11-10-9Z" />
+              </g>
+            )}
             <circle r="9" className="point-glow" />
             <circle r="6" className="point-ring" />
             <circle r="3.4" className="point-core" />
