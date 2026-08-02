@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { fullTestZones } from "@/src/config/fullTestStory";
 import { fogMessages, zones } from "@/src/config/story";
+import { haversineDistance, projectPositionToMap } from "@/src/lib/geo";
 
 describe("formal story route", () => {
   it("uses two standalone drives followed by one three-coordinate walking atlas", () => {
@@ -25,6 +26,16 @@ describe("formal story route", () => {
       expect(zone.coordinateSystem).toBe("wgs84");
       expect(zone.mapRoutePoints).toHaveLength(zone.routeGeo.length);
       expect(zone.routeGeo.at(-1)).toEqual(zone.checkpoints.at(-1)?.location);
+      for (const checkpoint of zone.checkpoints) {
+        const anchorIndex = zone.routeGeo.findIndex(
+          (anchor) => haversineDistance(anchor, checkpoint.location) < 0.5,
+        );
+        expect(anchorIndex).toBeGreaterThanOrEqual(0);
+        const projected = projectPositionToMap(checkpoint.location, zone, checkpoint);
+        expect(projected.x).toBeCloseTo(checkpoint.mapPoint.x, 4);
+        expect(projected.y).toBeCloseTo(checkpoint.mapPoint.y, 4);
+        expect(checkpoint.mapPoint).toEqual(zone.mapRoutePoints![anchorIndex]);
+      }
     }
   });
 

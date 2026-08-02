@@ -211,6 +211,54 @@ test("automatically arrives after two accurate nearby location samples", async (
   await expect(page.locator(".you-marker")).toBeVisible();
 });
 
+test("moves outside the suggested first-route start and keeps walking course stable", async ({ page, context, baseURL }) => {
+  await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
+  await context.setGeolocation({ latitude: 30.2594229, longitude: 120.1935934, accuracy: 20 });
+  await page.addInitScript(() => {
+    if (!("DeviceOrientationEvent" in window)) {
+      Object.defineProperty(window, "DeviceOrientationEvent", {
+        configurable: true,
+        value: class DeviceOrientationEvent extends Event {},
+      });
+    }
+    const nativeTimeout = window.setTimeout.bind(window);
+    window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
+      nativeTimeout(handler, timeout === 4_650 ? 40 : timeout, ...arguments_)) as typeof window.setTimeout;
+  });
+  await page.goto("/?run=e2e-formal-field-movement-v3");
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
+
+  const marker = page.locator(".you-marker");
+  const goal = page.locator(".goal-point");
+  await expect(marker).toHaveAttribute("data-map-x", /\d/);
+  const first = {
+    x: Number(await marker.getAttribute("data-map-x")),
+    y: Number(await marker.getAttribute("data-map-y")),
+  };
+  expect(first.x).toBeGreaterThan(Number(await goal.getAttribute("data-map-x")));
+
+  await context.setGeolocation({ latitude: 30.2594729, longitude: 120.1935434, accuracy: 19 });
+  await expect.poll(async () => {
+    const x = Number(await marker.getAttribute("data-map-x"));
+    const y = Number(await marker.getAttribute("data-map-y"));
+    return Math.hypot(x - first.x, y - first.y);
+  }).toBeGreaterThan(5);
+  await context.setGeolocation({ latitude: 30.2595229, longitude: 120.1934934, accuracy: 18 });
+  await expect(marker).toHaveAttribute("data-heading", /\d+/);
+  const walkingHeading = await marker.getAttribute("data-heading");
+
+  await page.evaluate(() => {
+    for (const value of [18, 301, 44]) {
+      const event = new Event("deviceorientation");
+      Object.defineProperty(event, "webkitCompassHeading", { value });
+      window.dispatchEvent(event);
+    }
+  });
+  await expect(marker).toHaveAttribute("data-heading", walkingHeading!);
+  await expect(page.locator(".paw-trail").first()).toBeVisible();
+});
+
 test("freezes the dot and resets arrival streak for coarse location samples", async ({ page, context, baseURL }) => {
   const parking = { latitude: 30.27463, longitude: 119.99011, accuracy: 18 };
   const target = { latitude: 30.27532, longitude: 119.99109, accuracy: 18 };
@@ -346,7 +394,8 @@ test("moves the explorer dot from live coordinates and force-arrival never telep
   const beforeY = Number(await marker.getAttribute("data-map-y"));
   await context.setGeolocation({ latitude: 30.27496, longitude: 119.99011, accuracy: 18 });
   await expect.poll(async () => Number(await marker.getAttribute("data-map-y"))).toBeLessThan(beforeY - 10);
-  await expect(marker).toHaveAttribute("data-heading", "0");
+  const mappedNorth = Number(await marker.getAttribute("data-heading"));
+  expect(Math.min(mappedNorth, 360 - mappedNorth)).toBeLessThan(10);
   await expect(page.locator(".paw-trail").first()).toBeVisible();
 
   const beforeForce = {

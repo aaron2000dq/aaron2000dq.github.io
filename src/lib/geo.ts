@@ -54,12 +54,13 @@ function segmentProjection(
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const lengthSq = dx * dx + dy * dy;
-  const t = lengthSq
-    ? Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / lengthSq))
+  const rawT = lengthSq
+    ? ((point.x - a.x) * dx + (point.y - a.y) * dy) / lengthSq
     : 0;
+  const t = Math.max(0, Math.min(1, rawT));
   const x = a.x + t * dx;
   const y = a.y + t * dy;
-  return { t, x, y, distance: Math.hypot(point.x - x, point.y - y) };
+  return { rawT, t, x, y, distance: Math.hypot(point.x - x, point.y - y) };
 }
 
 function projectLocationToRegisteredRoute(
@@ -74,6 +75,7 @@ function projectLocationToRegisteredRoute(
     | {
         segmentIndex: number;
         t: number;
+        rawT: number;
         signedDistanceM: number;
         distanceM: number;
       }
@@ -92,6 +94,7 @@ function projectLocationToRegisteredRoute(
       best = {
         segmentIndex: index,
         t: projection.t,
+        rawT: projection.rawT,
         signedDistanceM,
         distanceM: projection.distance,
       };
@@ -107,15 +110,26 @@ function projectLocationToRegisteredRoute(
   const geoStart = routeMeters[best.segmentIndex];
   const geoEnd = routeMeters[best.segmentIndex + 1];
   const geoLength = Math.hypot(geoEnd.x - geoStart.x, geoEnd.y - geoStart.y) || 1;
+  // A live fix before the suggested start or beyond the final route anchor is
+  // still a real position. Allow the first/last segment to extrapolate instead
+  // of clamping every such sample to a route endpoint. The old clamp is what
+  // made the distance counter change while the explorer dot stayed frozen.
+  let routeT = best.t;
+  if (best.segmentIndex === 0 && best.t === 0) {
+    routeT = Math.max(-2.5, best.rawT);
+  } else if (best.segmentIndex === routeMeters.length - 2 && best.t === 1) {
+    routeT = Math.min(3.5, best.rawT);
+  }
   const routePoint = {
-    x: mapStart.x + mapDx * best.t,
-    y: mapStart.y + mapDy * best.t,
+    x: mapStart.x + mapDx * routeT,
+    y: mapStart.y + mapDy * routeT,
   };
-  // A small signed cross-track component keeps the dot genuinely two
-  // dimensional while preventing a bad first fix from pinning it to a corner.
+  // Preserve cross-track movement as a second dimension. This is intentionally
+  // wider than the previous 56 px cap: someone may park on a neighbouring
+  // street, and walking there must visibly move the dot rather than pin it.
   const lateralPixels = Math.max(
-    -56,
-    Math.min(56, best.signedDistanceM * (mapLength / geoLength)),
+    -180,
+    Math.min(180, best.signedDistanceM * (mapLength / geoLength)),
   );
   const mapLeftNormal = { x: mapDy / mapLength, y: -mapDx / mapLength };
   return {
@@ -193,11 +207,45 @@ export function smoothPositionSample(
     longitude: previous.longitude + (next.longitude - previous.longitude) * alpha,
     accuracy: next.accuracy,
     timestamp: next.timestamp,
-    // A heading describes the current sample, not a permanent orientation.
-    // Dropping a stale course lets the live device compass take over while the
-    // explorer is standing still or after a new chapter begins.
-    heading: Number.isFinite(next.heading) ? next.heading : undefined,
+    // Keep the last trustworthy walking course until a new course can be
+    // calculated. Falling back to the raw compass on every small GPS step made
+    // the arrow spin while the explorer was walking in a straight line.
+    heading: Number.isFinite(next.heading) ? next.heading : previous.heading,
   };
+}
+
+function destinationPoint(point: LatLng, distanceM: number, headingDegrees: number): LatLng {
+  const heading = (headingDegrees * Math.PI) / 180;
+  return {
+    latitude:
+      point.latitude +
+      ((distanceM * Math.cos(heading)) / EARTH_RADIUS_M) * (180 / Math.PI),
+    longitude:
+      point.longitude +
+      ((distanceM * Math.sin(heading)) /
+        (EARTH_RADIUS_M * Math.cos((point.latitude * Math.PI) / 180))) *
+        (180 / Math.PI),
+  };
+}
+
+/** Convert a geographic course into the illustrated page's local direction. */
+export function projectHeadingToMap(
+  point: LatLng,
+  headingDegrees: number,
+  zone: ExplorationZone,
+  checkpoint: Checkpoint,
+) {
+  if (!Number.isFinite(headingDegrees)) return 0;
+  const start = projectPositionToMap(point, zone, checkpoint);
+  const ahead = projectPositionToMap(
+    destinationPoint(point, 6, headingDegrees),
+    zone,
+    checkpoint,
+  );
+  const dx = ahead.x - start.x;
+  const dy = ahead.y - start.y;
+  if (Math.hypot(dx, dy) < 0.01) return ((headingDegrees % 360) + 360) % 360;
+  return ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
 }
 
 /**

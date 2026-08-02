@@ -1,12 +1,14 @@
 "use client";
 
-import type { ExplorationZone, PositionSample, StoryProgress } from "@/src/types";
+import type { Checkpoint, ExplorationZone, PositionSample, StoryProgress } from "@/src/types";
 import { MagicMicroEffect } from "./MagicMicroEffect";
 
 type Props = {
   zone: ExplorationZone;
+  checkpoint: Checkpoint;
   progress: StoryProgress;
   position: PositionSample | null;
+  distanceToCheckpointM: number;
   surveyMode: boolean;
   onSurveyMode(value: boolean): void;
   onClose(): void;
@@ -19,8 +21,10 @@ type Props = {
 
 export function GmPanel({
   zone,
+  checkpoint,
   progress,
   position,
+  distanceToCheckpointM,
   surveyMode,
   onSurveyMode,
   onClose,
@@ -65,6 +69,9 @@ export function GmPanel({
           {position ? (
             <code>{position.latitude.toFixed(6)}, {position.longitude.toFixed(6)} · ±{Math.round(position.accuracy)}m</code>
           ) : <span>暂无有效位置</span>}
+          <b>目标校验</b>
+          <code>{checkpoint.location.latitude.toFixed(6)}, {checkpoint.location.longitude.toFixed(6)}</code>
+          <span>WGS‑84 直线距离：{Number.isFinite(distanceToCheckpointM) ? `${Math.round(distanceToCheckpointM)}m` : "等待定位"}</span>
         </div>
         <footer>
           <button className="danger-text" onClick={() => onReset(true)}>保留照片并重置进度</button>

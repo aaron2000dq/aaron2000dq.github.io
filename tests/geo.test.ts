@@ -6,6 +6,7 @@ import {
   isInsideCheckpoint,
   matchPositionToRoute,
   medianSample,
+  projectHeadingToMap,
   projectLocationToBounds,
   projectPositionToMap,
   smoothPositionSample,
@@ -102,17 +103,54 @@ describe("geographic matching", () => {
     }
   });
 
-  it("does not pin a far or wrong-system sample to a map corner", () => {
+  it("contains a far or wrong-system sample inside the visible map", () => {
     const zone = zones[0];
     const point = projectPositionToMap(
       { latitude: 30.257345, longitude: 120.195869 },
       zone,
       zone.checkpoints[0],
     );
-    expect(point.x).toBeGreaterThan(16);
-    expect(point.x).toBeLessThan(784);
-    expect(point.y).toBeGreaterThan(16);
-    expect(point.y).toBeLessThan(484);
+    expect(point.x).toBeGreaterThanOrEqual(16);
+    expect(point.x).toBeLessThanOrEqual(784);
+    expect(point.y).toBeGreaterThanOrEqual(16);
+    expect(point.y).toBeLessThanOrEqual(484);
+  });
+
+  it("keeps moving before the suggested start instead of pinning to the route endpoint", () => {
+    const zone = zones[0];
+    const checkpoint = zone.checkpoints[0];
+    const first = projectPositionToMap(
+      { latitude: 30.2594229, longitude: 120.1935934 },
+      zone,
+      checkpoint,
+    );
+    const second = projectPositionToMap(
+      { latitude: 30.2594729, longitude: 120.1935434 },
+      zone,
+      checkpoint,
+    );
+    expect(Math.hypot(second.x - first.x, second.y - first.y)).toBeGreaterThan(5);
+  });
+
+  it("registers the field-test scene with the explorer east of the goal", () => {
+    const zone = zones[0];
+    const checkpoint = zone.checkpoints[0];
+    const start = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
+    const goal = projectPositionToMap(checkpoint.location, zone, checkpoint);
+    expect(start.x).toBeGreaterThan(goal.x);
+    expect(goal.x).toBeCloseTo(checkpoint.mapPoint.x, 5);
+    expect(goal.y).toBeCloseTo(checkpoint.mapPoint.y, 5);
+  });
+
+  it("rotates a geographic course into the illustrated route direction", () => {
+    const zone = zones[0];
+    const checkpoint = zone.checkpoints[0];
+    const geographicHeading = bearingDegrees(zone.routeGeo[0], zone.routeGeo[1]);
+    const mapped = projectHeadingToMap(zone.routeGeo[0], geographicHeading, zone, checkpoint);
+    const first = zone.mapRoutePoints![0];
+    const second = zone.mapRoutePoints![1];
+    const expected = ((Math.atan2(second.x - first.x, -(second.y - first.y)) * 180) / Math.PI + 360) % 360;
+    expect(mapped).toBeCloseTo(expected, 0);
   });
 
   it("keeps the four-gate map aligned to its real OSM bounds", () => {
@@ -128,7 +166,7 @@ describe("geographic matching", () => {
     const smoothed = smoothPositionSample(previous, next);
     expect(smoothed.latitude).toBeGreaterThan(30.27515);
     expect(smoothed.timestamp).toBe(2);
-    expect(smoothed.heading).toBeUndefined();
+    expect(smoothed.heading).toBe(180);
   });
 });
 

@@ -11,11 +11,19 @@ import type { PositionSample } from "@/src/types";
 
 type LocationStatus = "idle" | "requesting" | "active" | "imprecise" | "denied" | "unavailable";
 
+function smoothCourse(previous: number | undefined, next: number, alpha = 0.58) {
+  if (!Number.isFinite(previous)) return ((next % 360) + 360) % 360;
+  const turn = ((next - Number(previous) + 540) % 360) - 180;
+  return (Number(previous) + turn * alpha + 360) % 360;
+}
+
 export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
   const [status, setStatus] = useState<LocationStatus>("idle");
   const [sample, setSample] = useState<PositionSample | null>(null);
   const [error, setError] = useState("");
   const sampleRef = useRef<PositionSample | null>(null);
+  const courseAnchorRef = useRef<PositionSample | null>(null);
+  const stableCourseRef = useRef<number | undefined>(undefined);
   const watchId = useRef<number | null>(null);
 
   const stop = useCallback(() => {
@@ -33,6 +41,8 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
     }
     stop();
     sampleRef.current = null;
+    courseAnchorRef.current = null;
+    stableCourseRef.current = undefined;
     setSample(null);
     setStatus("requesting");
     setError("");
@@ -52,10 +62,30 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
           return;
         }
         const previous = sampleRef.current;
-        if (previous && !Number.isFinite(next.heading)) {
-          const movedM = haversineDistance(previous, next);
-          const courseThresholdM = Math.max(4, Math.min(12, next.accuracy * 0.3));
-          if (movedM >= courseThresholdM) next.heading = bearingDegrees(previous, next);
+        if (Number.isFinite(next.heading)) {
+          stableCourseRef.current = smoothCourse(stableCourseRef.current, Number(next.heading));
+          next.heading = stableCourseRef.current;
+          courseAnchorRef.current = next;
+        } else {
+          const anchor = courseAnchorRef.current;
+          if (!anchor) {
+            courseAnchorRef.current = next;
+          } else {
+            // Accumulate several small Safari fixes against a stable anchor.
+            // Comparing only with the immediately previous sample meant a user
+            // could walk continuously without any individual step crossing the
+            // old 6-12 m threshold, so a walking course was never produced.
+            const movedM = haversineDistance(anchor, next);
+            const courseThresholdM = Math.max(3, Math.min(6, next.accuracy * 0.16));
+            if (movedM >= courseThresholdM) {
+              const course = bearingDegrees(anchor, next);
+              stableCourseRef.current = smoothCourse(stableCourseRef.current, course);
+              next.heading = stableCourseRef.current;
+              courseAnchorRef.current = next;
+            } else if (Number.isFinite(stableCourseRef.current)) {
+              next.heading = stableCourseRef.current;
+            }
+          }
         }
         const smoothed = smoothPositionSample(sampleRef.current, next);
         sampleRef.current = smoothed;
@@ -81,6 +111,8 @@ export function useGeolocation(enabled: boolean, maxAccuracy = 200) {
       stop();
       setStatus("idle");
       sampleRef.current = null;
+      courseAnchorRef.current = null;
+      stableCourseRef.current = undefined;
       setSample(null);
     }
     return stop;

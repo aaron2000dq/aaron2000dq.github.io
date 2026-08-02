@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { projectPositionToMap } from "@/src/lib/geo";
+import { projectHeadingToMap, projectPositionToMap } from "@/src/lib/geo";
 import type { Checkpoint, ExplorationZone, PositionSample } from "@/src/types";
 import { MapMagicOverlay } from "./MapMagicOverlay";
 
@@ -259,6 +259,13 @@ export function MapCanvas({
   const [failedAsset, setFailedAsset] = useState<string | null>(null);
   const hasIllustratedBase = Boolean(illustratedMap && failedAsset !== illustratedMap);
   const [marker, setMarker] = useState(zone.parkingMapPoint);
+  const mappedHeading = useMemo(
+    () =>
+      position
+        ? projectHeadingToMap(position, heading, zone, checkpoint)
+        : ((heading % 360) + 360) % 360,
+    [position, heading, zone, checkpoint],
+  );
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [pawTrail, setPawTrail] = useState<Array<{
@@ -440,6 +447,8 @@ export function MapCanvas({
           <g
             transform={`translate(${checkpoint.mapPoint.x} ${checkpoint.mapPoint.y})`}
             className={`atlas-point goal-point ${arrived ? "arrived" : ""}`}
+            data-map-x={checkpoint.mapPoint.x.toFixed(1)}
+            data-map-y={checkpoint.mapPoint.y.toFixed(1)}
             role="img"
             aria-label={arrived ? `目的地 ${checkpoint.label}` : "尚未揭晓的目的地"}
           >
@@ -468,7 +477,7 @@ export function MapCanvas({
             animate={{ x: marker.x, y: marker.y }}
             transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
             className={`atlas-point you-marker ${locationReliable ? "" : "in-fog"}`}
-            data-heading={Math.round(((heading % 360) + 360) % 360)}
+            data-heading={Math.round(mappedHeading)}
             data-map-x={marker.x.toFixed(1)}
             data-map-y={marker.y.toFixed(1)}
             role="img"
@@ -480,7 +489,7 @@ export function MapCanvas({
               <circle cx="-12" cy="6" r="1.2" />
               <path d="M0-14A14 14 0 0 1 11 8M11 8A14 14 0 0 1-12 6M-12 6A14 14 0 0 1 0-14" />
             </g>
-            <g className="you-heading-arrow" transform={`rotate(${heading})`}>
+            <g className="you-heading-arrow" transform={`rotate(${mappedHeading})`}>
               <path d="M0-25 10-9 3-11 0-8-3-11-10-9Z" />
             </g>
             <circle r="9" className="point-glow" />

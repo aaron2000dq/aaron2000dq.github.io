@@ -14,7 +14,11 @@ export const zones: ExplorationZone[] = [
     mysteryTitle: "XXVIII · THE FIRST PASSAGE",
     mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
     parkingLabel: "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
-    parkingMapPoint: { x: 110, y: 420 },
+    // The formal page is registered to the real scene shown during the field
+    // test: 紫藕邨 is east of the canal; the bicycle shop is west of the canal
+    // on the south side of 庆春东路. These page anchors deliberately preserve
+    // that relationship instead of mirroring it for visual composition.
+    parkingMapPoint: { x: 650, y: 290 },
     center: { latitude: 30.2598, longitude: 120.19218 },
     coordinateSystem: "wgs84",
     routeGeo: [
@@ -24,12 +28,12 @@ export const zones: ExplorationZone[] = [
       { latitude: 30.2597418, longitude: 120.1912823 },
     ],
     mapRoutePoints: [
-      { x: 110, y: 420 },
-      { x: 190, y: 360 },
-      { x: 455, y: 205 },
-      { x: 560, y: 120 },
+      { x: 650, y: 290 },
+      { x: 640, y: 260 },
+      { x: 330, y: 215 },
+      { x: 280, y: 225 },
     ],
-    svgPath: "M110 420 L175 398 L235 350 L300 320 L365 270 L430 240 L490 190 L530 150 L560 120",
+    svgPath: "M650 290 L640 260 L585 250 L525 235 L465 222 L400 215 L330 215 L280 225",
     maxLocationAccuracyM: 200,
     accent: "#4c5636",
     mapKind: "garden",
@@ -52,7 +56,7 @@ export const zones: ExplorationZone[] = [
         unlockCopy:
           "从这一页开始，二十九岁的路不必只靠双脚。第一个出现在新一岁的魔法，是让通勤也变成自由旅行的动力。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 560, y: 120 },
+        mapPoint: { x: 280, y: 225 },
       },
     ],
   },

@@ -562,7 +562,26 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       </AnimatePresence>
 
       {gmPinOpen && <div className="gm-backdrop"><form className="pin-card" onSubmit={submitPin}><MagicMicroEffect variant="rune" /><span>CARTOGRAPHER ONLY</span><h2>输入制图人口令</h2><input autoFocus inputMode="numeric" maxLength={4} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}/>{pinError && <p>墨迹没有认出这个口令。</p>}<div><button type="button" onClick={() => setGmPinOpen(false)}>取消</button><button className="primary-button">进入</button></div></form></div>}
-      {gmOpen && <GmPanel zone={zone} progress={progress} position={position} surveyMode={surveyMode} onSurveyMode={setSurveyMode} onClose={() => setGmOpen(false)} onForceArrive={forceArrive} onForcePass={forcePass} onPrevious={previousCheckpoint} onReset={resetAll} onMockPosition={() => { setMockPosition({ ...checkpoint.location, accuracy: 12, timestamp: Date.now() }); setGmOpen(false); }}/>} 
+      {gmOpen && (
+        <GmPanel
+          zone={zone}
+          checkpoint={checkpoint}
+          progress={progress}
+          position={position}
+          distanceToCheckpointM={routeMatch.distanceToCheckpointM}
+          surveyMode={surveyMode}
+          onSurveyMode={setSurveyMode}
+          onClose={() => setGmOpen(false)}
+          onForceArrive={forceArrive}
+          onForcePass={forcePass}
+          onPrevious={previousCheckpoint}
+          onReset={resetAll}
+          onMockPosition={() => {
+            setMockPosition({ ...checkpoint.location, accuracy: 12, timestamp: Date.now() });
+            setGmOpen(false);
+          }}
+        />
+      )}
     </main>
   );
 }
