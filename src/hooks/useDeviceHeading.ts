@@ -54,7 +54,9 @@ export function useDeviceHeading() {
 
   const onOrientation = useCallback((nativeEvent: DeviceOrientationEvent) => {
     const now = performance.now();
-    if (now - lastUpdate.current < 70) return;
+    // Keep up with a hand-held turn. The old 70 ms gate was visible on top of
+    // Safari's own sensor cadence, especially when the iPad was landscape.
+    if (now - lastUpdate.current < 24) return;
     const raw = compassDegrees(nativeEvent as CompassOrientationEvent);
     if (raw === null) return;
 
@@ -72,6 +74,7 @@ export function useDeviceHeading() {
   const attach = useCallback(() => {
     if (attached.current) return;
     window.addEventListener("deviceorientation", onOrientation, true);
+    window.addEventListener("deviceorientationabsolute", onOrientation, true);
     attached.current = true;
   }, [onOrientation]);
 
@@ -115,7 +118,10 @@ export function useDeviceHeading() {
     window.addEventListener("orientationchange", resetForScreenRotation);
     window.screen.orientation?.addEventListener?.("change", resetForScreenRotation);
     return () => {
-      if (attached.current) window.removeEventListener("deviceorientation", onOrientation, true);
+      if (attached.current) {
+        window.removeEventListener("deviceorientation", onOrientation, true);
+        window.removeEventListener("deviceorientationabsolute", onOrientation, true);
+      }
       window.removeEventListener("orientationchange", resetForScreenRotation);
       window.screen.orientation?.removeEventListener?.("change", resetForScreenRotation);
       attached.current = false;

@@ -211,7 +211,7 @@ test("automatically arrives after two accurate nearby location samples", async (
   await expect(page.locator(".you-marker")).toBeVisible();
 });
 
-test("moves outside the suggested first-route start and keeps walking course stable", async ({ page, context, baseURL }) => {
+test("moves outside the suggested first-route start and lets the live compass override walking course", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
   await context.setGeolocation({ latitude: 30.2594229, longitude: 120.1935934, accuracy: 20 });
   await page.addInitScript(() => {
@@ -246,16 +246,12 @@ test("moves outside the suggested first-route start and keeps walking course sta
   }).toBeGreaterThan(5);
   await context.setGeolocation({ latitude: 30.2595229, longitude: 120.1934934, accuracy: 18 });
   await expect(marker).toHaveAttribute("data-heading", /\d+/);
-  const walkingHeading = await marker.getAttribute("data-heading");
-
   await page.evaluate(() => {
-    for (const value of [18, 301, 44]) {
-      const event = new Event("deviceorientation");
-      Object.defineProperty(event, "webkitCompassHeading", { value });
-      window.dispatchEvent(event);
-    }
+    const event = new Event("deviceorientation");
+    Object.defineProperty(event, "webkitCompassHeading", { value: 44 });
+    window.dispatchEvent(event);
   });
-  await expect(marker).toHaveAttribute("data-heading", walkingHeading!);
+  await expect(marker).toHaveAttribute("data-heading", "44");
   await expect(page.locator(".paw-trail").first()).toBeVisible();
 });
 

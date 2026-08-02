@@ -174,7 +174,7 @@ describe("geographic matching", () => {
     const previous = { latitude: 30.275, longitude: 119.99, accuracy: 35, timestamp: 1, heading: 180 };
     const next = { latitude: 30.2752, longitude: 119.99, accuracy: 35, timestamp: 2 };
     const smoothed = smoothPositionSample(previous, next);
-    expect(smoothed.latitude).toBeGreaterThan(30.27515);
+    expect(smoothed.latitude).toBe(next.latitude);
     expect(smoothed.timestamp).toBe(2);
     expect(smoothed.heading).toBe(180);
   });

@@ -473,7 +473,7 @@ h1, h2, h3, blockquote, .display-type {
 .goal-arrival-ripple.ripple-two { animation-delay: .2s; }
 .goal-tag rect { fill: #382319e8; stroke: #d8ba79; stroke-width: .8; }
 .goal-tag text { fill: #f1d79e; font-size: 6.2px; font-weight: 700; letter-spacing: .12em; text-anchor: middle; }
-.you-heading-arrow { transform-origin: 0 0; transition: transform .18s linear; }
+.you-heading-arrow { transform-origin: 0 0; transition: transform .06s linear; }
 .you-heading-arrow path { fill: #73372b; stroke: #ead299; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 3px #1a0f0a99); }
 .you-magic-orbit { fill: #a55734; stroke: #572a1d; stroke-width: .55; opacity: .72; transform-box: fill-box; transform-origin: center; animation: currentMagicOrbit 7s linear infinite; filter: drop-shadow(0 0 2px #f1c777); }
 .you-magic-orbit path { fill: none; stroke-dasharray: 1 5; opacity: .42; }

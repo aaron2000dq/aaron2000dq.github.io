@@ -492,7 +492,7 @@ export function MapCanvas({
           <motion.g
             initial={false}
             animate={{ x: marker.x, y: marker.y }}
-            transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.12, ease: "easeOut" }}
             className={`atlas-point you-marker ${locationReliable ? "" : "in-fog"}`}
             data-heading={Math.round(mappedHeading)}
             data-map-x={marker.x.toFixed(1)}

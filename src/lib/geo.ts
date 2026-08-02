@@ -203,8 +203,12 @@ export function smoothPositionSample(
 ): PositionSample {
   if (!previous || next.timestamp <= previous.timestamp) return next;
   const movedM = haversineDistance(previous, next);
-  const meaningfulMoveM = Math.max(2.5, Math.min(10, next.accuracy * 0.12));
-  const alpha = movedM >= meaningfulMoveM ? 0.78 : 0.48;
+  // Geolocation fixes on iPadOS already arrive relatively slowly. Applying a
+  // second, heavy low-pass filter here made the marker trail several metres
+  // behind every fix. Preserve a little damping only for sub-metre GPS noise;
+  // any real walking step is rendered at the newest accepted coordinate.
+  const meaningfulMoveM = Math.max(1, Math.min(2, next.accuracy * 0.04));
+  const alpha = movedM >= meaningfulMoveM ? 1 : 0.72;
   return {
     latitude: previous.latitude + (next.latitude - previous.latitude) * alpha,
     longitude: previous.longitude + (next.longitude - previous.longitude) * alpha,
