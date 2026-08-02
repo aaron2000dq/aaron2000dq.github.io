@@ -34,7 +34,7 @@ function compassDegrees(event: CompassOrientationEvent) {
   let raw: number | null = null;
   if (Number.isFinite(event.webkitCompassHeading)) {
     raw = Number(event.webkitCompassHeading);
-  } else if (Number.isFinite(event.alpha)) {
+  } else if (event.absolute === true && Number.isFinite(event.alpha)) {
     raw = (360 - Number(event.alpha) + 360) % 360;
   }
   if (raw === null) return null;
@@ -73,8 +73,11 @@ export function useDeviceHeading() {
 
   const attach = useCallback(() => {
     if (attached.current) return;
+    // On iPadOS, `deviceorientation` carries the calibrated
+    // webkitCompassHeading. Listening to `deviceorientationabsolute` as well
+    // can deliver a second alpha-only event in another reference frame and
+    // make the arrow flip just after walking begins.
     window.addEventListener("deviceorientation", onOrientation, true);
-    window.addEventListener("deviceorientationabsolute", onOrientation, true);
     attached.current = true;
   }, [onOrientation]);
 
@@ -120,7 +123,6 @@ export function useDeviceHeading() {
     return () => {
       if (attached.current) {
         window.removeEventListener("deviceorientation", onOrientation, true);
-        window.removeEventListener("deviceorientationabsolute", onOrientation, true);
       }
       window.removeEventListener("orientationchange", resetForScreenRotation);
       window.screen.orientation?.removeEventListener?.("change", resetForScreenRotation);

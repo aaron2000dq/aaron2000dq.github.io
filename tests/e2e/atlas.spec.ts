@@ -252,6 +252,17 @@ test("moves outside the suggested first-route start and lets the live compass ov
     window.dispatchEvent(event);
   });
   await expect(marker).toHaveAttribute("data-heading", "44");
+
+  // Walking must not replace the calibrated device-facing direction with a
+  // GPS-derived course or an alpha-only event from another reference frame.
+  await context.setGeolocation({ latitude: 30.2595729, longitude: 120.1934434, accuracy: 18 });
+  await page.evaluate(() => {
+    const event = new Event("deviceorientation");
+    Object.defineProperty(event, "alpha", { value: 224 });
+    Object.defineProperty(event, "absolute", { value: false });
+    window.dispatchEvent(event);
+  });
+  await expect(marker).toHaveAttribute("data-heading", "44");
   await expect(page.locator(".paw-trail").first()).toBeVisible();
 });
 
