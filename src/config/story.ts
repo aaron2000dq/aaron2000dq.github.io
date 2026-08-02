@@ -15,9 +15,9 @@ export const zones: ExplorationZone[] = [
     mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
     parkingLabel: "采荷小区紫藕邨 1 幢附近 · 双菱路 60 号",
     // The formal page is registered to the real scene shown during the field
-    // test: 紫藕邨 is east of the canal; the bicycle shop is west of the canal
-    // on the south side of 庆春东路. These page anchors deliberately preserve
-    // that relationship instead of mirroring it for visual composition.
+    // 紫藕邨 is southeast of the bicycle shop. The blue water belongs only to
+    // 采荷科普园 and ends south of 庆春东路; the suggested walk goes around its
+    // dry northern end and never crosses water.
     parkingMapPoint: { x: 558.9, y: 255 },
     center: { latitude: 30.2598, longitude: 120.19218 },
     coordinateSystem: "wgs84",
@@ -44,7 +44,7 @@ export const zones: ExplorationZone[] = [
       west: 120.1896,
       east: 120.1946,
     },
-    illustratedMapAsset: "/assets/maps/caihe-motion-v3.jpg",
+    illustratedMapAsset: "/assets/maps/caihe-motion-v4.png",
     checkpoints: [
       {
         id: "liv-motion",

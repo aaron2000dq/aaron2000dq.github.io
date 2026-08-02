@@ -49,7 +49,7 @@ describe("formal story route", () => {
 
   it("uses one new illustrated map for each of the three formal walking areas", () => {
     expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
-      "/assets/maps/caihe-motion-v3.jpg",
+      "/assets/maps/caihe-motion-v4.png",
       "/assets/maps/jingwei-sound-v3.jpg",
       "/assets/maps/qianjiang-grand-north-v4.png",
     ]);

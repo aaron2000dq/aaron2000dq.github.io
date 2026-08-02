@@ -9,6 +9,7 @@ type Props = {
   progress: StoryProgress;
   position: PositionSample | null;
   distanceToCheckpointM: number;
+  headingCorrection: number;
   surveyMode: boolean;
   onSurveyMode(value: boolean): void;
   onClose(): void;
@@ -17,6 +18,7 @@ type Props = {
   onPrevious(): void;
   onReset(keepPhotos: boolean): void;
   onMockPosition(): void;
+  onToggleHeadingCorrection(): void;
 };
 
 export function GmPanel({
@@ -25,6 +27,7 @@ export function GmPanel({
   progress,
   position,
   distanceToCheckpointM,
+  headingCorrection,
   surveyMode,
   onSurveyMode,
   onClose,
@@ -33,6 +36,7 @@ export function GmPanel({
   onPrevious,
   onReset,
   onMockPosition,
+  onToggleHeadingCorrection,
 }: Props) {
   function exportSurvey() {
     const data = {
@@ -60,6 +64,7 @@ export function GmPanel({
           <button onClick={onForceArrive}>强制抵达</button>
           <button onClick={onForcePass}>强制过关</button>
           <button onClick={onMockPosition}>模拟当前目标坐标</button>
+          <button onClick={onToggleHeadingCorrection}>方向翻转 180°</button>
           <button onClick={onPrevious}>退回上一关</button>
           <button onClick={exportSurvey}>导出当前勘测点</button>
           <label className="gm-toggle"><input type="checkbox" checked={surveyMode} onChange={(event) => onSurveyMode(event.target.checked)}/><span>现场勘测模式</span></label>
@@ -72,6 +77,7 @@ export function GmPanel({
           <b>目标校验</b>
           <code>{checkpoint.location.latitude.toFixed(6)}, {checkpoint.location.longitude.toFixed(6)}</code>
           <span>WGS‑84 直线距离：{Number.isFinite(distanceToCheckpointM) ? `${Math.round(distanceToCheckpointM)}m` : "等待定位"}</span>
+          <span>设备方向补偿：{headingCorrection}°</span>
         </div>
         <footer>
           <button className="danger-text" onClick={() => onReset(true)}>保留照片并重置进度</button>

@@ -69,6 +69,14 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
   const [surveyMode, setSurveyMode] = useState(false);
+  // Field testing on the target iPad shows Safari's calibrated compass vector
+  // points at the near landscape edge. The explorer faces across the screen,
+  // so the formal experience needs a 180° facing correction. Keep a persistent
+  // GM toggle because iPad models can disagree about that physical reference.
+  const [headingCorrection, setHeadingCorrection] = useState(() => {
+    const saved = window.localStorage.getItem("exploration-atlas:heading-correction");
+    return saved === "0" ? 0 : 180;
+  });
   const [mockPosition, setMockPosition] = useState<PositionSample | null>(null);
   const [insideStreak, setInsideStreak] = useState(0);
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
@@ -96,6 +104,9 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   );
   const deviceHeading = useDeviceHeading();
   const position = mockPosition ?? location.sample;
+  const displayedHeading = deviceHeading.heading !== null
+    ? (deviceHeading.heading + headingCorrection) % 360
+    : position?.heading ?? 0;
   const routeMatch = useMemo(
     () =>
       position
@@ -505,7 +516,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           >
             <header className="topbar"><div><i className="topbar-sigil" aria-hidden="true"/><span>THE EXPLORATION ATLAS · XXVIII → XXIX</span><b>{displayedZoneTitle}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已揭晓" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
-              <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={deviceHeading.heading ?? position?.heading ?? 0} onMapFocus={() => setQuestExpanded(false)}/>
+              <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={displayedHeading} onMapFocus={() => setQuestExpanded(false)}/>
               <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
                 <MagicMicroEffect variant="ripple" />
                 <button
@@ -569,6 +580,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           progress={progress}
           position={position}
           distanceToCheckpointM={routeMatch.distanceToCheckpointM}
+          headingCorrection={headingCorrection}
           surveyMode={surveyMode}
           onSurveyMode={setSurveyMode}
           onClose={() => setGmOpen(false)}
@@ -579,6 +591,13 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
           onMockPosition={() => {
             setMockPosition({ ...checkpoint.location, accuracy: 12, timestamp: Date.now() });
             setGmOpen(false);
+          }}
+          onToggleHeadingCorrection={() => {
+            setHeadingCorrection((current) => {
+              const next = current === 180 ? 0 : 180;
+              window.localStorage.setItem("exploration-atlas:heading-correction", String(next));
+              return next;
+            });
           }}
         />
       )}

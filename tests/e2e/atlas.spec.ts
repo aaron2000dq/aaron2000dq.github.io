@@ -251,7 +251,7 @@ test("moves outside the suggested first-route start and lets the live compass ov
     Object.defineProperty(event, "webkitCompassHeading", { value: 44 });
     window.dispatchEvent(event);
   });
-  await expect(marker).toHaveAttribute("data-heading", "44");
+  await expect(marker).toHaveAttribute("data-heading", "224");
 
   // Walking must not replace the calibrated device-facing direction with a
   // GPS-derived course or an alpha-only event from another reference frame.
@@ -262,7 +262,7 @@ test("moves outside the suggested first-route start and lets the live compass ov
     Object.defineProperty(event, "absolute", { value: false });
     window.dispatchEvent(event);
   });
-  await expect(marker).toHaveAttribute("data-heading", "44");
+  await expect(marker).toHaveAttribute("data-heading", "224");
   await expect(page.locator(".paw-trail").first()).toBeVisible();
 });
 
@@ -327,8 +327,8 @@ test("uses two breathing dots and rotates the current-position arrow", async ({ 
     Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
     window.dispatchEvent(event);
   });
-  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "123");
-  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(123)");
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "303");
+  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(303)");
 });
 
 test("compensates the compass for an iPad landscape screen", async ({ page }) => {
@@ -352,8 +352,8 @@ test("compensates the compass for an iPad landscape screen", async ({ page }) =>
     Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
     window.dispatchEvent(event);
   });
-  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "33");
-  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(33)");
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "213");
+  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(213)");
 });
 
 test("uses the iPad legacy quarter-turn when Screen Orientation is stuck at zero", async ({ page }) => {
@@ -381,7 +381,7 @@ test("uses the iPad legacy quarter-turn when Screen Orientation is stuck at zero
     Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
     window.dispatchEvent(event);
   });
-  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "33");
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "213");
 });
 
 test("uses the physical iPad landscape side when screen orientation reports the opposite side", async ({ page }) => {
@@ -409,8 +409,8 @@ test("uses the physical iPad landscape side when screen orientation reports the 
     Object.defineProperty(event, "webkitCompassHeading", { value: 123 });
     window.dispatchEvent(event);
   });
-  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "213");
-  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(213)");
+  await expect(page.locator(".you-marker")).toHaveAttribute("data-heading", "33");
+  await expect(page.locator(".you-heading-arrow")).toHaveAttribute("transform", "rotate(33)");
 });
 
 test("moves the explorer dot from live coordinates and force-arrival never teleports it", async ({ page, context, baseURL }) => {
