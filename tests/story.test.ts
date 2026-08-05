@@ -10,13 +10,13 @@ describe("formal story route", () => {
     expect(zones.map((zone) => zone.checkpoints.filter((item) => item.giftType !== "love").length))
       .toEqual([1, 1, 3]);
     expect(zones.flatMap((zone) => zone.checkpoints).map((item) => item.giftType))
-      .toEqual(["motion", "sound", "scent", "sparkle", "taste", "love"]);
+      .toEqual(["sound", "motion", "scent", "sparkle", "taste", "love"]);
   });
 
   it("starts each map at the intended parking area", () => {
     expect(zones.map((zone) => zone.parkingLabel)).toEqual([
-      "采荷科普园东侧 · 五安路附近",
       "经纬国际创意产业园停车场 · 石桥路 279 号",
+      "采荷科普园东侧 · 五安路附近",
       "杭州来福士中心 · T1 停车区",
     ]);
   });
@@ -49,14 +49,15 @@ describe("formal story route", () => {
 
   it("uses one new illustrated map for each of the three formal walking areas", () => {
     expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
-      "/assets/maps/caihe-motion-v4.png",
       "/assets/maps/jingwei-sound-v3.jpg",
+      "/assets/maps/caihe-motion-v4.png",
       "/assets/maps/qianjiang-grand-north-v4.png",
     ]);
   });
 
-  it("uses the real first-checkpoint pose photo instead of a placeholder", () => {
-    expect(zones[0].checkpoints[0].referenceImage).toBe("/references/motion-official-v1.jpg");
+  it("keeps the field-tested bicycle pose photo instead of a placeholder", () => {
+    const bicycleZone = zones.find((zone) => zone.id === "motion-district");
+    expect(bicycleZone?.checkpoints[0].referenceImage).toBe("/references/motion-official-v1.jpg");
   });
 
   it("keeps every active goal clear of the floating quest panel", () => {
@@ -72,6 +73,6 @@ describe("full rehearsal story route", () => {
   it("mirrors the formal three-map structure around the four fixed gates", () => {
     expect(fullTestZones).toHaveLength(3);
     expect(fullTestZones.flatMap((zone) => zone.checkpoints).map((item) => item.giftType))
-      .toEqual(["motion", "sound", "scent", "sparkle", "taste", "love"]);
+      .toEqual(["sound", "motion", "scent", "sparkle", "taste", "love"]);
   });
 });

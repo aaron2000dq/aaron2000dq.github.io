@@ -17,7 +17,7 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.locator(".intro-screen")).toHaveClass(/is-opening/);
   await expect(page.locator(".intro-map-sheet")).toHaveCount(0);
   await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
-  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/caihe-motion-v4.png");
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", "/assets/maps/jingwei-sound-v3.jpg");
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
 
   const compass = page.getByRole("button", { name: "指南针" });
@@ -70,14 +70,14 @@ test("renders a layered magical atmosphere without blocking the atlas", async ({
   await expect(page.locator(".map-illustration-loading")).toHaveCount(0);
   await expect(page.locator(".map-arcane-fog")).toHaveCount(2);
   await expect(page.locator(".theme-ambient")).toHaveCount(1);
-  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "motion");
+  await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", "sound");
   await expect(page.locator(".theme-trace")).toHaveCount(1);
   await expect(page.locator(".theme-particles i")).toHaveCount(12);
   await expect(page.locator(".theme-light-blooms i")).toHaveCount(3);
   await expect(page.locator(".chapter-cinematic-asset")).toHaveCount(0);
   expect(
     await page.locator(".theme-particles i").first().evaluate((element) => getComputedStyle(element).animationName),
-  ).toBe("motionWindCurrent");
+  ).toBe("soundNotePhrase");
   await expect(page.locator(".ink-constellation circle")).toHaveCount(6);
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
   await expect(page.locator(".you-magic-orbit")).toBeVisible();
@@ -186,15 +186,15 @@ test("keeps the magical interface usable with reduced motion", async ({ page }) 
 
 test("automatically arrives after two accurate nearby location samples", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.2585314, longitude: 120.1933382, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.3270953, longitude: 120.1834653, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.25975, longitude: 120.19155, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.32742, longitude: 120.18396, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.2597418, longitude: 120.1912823, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.3274763, longitude: 120.1840469, accuracy: 14 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.259742, longitude: 120.1912824, accuracy: 13 });
+  await context.setGeolocation({ latitude: 30.3274765, longitude: 120.184047, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
   await expect(page.locator(".arrival-rune-seal")).toBeVisible();
@@ -213,7 +213,7 @@ test("automatically arrives after two accurate nearby location samples", async (
 
 test("moves outside the suggested first-route start and lets the live compass override walking course", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.2594229, longitude: 120.1935934, accuracy: 20 });
+  await context.setGeolocation({ latitude: 30.3270153, longitude: 120.1833853, accuracy: 20 });
   await page.addInitScript(() => {
     if (!("DeviceOrientationEvent" in window)) {
       Object.defineProperty(window, "DeviceOrientationEvent", {
@@ -236,15 +236,15 @@ test("moves outside the suggested first-route start and lets the live compass ov
     x: Number(await marker.getAttribute("data-map-x")),
     y: Number(await marker.getAttribute("data-map-y")),
   };
-  expect(first.x).toBeGreaterThan(Number(await goal.getAttribute("data-map-x")));
+  expect(first.x).toBeLessThan(Number(await goal.getAttribute("data-map-x")));
 
-  await context.setGeolocation({ latitude: 30.2594729, longitude: 120.1935434, accuracy: 19 });
+  await context.setGeolocation({ latitude: 30.3270953, longitude: 120.1834653, accuracy: 19 });
   await expect.poll(async () => {
     const x = Number(await marker.getAttribute("data-map-x"));
     const y = Number(await marker.getAttribute("data-map-y"));
     return Math.hypot(x - first.x, y - first.y);
   }).toBeGreaterThan(5);
-  await context.setGeolocation({ latitude: 30.2595229, longitude: 120.1934934, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.3271753, longitude: 120.1835453, accuracy: 18 });
   await expect(marker).toHaveAttribute("data-heading", /\d+/);
   await page.evaluate(() => {
     const event = new Event("deviceorientation");
@@ -255,7 +255,7 @@ test("moves outside the suggested first-route start and lets the live compass ov
 
   // Walking must not replace the calibrated device-facing direction with a
   // GPS-derived course or an alpha-only event from another reference frame.
-  await context.setGeolocation({ latitude: 30.2595729, longitude: 120.1934434, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.3272553, longitude: 120.1836253, accuracy: 18 });
   await page.evaluate(() => {
     const event = new Event("deviceorientation");
     Object.defineProperty(event, "alpha", { value: 224 });
@@ -516,12 +516,12 @@ test("conceals every first coordinate answer until arrival, then reveals it toge
   await page.goto("/?mode=fulltest&run=e2e-no-spoilers");
   await page.getByRole("button", { name: "开启地图" }).click();
 
-  await expect(page.locator(".topbar b")).toHaveText("XXVIII · THE FIRST PASSAGE");
-  await expect(page.locator(".map-cartouche .map-title")).toHaveText("XXVIII · THE FIRST PASSAGE");
+  await expect(page.locator(".topbar b")).toHaveText("XXVIII · THE FIRST ECHO");
+  await expect(page.locator(".map-cartouche .map-title")).toHaveText("XXVIII · THE FIRST ECHO");
   await expect(page.locator(".quest-card h2")).toContainText("第一枚未知坐标");
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toBeVisible();
-  await expect(page.locator(".chapter-relic[data-gift='motion']")).toHaveCount(0);
-  await expect(page.getByText("好用的", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".chapter-relic[data-gift='sound']")).toHaveCount(0);
+  await expect(page.getByText("好听的", { exact: true })).toHaveCount(0);
   await expect(page.getByText("富力中心北区 · 东门", { exact: true })).toHaveCount(0);
   await expect(page.getByLabel(/目的地 富力中心北区/)).toHaveCount(0);
   await expect(page.getByLabel("尚未揭晓的目的地")).toBeVisible();
@@ -531,26 +531,26 @@ test("conceals every first coordinate answer until arrival, then reveals it toge
   await page.getByRole("button", { name: "强制抵达" }).click();
 
   await expect(page.locator(".topbar b")).toHaveText("FULI NORTH · EAST GATE");
-  await expect(page.locator(".quest-card h2")).toContainText("好用的");
+  await expect(page.locator(".quest-card h2")).toContainText("好听的");
   await expect(page.locator(".quest-card h2")).toContainText("富力中心北区 · 东门");
-  await expect(page.locator(".chapter-relic[data-gift='motion']")).toBeVisible();
+  await expect(page.locator(".chapter-relic[data-gift='sound']")).toBeVisible();
   await expect(page.locator(".chapter-relic[data-gift='mystery']")).toHaveCount(0);
 });
 
 test("restores the current unlocked checkpoint after a refresh", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
-  await context.setGeolocation({ latitude: 30.2585314, longitude: 120.1933382, accuracy: 18 });
+  await context.setGeolocation({ latitude: 30.3270953, longitude: 120.1834653, accuracy: 18 });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.25975, longitude: 120.19155, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.32742, longitude: 120.18396, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.2597418, longitude: 120.1912823, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.3274763, longitude: 120.1840469, accuracy: 14 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.259742, longitude: 120.1912824, accuracy: 13 });
+  await context.setGeolocation({ latitude: 30.3274765, longitude: 120.184047, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await page.reload();
-  await expect(page.locator(".topbar b")).toHaveText("Caihe · Motion District");
+  await expect(page.locator(".topbar b")).toHaveText("Jingwei · Sound District");
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
@@ -566,7 +566,7 @@ test("isolates a named formal preview run from previously saved formal progress"
   await expect(page.getByText("第一枚未知坐标")).toBeVisible({ timeout: 7_000 });
   await expect(page.locator("image.illustrated-base-map")).toHaveAttribute(
     "href",
-    "/assets/maps/caihe-motion-v3.jpg",
+    "/assets/maps/jingwei-sound-v3.jpg",
   );
 
   expect(await page.evaluate(async () => {
@@ -687,10 +687,10 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "开启地图" }).click();
 
   for (const [mystery, gift, asset, theme, particleAnimation] of [
-    ["第一枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion", "motionWindCurrent"],
-    ["第二枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound", "soundNotePhrase"],
+    ["第一枚未知坐标", "好听的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "sound", "soundNotePhrase"],
+    ["第二枚未知坐标", "好用的", "/assets/maps/rehearsal/05-fuli-north-four-gates-v1.png", "motion", "motionWindCurrent"],
   ]) {
-    await expect(page.locator(".quest-card h2")).toContainText(mystery);
+    await expect(page.locator(".quest-card h2")).toContainText(mystery, { timeout: 10_000 });
     await expect(page.getByText(gift, { exact: true })).toHaveCount(0);
     await expect(page.locator("image.illustrated-base-map")).toHaveAttribute("href", asset);
     await expect(page.locator(".theme-ambient")).toHaveAttribute("data-theme", theme);
@@ -770,7 +770,8 @@ test("supports dragging and two-pointer zoom on the hand-drawn map", async ({ pa
   expect(Number(await map.getAttribute("data-zoom"))).toBeGreaterThan(1.2);
 });
 
-test("shows one reference photo, scores an uploaded recreation, and stores it locally", async ({ page }) => {
+test("shows the bicycle reference photo, scores an uploaded recreation, and stores it locally", async ({ page }) => {
+  test.setTimeout(45_000);
   await page.addInitScript(() => {
     const nativeTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...arguments_: unknown[]) =>
@@ -778,6 +779,11 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   });
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
+  await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
+  await openCartographer(page);
+  await page.getByRole("button", { name: "强制过关" }).click();
+  await page.getByRole("button", { name: "带着这一页返回飞行扫帚" }).click();
+  await page.getByRole("button", { name: "我已停车，翻开下一页" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
   await openCartographer(page);
   await page.getByRole("button", { name: "强制抵达" }).click();
@@ -802,13 +808,13 @@ test("shows one reference photo, scores an uploaded recreation, and stores it lo
   await expect(page.locator(".confetti-cannon")).toHaveCount(2);
   await expect(page.locator(".confetti-piece")).toHaveCount(52);
   await expect(page.getByText("画面与记忆重合")).toBeVisible();
-  await expect(page.getByText("PAGE 01 · REVEALED")).toBeVisible();
+  await expect(page.getByText("PAGE 02 · REVEALED")).toBeVisible();
   expect(Date.now() - startedAt).toBeLessThan(4_000);
   await expect(page.getByText(/照片匹配度 \d+%/)).toBeVisible();
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas-formal-wgs-photo-v2");
+      const request = indexedDB.open("exploration-atlas-formal-route-sound-first-v1");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();

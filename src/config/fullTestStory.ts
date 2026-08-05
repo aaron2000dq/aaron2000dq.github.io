@@ -9,7 +9,7 @@ function testCheckpoint(
 ): Checkpoint {
   return {
     ...formal,
-    id: `fulltest-v3-${formal.id}`,
+    id: `fulltest-v4-${formal.id}`,
     label: rehearsal.label,
     location: rehearsal.location,
     unlockRadiusM: rehearsal.unlockRadiusM,
@@ -20,25 +20,25 @@ function testCheckpoint(
 
 // The full test route uses the exact formal story flow, but all live location
 // checks are moved to the four fixed rehearsal gates around the nearby block:
-// motion → sound → scent → sparkle, then taste/love reuse the north gate.
+// sound → motion → scent → sparkle, then taste/love reuse the north gate.
 export const fullTestZones: ExplorationZone[] = [
   {
     ...rehearsalZones[0],
-    id: "fulltest-v3-motion-district",
+    id: "fulltest-v4-sound-district",
     mysteryTitle: formalZones[0].mysteryTitle,
     mysterySubtitle: formalZones[0].mysterySubtitle,
     checkpoints: [testCheckpoint(formalZones[0].checkpoints[0], rehearsalZones[0].checkpoints[0])],
   },
   {
     ...rehearsalZones[1],
-    id: "fulltest-v3-sound-district",
+    id: "fulltest-v4-motion-district",
     mysteryTitle: formalZones[1].mysteryTitle,
     mysterySubtitle: formalZones[1].mysterySubtitle,
     checkpoints: [testCheckpoint(formalZones[1].checkpoints[0], rehearsalZones[1].checkpoints[0])],
   },
   {
     ...rehearsalZones[2],
-    id: "fulltest-v3-grand-atlas",
+    id: "fulltest-v4-grand-atlas",
     title: "FULI NORTH · GRAND TEST ATLAS",
     subtitle: "富力中心北区西门至北门 · 三枚坐标与隐藏章节",
     mysteryTitle: formalZones[2].mysteryTitle,

@@ -5,19 +5,18 @@ export const GM_PIN = "1104";
 // Formal runtime coordinates are WGS-84, matching browser Geolocation. The
 // original GCJ-02 POIs were converted only during data preparation and checked
 // against nearby OSM road/building geometry; they are never mixed at runtime.
-export const zones: ExplorationZone[] = [
-  {
+const motionZone: ExplorationZone = {
     id: "motion-district",
-    order: 1,
+    order: 2,
     title: "Caihe · Motion District",
     subtitle: "庆春东路与采荷街区 · 寻找移动的方式",
-    mysteryTitle: "XXVIII · THE FIRST PASSAGE",
-    mysterySubtitle: "成为巫师的第一步 · 正在寻找新的方向",
+    mysteryTitle: "XXVIII · THE SECOND PASSAGE",
+    mysterySubtitle: "成为巫师的第二步 · 正在寻找新的方向",
     parkingLabel: "采荷科普园东侧 · 五安路附近",
     // The formal page is registered to the real scene shown during the field
-    // 紫藕邨 is southeast of the bicycle shop. The blue water belongs only to
-    // 采荷科普园 and ends south of 庆春东路; the suggested walk goes around its
-    // dry northern end and never crosses water.
+    // test. The blue water belongs only to 采荷科普园 and ends south of
+    // 庆春东路; the suggested walk goes around its dry northern end and never
+    // crosses water.
     parkingMapPoint: { x: 598.1, y: 475.7 },
     center: { latitude: 30.2598, longitude: 120.19218 },
     coordinateSystem: "wgs84",
@@ -49,7 +48,7 @@ export const zones: ExplorationZone[] = [
       {
         id: "liv-motion",
         label: "Liv",
-        mysteryTitle: "第一枚未知坐标",
+        mysteryTitle: "第二枚未知坐标",
         mysteryLabel: "答案藏在下一段路",
         storyBeat: "找到你要前进的方式。",
         giftType: "motion",
@@ -61,19 +60,20 @@ export const zones: ExplorationZone[] = [
         clue:
           "有些礼物会被你带走，有些却会反过来带着你。沿着这一页的脚印，它的咒语是让你的出发更加轻盈。",
         unlockCopy:
-          "从这一页开始，二十九岁的路不必只靠双脚。第一个出现在新一岁的魔法，是让通勤也变成自由旅行的动力。",
+          "从这一页开始，二十九岁的路不必只靠双脚。第二个出现在新一岁的魔法，是让通勤也变成自由旅行的动力。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
         mapPoint: { x: 269.2, y: 251.5 },
       },
     ],
-  },
-  {
+};
+
+const soundZone: ExplorationZone = {
     id: "sound-district",
-    order: 2,
+    order: 1,
     title: "Jingwei · Sound District",
     subtitle: "石桥路与经纬创意园 · 寻找时间的声音",
-    mysteryTitle: "XXVIII · THE SECOND ECHO",
-    mysterySubtitle: "成为巫师的第二步 · 被时间保存的一小段",
+    mysteryTitle: "XXVIII · THE FIRST ECHO",
+    mysterySubtitle: "成为巫师的第一步 · 被时间保存的一小段",
     parkingLabel: "经纬国际创意产业园停车场 · 石桥路 279 号",
     parkingMapPoint: { x: 307, y: 320.5 },
     center: { latitude: 30.32729, longitude: 120.18376 },
@@ -104,7 +104,7 @@ export const zones: ExplorationZone[] = [
       {
         id: "vinyl-sound",
         label: "聆翔文化",
-        mysteryTitle: "第二枚未知坐标",
+        mysteryTitle: "第一枚未知坐标",
         mysteryLabel: "答案绕着时间旋转",
         storyBeat: "记忆的回声藏起故事。",
         giftType: "sound",
@@ -116,13 +116,14 @@ export const zones: ExplorationZone[] = [
         clue:
           "有些时刻没有消失，只是藏进一圈又一圈的纹路。沿墨迹找到它，它的咒语是保留下记忆在某一刻的声音。",
         unlockCopy:
-          "二十八岁的回声，会在二十九岁的房间里继续旋转。第二个出现在新一岁的魔法，是唱针落下时我在你的身边。",
+          "二十八岁的回声，会在二十九岁的房间里继续旋转。第一个出现在新一岁的魔法，是唱针落下时我在你的身边。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
         mapPoint: { x: 493.1, y: 179.6 },
       },
     ],
-  },
-  {
+};
+
+const mainZone: ExplorationZone = {
     id: "exploration-main",
     order: 3,
     title: "Qianjiang · Grand Atlas",
@@ -244,8 +245,11 @@ export const zones: ExplorationZone[] = [
         mapPoint: { x: 189.2, y: 127.8 },
       },
     ],
-  },
-];
+};
+
+// Driving order: listen first in Jingwei, then choose the bicycle in Caihe,
+// then park once at Raffles and finish the three-point walking atlas.
+export const zones: ExplorationZone[] = [soundZone, motionZone, mainZone];
 
 export const initialProgress: StoryProgress = {
   activeZoneId: zones[0].id,
@@ -259,7 +263,7 @@ export const initialProgress: StoryProgress = {
 };
 
 export const fogMessages = [
-  "入学第一枚印记已经收好。前方还有一段回声，等待被时间重新唤醒。",
+  "入学第一枚印记已经收好。前方还有一种让出发更轻盈的魔法，等待被找到。",
   "两枚入学印记已经收好。最后三枚坐标，将在同一片夜色里连续显形。",
 ];
 

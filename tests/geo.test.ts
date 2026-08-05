@@ -15,6 +15,8 @@ import { gcj02ToWgs84Approx, wgs84ToGcj02 } from "../src/lib/coordinateTransform
 import { rehearsalZones } from "../src/config/rehearsal";
 import { zones } from "../src/config/story";
 
+const bicycleZone = zones.find((zone) => zone.id === "motion-district")!;
+
 describe("geographic matching", () => {
   const route = [
     { latitude: 30.275, longitude: 119.99 },
@@ -104,7 +106,7 @@ describe("geographic matching", () => {
   });
 
   it("contains a far or wrong-system sample inside the visible map", () => {
-    const zone = zones[0];
+    const zone = bicycleZone;
     const point = projectPositionToMap(
       { latitude: 30.257345, longitude: 120.195869 },
       zone,
@@ -117,7 +119,7 @@ describe("geographic matching", () => {
   });
 
   it("keeps moving before the suggested start instead of pinning to the route endpoint", () => {
-    const zone = zones[0];
+    const zone = bicycleZone;
     const checkpoint = zone.checkpoints[0];
     const first = projectPositionToMap(
       { latitude: 30.2594229, longitude: 120.1935934 },
@@ -133,7 +135,7 @@ describe("geographic matching", () => {
   });
 
   it("registers the field-test scene with the explorer east of the goal", () => {
-    const zone = zones[0];
+    const zone = bicycleZone;
     const checkpoint = zone.checkpoints[0];
     const start = projectPositionToMap(zone.routeGeo[0], zone, checkpoint);
     const goal = projectPositionToMap(checkpoint.location, zone, checkpoint);
@@ -143,7 +145,7 @@ describe("geographic matching", () => {
   });
 
   it("rotates a geographic course into the illustrated route direction", () => {
-    const zone = zones[0];
+    const zone = bicycleZone;
     const checkpoint = zone.checkpoints[0];
     const geographicHeading = bearingDegrees(zone.routeGeo[0], zone.routeGeo[1]);
     const mapped = projectHeadingToMap(zone.routeGeo[0], geographicHeading, zone, checkpoint);
@@ -189,7 +191,7 @@ describe("offline coordinate preparation", () => {
 
   it("places the former AMap bicycle destination on the expected local roads", () => {
     const destination = gcj02ToWgs84Approx({ latitude: 30.257345, longitude: 120.195869 });
-    const configured = zones[0].checkpoints[0].location;
+    const configured = bicycleZone.checkpoints[0].location;
     const shuanglingRoadReference = { latitude: 30.259743, longitude: 120.1910573 };
     const qingchunRoadReference = { latitude: 30.2599455, longitude: 120.1912823 };
     expect(haversineDistance(destination, configured)).toBeLessThan(1);
@@ -205,9 +207,9 @@ describe("offline coordinate preparation", () => {
 
   it("uses the field-tested start east of Caihe Science Park", () => {
     const convertedStart = gcj02ToWgs84Approx({ latitude: 30.256131, longitude: 120.197919 });
-    const configuredStart = zones[0].routeGeo[0];
+    const configuredStart = bicycleZone.routeGeo[0];
     expect(haversineDistance(convertedStart, configuredStart)).toBeLessThan(1);
-    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeGreaterThan(150);
-    expect(haversineDistance(configuredStart, zones[0].checkpoints[0].location)).toBeLessThan(250);
+    expect(haversineDistance(configuredStart, bicycleZone.checkpoints[0].location)).toBeGreaterThan(150);
+    expect(haversineDistance(configuredStart, bicycleZone.checkpoints[0].location)).toBeLessThan(250);
   });
 });
