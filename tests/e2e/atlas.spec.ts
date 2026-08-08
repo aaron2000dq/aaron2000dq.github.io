@@ -41,6 +41,8 @@ test("starts the supplied looping background track from the envelope gesture and
   await page.goto("/?run=e2e-background-track");
   const music = page.locator(".music-toggle");
   const audio = page.locator(".atlas-background-audio");
+  await expect(music).toHaveCSS("width", "42px");
+  await expect(music.locator("span")).toHaveCount(0);
   await expect(audio).toHaveAttribute("src", "/assets/audio/exploration-background-v2.mp3");
   await expect(audio).toHaveAttribute("loop", "");
   expect(await audio.evaluate((element: HTMLAudioElement) => element.loop)).toBe(true);
@@ -55,7 +57,49 @@ test("starts the supplied looping background track from the envelope gesture and
   await music.click();
   await expect(music).toHaveAttribute("data-music-state", "muted");
   await expect(music).toHaveAttribute("aria-label", "播放魔法背景音乐");
-  await expect(music).toContainText("音乐已静音");
+  await expect(music).toHaveClass(/is-muted/);
+});
+
+test("keeps the formal finale clean while retaining reset only in rehearsal flows", async ({ page }) => {
+  await page.goto("/?run=e2e-formal-finale");
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("exploration-atlas-formal-e2e-formal-finale");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("state", "readwrite");
+        transaction.objectStore("state").put({
+          activeZoneId: "exploration-main",
+          activeCheckpointId: "hidden-love",
+          completedCheckpointIds: [
+            "vinyl-sound",
+            "liv-motion",
+            "aesop-scent",
+            "dior-sparkle",
+            "ruich-taste",
+            "hidden-love",
+          ],
+          photoAttempts: {},
+          capturedPhotoIds: [],
+          phase: "finale",
+          zoneStarted: true,
+          arrivedCheckpointIds: [
+            "vinyl-sound",
+            "liv-motion",
+            "aesop-scent",
+            "dior-sparkle",
+            "ruich-taste",
+          ],
+        }, "progress");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      };
+    });
+  });
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Exploration Completed" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "重新彩排" })).toHaveCount(0);
 });
 
 test("renders a layered magical atmosphere without blocking the atlas", async ({ page }) => {
@@ -872,6 +916,7 @@ test("walks all six gifts through the fallback path to the finale", async ({ pag
   await page.getByRole("button", { name: "打开最后一封信" }).click();
   await page.getByRole("button", { name: "翻开二十九岁的第一章" }).click();
   await expect(page.getByRole("heading", { name: "Exploration Completed" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "重新彩排" })).toBeVisible();
 });
 
 test("supports dragging and two-pointer zoom on the hand-drawn map", async ({ page }) => {

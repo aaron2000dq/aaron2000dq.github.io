@@ -58,6 +58,7 @@ function createInitialProgress(storyZones: ExplorationZone[]): StoryProgress {
 
 export function ExplorationApp({ storageNamespace = "formal", storyZones = formalZones }: ExplorationAppProps) {
   const music = useMagicalSoundscape();
+  const isRehearsalFlow = storageNamespace.startsWith("fulltest-");
   const storyInitialProgress = useMemo(() => createInitialProgress(storyZones), [storyZones]);
   const [progress, setProgress] = useState<StoryProgress>(() => structuredClone(storyInitialProgress));
   const [hydrated, setHydrated] = useState(false);
@@ -490,7 +491,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         aria-label={music.muted || !music.started ? "播放魔法背景音乐" : "关闭魔法背景音乐"}
         data-music-state={music.muted ? "muted" : music.started ? "playing" : "ready"}
         onClick={music.toggle}
-      ><i aria-hidden="true">♪</i><span>{music.muted ? "音乐已静音" : "背景音乐"}</span></button>
+      ><i aria-hidden="true">♪</i></button>
 
       <AnimatePresence>
         {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
@@ -577,7 +578,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             <div className="finale-content">
               <div className="final-heart" aria-hidden="true"><i/><span>♡</span></div><span>XXVIII HAS BEEN KEPT · XXIX NOW BEGINS</span><h1>Exploration<br/>Completed</h1><blockquote>二十八岁的故事，已经被好好收藏。<br/>现在，请翻开二十九岁的第一章，今年的主题是探索。<br/>无论是麻瓜还是巫师，我们都会一起探索这个好玩的世界，学习用爱编织的魔法。<br/><b>Happy 29th Birthday, bb.</b></blockquote>
               <div className="gallery-strip">{photos.length ? photos.map((photo) => <button key={photo.id} onClick={() => sharePhoto(photo)}><img src={photo.dataUrl} alt="探索复刻照片"/><span>{photo.score} 分 · 保存</span></button>) : <p>完成照片关卡后，探索相册会出现在这里。</p>}</div>
-              <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>
+              {isRehearsalFlow && <button className="secondary-button" onClick={() => resetAll(true)}>重新彩排</button>}
             </div>
           </motion.section>
         )}

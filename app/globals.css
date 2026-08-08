@@ -80,13 +80,13 @@ h1, h2, h3, blockquote, .display-type {
   z-index: 190;
   left: max(18px, env(safe-area-inset-left));
   bottom: max(18px, env(safe-area-inset-bottom));
-  min-width: 122px;
+  width: 42px;
+  min-width: 42px;
   height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  padding: 0 15px 0 11px;
+  padding: 0;
   border: 1px solid #c59c5d;
   border-radius: 999px;
   color: #f0d9a5;
@@ -98,12 +98,12 @@ h1, h2, h3, blockquote, .display-type {
   transition: transform .22s cubic-bezier(.22, 1, .36, 1), opacity .22s ease, filter .22s ease, box-shadow .22s ease;
 }
 .music-toggle::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d8b66b42; border-radius: inherit; pointer-events: none; }
-.music-toggle i { position: relative; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; color: #24140d; background: radial-gradient(circle at 35% 30%, #f2d590, #a87235); font: 700 13px/1 var(--font-display); box-shadow: 0 0 0 2px #2a180f, 0 0 11px #e2b65e85; animation: musicGlyphPulse 2.6s ease-in-out infinite; }
-.music-toggle span { position: relative; font: 650 10px/1 var(--font-inscription); letter-spacing: .1em; }
+.music-toggle i { position: relative; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; color: #24140d; background: radial-gradient(circle at 35% 30%, #f2d590, #a87235); font: 700 14px/1 var(--font-display); box-shadow: 0 0 0 2px #2a180f, 0 0 11px #e2b65e85; animation: musicGlyphPulse 2.6s ease-in-out infinite; }
 .music-toggle:hover { transform: translateY(-1px); filter: brightness(1.08); box-shadow: inset 0 0 0 1px #f2d18d2e, 0 9px 26px #100704c7, 0 0 22px #d7a24d35; }
 .music-toggle:active { transform: translateY(1px) scale(.985); }
 .music-toggle.is-muted { opacity: .62; filter: saturate(.55); }
 .music-toggle.is-muted i { animation: none; box-shadow: 0 0 0 2px #2a180f; }
+.music-toggle.is-muted::after { content: ""; position: absolute; z-index: 2; width: 25px; height: 1.5px; border-radius: 2px; background: #7f3b32; box-shadow: 0 0 2px #edcf91; transform: rotate(-42deg); }
 
 .primary-button, .secondary-button, .text-button, .wax-button { border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .primary-button { padding: 13px 20px; background: var(--ink); color: #f1dfb3; border: 1px solid #6f5032; box-shadow: inset 0 0 0 2px #21160f, 0 6px 16px #3b241b3d; letter-spacing: .06em; }
