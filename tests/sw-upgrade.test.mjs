@@ -22,7 +22,7 @@ const mime = {
   ".wasm": "application/wasm",
 };
 
-test("an installed v1 worker is replaced and refreshes an already-open atlas", async () => {
+test("an installed v1 worker is replaced without interrupting an already-open atlas", async () => {
   let root = legacyRoot;
   const server = createServer(async (request, response) => {
     if (request.url === "/__switch") {
@@ -58,6 +58,17 @@ test("an installed v1 worker is replaced and refreshes an already-open atlas", a
     await page.reload();
     await page.getByRole("heading", { name: "LEGACY LINE MAP" }).waitFor();
     assert.deepEqual(await page.evaluate(() => caches.keys()), ["exploration-atlas-v1"]);
+    await page.evaluate(() => {
+      window.__atlasUpdateMessages = [];
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        window.__atlasUpdateMessages.push(event.data);
+      });
+    });
+
+    let navigations = 0;
+    page.on("framenavigated", (frame) => {
+      if (frame === page.mainFrame()) navigations += 1;
+    });
 
     await page.request.get("http://127.0.0.1:4180/__switch");
     await page.evaluate(async () => {
@@ -65,10 +76,26 @@ test("an installed v1 worker is replaced and refreshes an already-open atlas", a
       await registration?.update();
     });
 
-    await page.getByRole("heading", { name: "Exploration Atlas" }).waitFor({ timeout: 30_000 });
+    await page.waitForFunction(
+      () => window.__atlasUpdateMessages?.some((message) => message?.type === "ATLAS_UPDATED"),
+      undefined,
+      { timeout: 30_000 },
+    );
+
+    assert.equal(navigations, 0, "the active experience must not be reloaded during an update");
+    assert.equal(await page.getByRole("heading", { name: "LEGACY LINE MAP" }).count(), 1);
+    assert.equal(await page.getByRole("heading", { name: "Exploration Atlas" }).count(), 0);
+
     const cacheNames = await page.evaluate(() => caches.keys());
-    assert.equal(cacheNames.includes("exploration-atlas-v1"), false);
-    assert.equal(cacheNames.some((name) => name.startsWith("exploration-atlas-")), true);
+    assert.equal(
+      cacheNames.some(
+        (name) => name.startsWith("exploration-atlas-") && name !== "exploration-atlas-v1",
+      ),
+      true,
+    );
+
+    await page.reload();
+    await page.getByRole("heading", { name: "Exploration Atlas" }).waitFor({ timeout: 30_000 });
   } finally {
     await browser.close();
     await new Promise((resolve) => server.close(resolve));

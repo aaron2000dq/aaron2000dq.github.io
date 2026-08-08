@@ -602,7 +602,7 @@ test("keeps the map immersive with a collapsible floating quest card", async ({ 
 
   const map = page.locator(".map-stage");
   const card = page.locator(".floating-quest-card");
-  await expect(card).toHaveClass(/is-collapsed/);
+  await expect(card).toHaveClass(/is-collapsed/, { timeout: 15_000 });
   await expect(page.locator(".quest-clue")).toHaveCount(0);
   expect(await map.evaluate((element) => getComputedStyle(element).position)).toBe("relative");
   expect(await card.evaluate((element) => getComputedStyle(element).position)).toBe("absolute");

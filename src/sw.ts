@@ -66,28 +66,21 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  let replacingExistingVersion = false;
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => {
-        replacingExistingVersion = keys.some(
-          (key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME,
-        );
-        return Promise.all(
+      .then((keys) =>
+        Promise.all(
           keys
             .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
             .map((key) => caches.delete(key)),
-        );
-      })
+        ),
+      )
       .then(() => self.clients.claim())
       .then(async () => {
         const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
         clients.forEach((client) => {
           client.postMessage({ type: "ATLAS_UPDATED", buildId: __BUILD_ID__ });
-          if (replacingExistingVersion && "navigate" in client) {
-            void client.navigate(client.url).catch(() => undefined);
-          }
         });
       }),
   );
