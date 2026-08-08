@@ -19,4 +19,5 @@ test("ships a complete installable PWA", async () => {
   assert.match(html, /apple-mobile-web-app-capable/i);
   assert.equal(JSON.parse(manifest).orientation, "landscape");
   assert.match(sw, /pose_landmarker_lite\.task/);
+  assert.match(sw, /exploration-background-v2\.mp3/);
 });

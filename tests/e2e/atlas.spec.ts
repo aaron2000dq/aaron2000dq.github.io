@@ -37,15 +37,20 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
-test("starts the original offline magic soundscape from the envelope gesture and can mute it", async ({ page }) => {
-  await page.goto("/?run=e2e-original-soundscape");
+test("starts the supplied looping background track from the envelope gesture and can mute it", async ({ page }) => {
+  await page.goto("/?run=e2e-background-track");
   const music = page.locator(".music-toggle");
+  const audio = page.locator(".atlas-background-audio");
+  await expect(audio).toHaveAttribute("src", "/assets/audio/exploration-background-v2.mp3");
+  await expect(audio).toHaveAttribute("loop", "");
+  expect(await audio.evaluate((element: HTMLAudioElement) => element.loop)).toBe(true);
   await expect(music).toHaveAttribute("data-music-state", "ready");
   await expect(music).toHaveAttribute("aria-label", "播放魔法背景音乐");
 
   await page.getByRole("button", { name: "开启地图" }).click();
   await expect(music).toHaveAttribute("data-music-state", "playing");
   await expect(music).toHaveAttribute("aria-label", "关闭魔法背景音乐");
+  await expect.poll(() => audio.evaluate((element: HTMLAudioElement) => element.paused)).toBe(false);
 
   await music.click();
   await expect(music).toHaveAttribute("data-music-state", "muted");
@@ -1031,6 +1036,7 @@ test("stores the complete atlas and local vision model for offline use", async (
       "assets/magic/cartographer-medallion-v2.png",
       "assets/magic/explorer-envelope-open-v3.png",
       "assets/magic/exploration-wax-seal-v3.png",
+      "assets/audio/exploration-background-v2.mp3",
     ];
     const exact = await Promise.all(
       paths.map(async (path) => {

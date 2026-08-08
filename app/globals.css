@@ -62,6 +62,7 @@ h1, h2, h3, blockquote, .display-type {
 }
 
 .atlas-shell { height: 100dvh; min-height: 100svh; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 30%, #6e4930, #21150f 70%); }
+.atlas-background-audio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .atlas-shell::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: multiply; background: radial-gradient(ellipse at 8% 18%, #2b170d55 0 2%, transparent 11%), radial-gradient(ellipse at 83% 76%, #2b170d33 0 3%, transparent 14%), linear-gradient(102deg, transparent 0 48%, #3d25141c 51%, transparent 54%); }
 .rotate-notice { display: none; position: fixed; inset: 0; z-index: 300; place-content: center; text-align: center; color: var(--ink); background: var(--paper-light); padding: 40px; }
 .rotate-icon { font-size: 58px; }

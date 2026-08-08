@@ -14,7 +14,7 @@ import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from 
 import { warmPhotoMatcher } from "@/src/lib/photoMatch";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { useDeviceHeading } from "@/src/hooks/useDeviceHeading";
-import { useMagicalSoundscape } from "@/src/hooks/useMagicalSoundscape";
+import { BACKGROUND_TRACK_SRC, useMagicalSoundscape } from "@/src/hooks/useMagicalSoundscape";
 import type { CapturedPhoto, ExplorationZone, MatchResult, PositionSample, StoryProgress } from "@/src/types";
 
 const giftNames = {
@@ -465,6 +465,15 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
   return (
     <main className="atlas-shell" data-intro-assets="ready">
+      <audio
+        ref={music.audioRef}
+        className="atlas-background-audio"
+        src={BACKGROUND_TRACK_SRC}
+        preload="auto"
+        loop
+        playsInline
+        aria-hidden="true"
+      />
       <div className="rotate-notice"><div className="rotate-icon">↻</div><h1>请将 iPad 横过来</h1><p>地图需要一片更宽的羊皮纸。</p></div>
       <MagicAtmosphere phase={progress.phase} giftType={checkpoint.giftType} awake={progress.phase !== "intro"} />
       <button
@@ -481,7 +490,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         aria-label={music.muted || !music.started ? "播放魔法背景音乐" : "关闭魔法背景音乐"}
         data-music-state={music.muted ? "muted" : music.started ? "playing" : "ready"}
         onClick={music.toggle}
-      ><i aria-hidden="true">♪</i><span>{music.muted ? "音乐已静音" : "魔法声景"}</span></button>
+      ><i aria-hidden="true">♪</i><span>{music.muted ? "音乐已静音" : "背景音乐"}</span></button>
 
       <AnimatePresence>
         {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
