@@ -81,6 +81,37 @@ describe("formal story route", () => {
     expect(bicycleZone?.checkpoints[0].referenceImage).toBe("/references/motion-official-v1.jpg");
   });
 
+  it("locks the two field-tested follow-up maps to their verified WGS-84 endpoints", () => {
+    expect(zones[1].id).toBe("motion-district");
+    expect(zones[1].checkpoints[0]).toMatchObject({
+      id: "liv-motion",
+      label: "Liv",
+      location: { latitude: 30.2597418, longitude: 120.1912823 },
+      unlockRadiusM: 30,
+    });
+    expect(zones[2].checkpoints.slice(0, 3).map(({ id, location, unlockRadiusM }) => ({
+      id,
+      location,
+      unlockRadiusM,
+    }))).toEqual([
+      {
+        id: "aesop-scent",
+        location: { latitude: 30.2552323, longitude: 120.2099383 },
+        unlockRadiusM: 30,
+      },
+      {
+        id: "dior-sparkle",
+        location: { latitude: 30.253989, longitude: 120.2110951 },
+        unlockRadiusM: 30,
+      },
+      {
+        id: "ruich-taste",
+        location: { latitude: 30.2509232654, longitude: 120.2078163859 },
+        unlockRadiusM: 30,
+      },
+    ]);
+  });
+
   it("keeps every active goal clear of the collapsed left quest panel", () => {
     for (const zone of zones) {
       for (const checkpoint of zone.checkpoints) {

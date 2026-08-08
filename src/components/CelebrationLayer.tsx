@@ -78,8 +78,8 @@ export function CelebrationLayer({ kind, label }: CelebrationLayerProps) {
           </div>
           <div className="celebration-copy arrival-copy">
             <span>COORDINATE FOUND</span>
-            <strong>坐标已回应</strong>
-            <small>{label}</small>
+            <strong>{label}</strong>
+            <small>坐标已回应</small>
           </div>
         </>
       ) : (

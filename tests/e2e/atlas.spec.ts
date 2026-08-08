@@ -37,6 +37,22 @@ test("opens the atlas and exposes a complete no-dead-end fallback", async ({ pag
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
+test("starts the original offline magic soundscape from the envelope gesture and can mute it", async ({ page }) => {
+  await page.goto("/?run=e2e-original-soundscape");
+  const music = page.locator(".music-toggle");
+  await expect(music).toHaveAttribute("data-music-state", "ready");
+  await expect(music).toHaveAttribute("aria-label", "播放魔法背景音乐");
+
+  await page.getByRole("button", { name: "开启地图" }).click();
+  await expect(music).toHaveAttribute("data-music-state", "playing");
+  await expect(music).toHaveAttribute("aria-label", "关闭魔法背景音乐");
+
+  await music.click();
+  await expect(music).toHaveAttribute("data-music-state", "muted");
+  await expect(music).toHaveAttribute("aria-label", "播放魔法背景音乐");
+  await expect(music).toContainText("音乐已静音");
+});
+
 test("renders a layered magical atmosphere without blocking the atlas", async ({ page }) => {
   await page.goto("/?mode=fulltest&run=e2e-magical-atmosphere");
   await expect(page.locator(".magic-atmosphere")).toHaveAttribute("data-phase", "intro");
@@ -198,7 +214,15 @@ test("automatically arrives after two accurate nearby location samples", async (
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
   await expect(page.locator(".arrival-rune-seal")).toBeVisible();
+  await expect(page.locator(".arrival-copy strong")).toHaveText("聆翔文化");
   await expect(page.getByText("坐标已回应")).toBeVisible();
+  expect(
+    await page.locator(".arrival-copy strong").evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
+  ).toBeGreaterThanOrEqual(48);
+  await expect(page.locator(".quest-card h2")).toContainText("聆翔文化");
+  expect(
+    await page.locator(".quest-card h2").evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
+  ).toBeGreaterThanOrEqual(34);
   await expect(page.locator(".goal-arrival-ripple")).toHaveCount(2);
   await expect(page.getByText("精度 ±13m")).toBeVisible();
   await expect(page.locator(".paw-trail").first()).toBeVisible();

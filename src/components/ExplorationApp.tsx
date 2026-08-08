@@ -14,6 +14,7 @@ import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from 
 import { warmPhotoMatcher } from "@/src/lib/photoMatch";
 import { useGeolocation } from "@/src/hooks/useGeolocation";
 import { useDeviceHeading } from "@/src/hooks/useDeviceHeading";
+import { useMagicalSoundscape } from "@/src/hooks/useMagicalSoundscape";
 import type { CapturedPhoto, ExplorationZone, MatchResult, PositionSample, StoryProgress } from "@/src/types";
 
 const giftNames = {
@@ -56,6 +57,7 @@ function createInitialProgress(storyZones: ExplorationZone[]): StoryProgress {
 }
 
 export function ExplorationApp({ storageNamespace = "formal", storyZones = formalZones }: ExplorationAppProps) {
+  const music = useMagicalSoundscape();
   const storyInitialProgress = useMemo(() => createInitialProgress(storyZones), [storyZones]);
   const [progress, setProgress] = useState<StoryProgress>(() => structuredClone(storyInitialProgress));
   const [hydrated, setHydrated] = useState(false);
@@ -387,6 +389,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
   function openAtlas() {
     if (introOpening) return;
+    music.start();
     setIntroOpening(true);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     introTimer.current = window.setTimeout(
@@ -472,6 +475,13 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         onPointerCancel={endCompassHold}
         onContextMenu={(event) => event.preventDefault()}
       ><span>N</span><i/><svg className="compass-hold-progress" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" pathLength="1"/></svg></button>
+      <button
+        className={`music-toggle ${music.muted ? "is-muted" : ""}`}
+        type="button"
+        aria-label={music.muted || !music.started ? "播放魔法背景音乐" : "关闭魔法背景音乐"}
+        data-music-state={music.muted ? "muted" : music.started ? "playing" : "ready"}
+        onClick={music.toggle}
+      ><i aria-hidden="true">♪</i><span>{music.muted ? "音乐已静音" : "魔法声景"}</span></button>
 
       <AnimatePresence>
         {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
@@ -523,7 +533,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             <header className="topbar"><div><i className="topbar-sigil" aria-hidden="true"/><span>THE EXPLORATION ATLAS · XXVIII → XXIX</span><b>{displayedZoneTitle}</b></div><div className="chapter-dots">{storyZones.map((item) => <i key={item.id} className={item.order <= zone.order ? "active" : ""}/>)}</div><div className="status-chip">{arrived ? "坐标已揭晓" : location.status === "active" ? "墨点已定位" : location.status === "imprecise" ? "定位在云雾中" : progress.zoneStarted ? "正在寻找位置" : "等待开始"}</div></header>
             <div className="map-layout">
               <MapCanvas zone={zone} checkpoint={checkpoint} position={position} locationReliable={!progress.zoneStarted || locationReliable} arrived={arrived} completedIds={progress.completedCheckpointIds} heading={displayedHeading} showHeading={headingVisible} onMapFocus={() => setQuestExpanded(false)}/>
-              <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"}`}>
+              <aside className={`quest-card floating-quest-card ${questExpanded ? "is-expanded" : "is-collapsed"} ${arrived ? "is-arrived" : ""}`}>
                 <MagicMicroEffect variant="ripple" />
                 <button
                   className="quest-panel-toggle"
@@ -533,7 +543,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                 >{questExpanded ? "收起" : "查看线索"}</button>
                 <div className="quest-medallion" aria-hidden="true"><span className="quest-number">{String(coordinateNumber).padStart(2, "0")}</span></div>
                 <span className="eyebrow">{arrived ? "COORDINATE REVEALED" : "THE LAST PAGE OF XXVIII"}</span>
-                <h2>{arrived ? giftNames[checkpoint.giftType] : concealedTitle}<small>{arrived ? checkpoint.label : concealedLabel}</small></h2>
+                <h2>{arrived ? checkpoint.label : concealedTitle}<small>{arrived ? giftNames[checkpoint.giftType] : concealedLabel}</small></h2>
                 {questExpanded && checkpoint.storyBeat && <p className="quest-story-beat">{checkpoint.storyBeat}</p>}
                 {questExpanded && <p className="quest-clue">{checkpoint.clue}</p>}
                 <div className="distance-row"><span>{arrived ? "已经抵达" : position && !locationReliable ? "墨点已冻结" : formatDistance(routeMatch.distanceToCheckpointM)}</span><small>{position ? `精度 ±${Math.round(position.accuracy)}m` : "Wi‑Fi iPad 粗定位"}</small></div>
@@ -572,7 +582,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
             <motion.section className="unlock-card" initial={{ scale: 0.7, rotate: -3 }} animate={{ scale: 1, rotate: 0 }}>
               <MagicMicroEffect variant="star-trail" />
               <div className="unlock-generated-rune" aria-hidden="true" />
-              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>PAGE {String(coordinateNumber).padStart(2, "0")} · REVEALED</span><h2>{giftNames[checkpoint.giftType]}<small>{checkpoint.label}</small></h2>{checkpoint.storyBeat && <blockquote className="unlock-story-beat">{checkpoint.storyBeat}</blockquote>}<p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "翻开二十九岁的第一章" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "寻找下一枚未知坐标" : "带着这一页返回飞行扫帚"}</button>
+              <div className="unlock-seal">{checkpoint.giftType === "love" ? "♡" : "✦"}</div><span>PAGE {String(coordinateNumber).padStart(2, "0")} · REVEALED</span><h2>{checkpoint.label}<small>{giftNames[checkpoint.giftType]}</small></h2>{checkpoint.storyBeat && <blockquote className="unlock-story-beat">{checkpoint.storyBeat}</blockquote>}<p>{checkpoint.unlockCopy}</p>{lastResult && <small>照片匹配度 {lastResult.score}%{lastResult.poseScore === null ? " · 场景匹配模式" : " · 姿势已识别"}</small>}<button className="primary-button" onClick={continueAfterUnlock}>{checkpoint.giftType === "love" ? "翻开二十九岁的第一章" : zone.checkpoints[zone.checkpoints.findIndex((item) => item.id === checkpoint.id) + 1] ? "寻找下一枚未知坐标" : "带着这一页返回飞行扫帚"}</button>
             </motion.section>
           </motion.div>
         )}
