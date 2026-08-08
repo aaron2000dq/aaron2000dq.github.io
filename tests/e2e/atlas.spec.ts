@@ -63,6 +63,7 @@ test("starts the supplied looping background track from the envelope gesture and
 test("keeps the formal finale clean while retaining reset only in rehearsal flows", async ({ page }) => {
   await page.goto("/?run=e2e-formal-finale");
   await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.waitForTimeout(600);
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.open("exploration-atlas-formal-e2e-formal-finale");
