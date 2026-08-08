@@ -212,4 +212,17 @@ describe("offline coordinate preparation", () => {
     expect(haversineDistance(configuredStart, bicycleZone.checkpoints[0].location)).toBeGreaterThan(150);
     expect(haversineDistance(configuredStart, bicycleZone.checkpoints[0].location)).toBeLessThan(250);
   });
+
+  it("places the RUICH endpoint inside Raffles T1 instead of at City Balcony", () => {
+    const ruichFromCtrip = gcj02ToWgs84Approx({
+      latitude: 30.2484995,
+      longitude: 120.2123588,
+    });
+    const ruich = zones[2].checkpoints.find((checkpoint) => checkpoint.id === "ruich-taste")!;
+    const rafflesFootprintCenter = { latitude: 30.2512685, longitude: 120.20854 };
+    const formerCityBalcony = { latitude: 30.2442573, longitude: 120.2122716 };
+    expect(haversineDistance(ruichFromCtrip, ruich.location)).toBeLessThan(1);
+    expect(haversineDistance(ruich.location, rafflesFootprintCenter)).toBeLessThan(100);
+    expect(haversineDistance(ruich.location, formerCityBalcony)).toBeGreaterThan(800);
+  });
 });

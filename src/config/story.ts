@@ -127,35 +127,31 @@ const mainZone: ExplorationZone = {
     id: "exploration-main",
     order: 3,
     title: "Qianjiang · Grand Atlas",
-    subtitle: "来福士、万象城、城市阳台 · 三个魔法连续显形",
+    subtitle: "来福士、万象城与天御高空 · 三个魔法连续显形",
     mysteryTitle: "XXVIII · THE GRAND ATLAS",
     mysterySubtitle: "入学前的最后一程 · 还藏着三枚坐标",
     parkingLabel: "杭州来福士中心 · T1 停车区",
     parkingMapPoint: { x: 172.4, y: 134.8 },
-    center: { latitude: 30.2541536, longitude: 120.2031277 },
+    center: { latitude: 30.2526, longitude: 120.2095 },
     coordinateSystem: "wgs84",
     routeGeo: [
       { latitude: 30.2539161, longitude: 120.2027447 },
       { latitude: 30.2546214, longitude: 120.2063537 },
       { latitude: 30.2552323, longitude: 120.2099383 },
       { latitude: 30.253989, longitude: 120.2110951 },
-      // City Balcony POI center. Replace with the exact reference-photo
-      // standing point after the final night-time survey.
-      { latitude: 30.2442573, longitude: 120.2122716 },
-      { latitude: 30.2502204, longitude: 120.2054519 },
-      { latitude: 30.2541536, longitude: 120.2031277 },
+      // RUICH T1 天御 56F. The GCJ-02 POI (30.2484995, 120.2123588)
+      // was converted offline and checked against the Raffles City footprint.
+      { latitude: 30.2509232654, longitude: 120.2078163859 },
     ],
     mapRoutePoints: [
       { x: 172.4, y: 134.8 },
       { x: 330.2, y: 114.1 },
       { x: 486.9, y: 96.1 },
       { x: 537.5, y: 132.7 },
-      { x: 588.9, y: 418.9 },
-      { x: 290.8, y: 243.5 },
-      { x: 189.2, y: 127.8 },
+      { x: 394.2, y: 222.9 },
     ],
     svgPath:
-      "M172.4 134.8 L330.2 114.1 L486.9 96.1 L537.5 132.7 L588.9 418.9 L290.8 243.5 L189.2 127.8",
+      "M172.4 134.8 L330.2 114.1 L486.9 96.1 L537.5 132.7 L394.2 222.9",
     maxLocationAccuracyM: 200,
     accent: "#274554",
     mapKind: "city",
@@ -207,13 +203,13 @@ const mainZone: ExplorationZone = {
         mapPoint: { x: 537.5, y: 132.7 },
       },
       {
-        id: "balcony-taste",
-        label: "城市阳台",
+        id: "ruich-taste",
+        label: "RUICH",
         mysteryTitle: "第五枚未知坐标",
         mysteryLabel: "答案比城市更接近天空",
         storyBeat: "新世界的大门已为你打开，天才巫师的惊喜坐标均已解锁。",
         giftType: "taste",
-        location: { latitude: 30.2442573, longitude: 120.2122716 },
+        location: { latitude: 30.2509232654, longitude: 120.2078163859 },
         unlockRadiusM: 30,
         referenceImage: "/references/taste.svg",
         matchMode: "scene-only",
@@ -221,9 +217,9 @@ const mainZone: ExplorationZone = {
         clue:
           "地面上的四页已经写完。最后一枚坐标不藏在脚边，请抬起头，去往今晚比城市更接近天空的地方。",
         unlockCopy:
-          "二十九岁的无限可能顺利开启，请前往探索属于你的精彩一岁。第五个魔法，是在麻瓜世界的背后总有人等着你一起分享今天的晚餐。",
+          "二十九岁的无限可能顺利开启，请前往探索属于你的精彩一岁。第五个魔法，是在麻瓜世界的高处，总有人等着你一起分享今天的晚餐。",
         photoPrompt: "复刻学长的显影照片，留下此刻的你。",
-        mapPoint: { x: 588.9, y: 418.9 },
+        mapPoint: { x: 394.2, y: 222.9 },
       },
       {
         id: "hidden-love",
@@ -232,7 +228,7 @@ const mainZone: ExplorationZone = {
         mysteryLabel: "它从来不需要坐标",
         storyBeat: "读完这封信，二十八岁的故事合上，二十九岁的第一章正式开始。",
         giftType: "love",
-        location: { latitude: 30.2541536, longitude: 120.2031277 },
+        location: { latitude: 30.2509232654, longitude: 120.2078163859 },
         unlockRadiusM: 30,
         referenceImage: "/references/love.svg",
         matchMode: "scene-only",
@@ -242,7 +238,7 @@ const mainZone: ExplorationZone = {
         unlockCopy:
           "前面的五个魔法，会陪你走进二十九岁；最后这一份不用拿在手里，读完这封信，二十八岁的故事合上，过去的地图已经无法抵达。但在今天和地图尚未画出的未来里，你都会被我好好地爱着。那么，准备好入学面对新的一切了吗，拥有魔法的天才饼饼？",
         photoPrompt: "不需要复刻。请打开最后一封信。",
-        mapPoint: { x: 189.2, y: 127.8 },
+        mapPoint: { x: 394.2, y: 222.9 },
       },
     ],
 };

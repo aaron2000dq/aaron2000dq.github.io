@@ -554,6 +554,54 @@ test("restores the current unlocked checkpoint after a refresh", async ({ page, 
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
 });
 
+test("places the fifth formal goal at RUICH T1 and unlocks there", async ({ page, context, baseURL }) => {
+  await context.grantPermissions(["geolocation"], { origin: new URL(baseURL!).origin });
+  await context.setGeolocation({ latitude: 30.2512, longitude: 120.2082, accuracy: 16 });
+  await page.goto("/?run=e2e-ruich-goal");
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.waitForTimeout(250);
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("exploration-atlas-formal-e2e-ruich-goal");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("state", "readwrite");
+        transaction.objectStore("state").put({
+          activeZoneId: "exploration-main",
+          activeCheckpointId: "ruich-taste",
+          completedCheckpointIds: ["vinyl-sound", "liv-motion", "aesop-scent", "dior-sparkle"],
+          photoAttempts: {},
+          capturedPhotoIds: [],
+          phase: "map",
+          zoneStarted: true,
+          arrivedCheckpointIds: [],
+        }, "progress");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      };
+    });
+  });
+  await page.reload();
+
+  await expect(page.locator(".quest-card h2")).toContainText("第五枚未知坐标");
+  await expect(page.locator("image.illustrated-base-map")).toHaveAttribute(
+    "href",
+    "/assets/maps/qianjiang-grand-north-v4.png",
+  );
+  await expect(page.locator(".goal-point")).toHaveAttribute("data-map-x", "394.2");
+  await expect(page.locator(".goal-point")).toHaveAttribute("data-map-y", "222.9");
+
+  await context.setGeolocation({ latitude: 30.2509232, longitude: 120.2078163, accuracy: 14 });
+  await page.waitForTimeout(120);
+  await context.setGeolocation({ latitude: 30.2509233, longitude: 120.2078164, accuracy: 13 });
+  await page.waitForTimeout(120);
+  await context.setGeolocation({ latitude: 30.2509234, longitude: 120.2078165, accuracy: 12 });
+
+  await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
+  await expect(page.locator(".quest-card h2")).toContainText("RUICH");
+  await expect(page.getByText("坐标已回应")).toBeVisible();
+});
+
 test("isolates a named formal preview run from previously saved formal progress", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
@@ -814,7 +862,7 @@ test("shows the bicycle reference photo, scores an uploaded recreation, and stor
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas-formal-route-sound-first-v1");
+      const request = indexedDB.open("exploration-atlas-formal-ruich-goal-v1");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();

@@ -41,9 +41,9 @@ describe("formal story route", () => {
     }
   });
 
-  it("keeps Aesop, Dior and City Balcony on the same walking route", () => {
+  it("keeps Aesop, Dior and RUICH on the same walking route", () => {
     expect(zones[2].checkpoints.slice(0, 3).map((item) => item.label))
-      .toEqual(["Aesop", "Dior", "城市阳台"]);
+      .toEqual(["Aesop", "Dior", "RUICH"]);
     expect(zones[2].mysterySubtitle).toContain("三枚坐标");
   });
 
