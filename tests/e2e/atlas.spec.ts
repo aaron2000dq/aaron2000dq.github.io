@@ -1093,6 +1093,21 @@ test("stores the complete atlas and local vision model for offline use", async (
     }
   });
   await expect(page.getByText("猫头鹰缓存中")).toBeVisible();
+  const videoRange = await page.evaluate(async () => {
+    const response = await fetch("/assets/video/cookie-29-intro-web.mp4", {
+      headers: { Range: "bytes=0-1023" },
+    });
+    return {
+      status: response.status,
+      contentRange: response.headers.get("Content-Range"),
+      bytes: (await response.arrayBuffer()).byteLength,
+    };
+  });
+  expect(videoRange).toEqual({
+    status: 206,
+    contentRange: "bytes 0-1023/61411677",
+    bytes: 1024,
+  });
   await context.setOffline(true);
   const offlineAssets = await page.evaluate(async () => {
     const paths = [
@@ -1117,6 +1132,7 @@ test("stores the complete atlas and local vision model for offline use", async (
       "assets/magic/explorer-envelope-open-v3.png",
       "assets/magic/exploration-wax-seal-v3.png",
       "assets/audio/exploration-background-v2.mp3",
+      "assets/video/cookie-29-intro-web.mp4",
     ];
     const exact = await Promise.all(
       paths.map(async (path) => {
