@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.sessionStorage.setItem("exploration-atlas:intro-film-played-v1", "true");
+  });
+});
+
 async function openCartographer(page: import("@playwright/test").Page) {
   const compass = page.getByRole("button", { name: "指南针" });
   await compass.dispatchEvent("pointerdown");
@@ -9,6 +15,34 @@ async function openCartographer(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "进入" }).click();
   await expect(page.getByRole("heading", { name: "制图人控制台" })).toBeVisible();
 }
+
+test("plays the Cookie XXIX film first and hands its final envelope to the web letter", async ({ page }) => {
+  await page.goto("/?run=e2e-cookie-film&intro=1");
+
+  const film = page.locator(".intro-film-overlay");
+  const video = page.locator(".intro-film-video");
+  await expect(film).toHaveAttribute("data-film-stage", "cover");
+  await expect(video).toHaveAttribute("src", "/assets/video/cookie-29-intro-web.mp4");
+  await expect(video).toHaveAttribute("poster", "/assets/video/cookie-29-intro-poster.jpg");
+  await expect(page.getByRole("heading", { name: "一封只交给饼饼的信" })).toBeVisible();
+  await video.evaluate(async (element: HTMLVideoElement) => {
+    if (element.readyState >= 1) return;
+    await new Promise<void>((resolve) => element.addEventListener("loadedmetadata", () => resolve(), { once: true }));
+  });
+
+  await page.getByRole("button", { name: /接收邀请/ }).click();
+  await expect(film).toHaveAttribute("data-film-stage", "playing");
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = Math.max(0, element.duration - .18);
+  });
+
+  await expect(film).toHaveAttribute("data-film-stage", "bridging");
+  await expect(page.locator(".intro-screen")).toHaveClass(/is-cinematic-receiving/);
+  await expect(film).toHaveCount(0, { timeout: 2_000 });
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "开启地图" })).toBeFocused();
+  await expect(page.getByRole("button", { name: "重看片头" })).toBeVisible();
+});
 
 test("opens the atlas and exposes a complete no-dead-end fallback", async ({ page }) => {
   await page.goto("/");

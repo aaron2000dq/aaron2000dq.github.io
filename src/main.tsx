@@ -40,6 +40,7 @@ createRoot(document.getElementById("root")!).render(
       <ExplorationApp
         storageNamespace={storageNamespace}
         storyZones={mode === "fulltest" ? fullTestZones : undefined}
+        enableCinematicIntro={mode !== "fulltest" || params.get("intro") === "1"}
       />
     )}
   </StrictMode>,

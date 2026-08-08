@@ -8,6 +8,7 @@ import { GmPanel } from "./GmPanel";
 import { MagicMicroEffect } from "./MagicMicroEffect";
 import { MapCanvas } from "./MapCanvas";
 import { MagicAtmosphere } from "./MagicAtmosphere";
+import { IntroFilm } from "./IntroFilm";
 import { fogMessages, GM_PIN, zones as formalZones } from "@/src/config/story";
 import { formatDistance, isInsideCheckpoint, matchPositionToRoute } from "@/src/lib/geo";
 import { getPhotos, loadProgress, resetProgress, savePhoto, saveProgress } from "@/src/lib/storage";
@@ -29,7 +30,10 @@ const giftNames = {
 type ExplorationAppProps = {
   storageNamespace?: string;
   storyZones?: ExplorationZone[];
+  enableCinematicIntro?: boolean;
 };
+
+const INTRO_FILM_SESSION_KEY = "exploration-atlas:intro-film-played-v1";
 
 async function decodeIntroImage(src: string) {
   await new Promise<void>((resolve) => {
@@ -56,7 +60,7 @@ function createInitialProgress(storyZones: ExplorationZone[]): StoryProgress {
   };
 }
 
-export function ExplorationApp({ storageNamespace = "formal", storyZones = formalZones }: ExplorationAppProps) {
+export function ExplorationApp({ storageNamespace = "formal", storyZones = formalZones, enableCinematicIntro = true }: ExplorationAppProps) {
   const music = useMagicalSoundscape();
   const isRehearsalFlow = storageNamespace.startsWith("fulltest-");
   const storyInitialProgress = useMemo(() => createInitialProgress(storyZones), [storyZones]);
@@ -64,6 +68,13 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const [hydrated, setHydrated] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [introOpening, setIntroOpening] = useState(false);
+  const [introFilmVisible, setIntroFilmVisible] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!enableCinematicIntro || params.get("skipIntro") === "1") return false;
+    return params.get("intro") === "1" || window.sessionStorage.getItem(INTRO_FILM_SESSION_KEY) !== "true";
+  });
+  const [introFilmReceiving, setIntroFilmReceiving] = useState(false);
+  const [introFilmKey, setIntroFilmKey] = useState(0);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [gmPinOpen, setGmPinOpen] = useState(false);
   const [gmOpen, setGmOpen] = useState(false);
@@ -97,6 +108,8 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
   const introTimer = useRef<number | null>(null);
   const celebrationTimer = useRef<number | null>(null);
   const unlockTimer = useRef<number | null>(null);
+  const introFilmArrivalTimer = useRef<number | null>(null);
+  const introWaxButton = useRef<HTMLButtonElement | null>(null);
   const celebratedArrivals = useRef(new Set<string>());
 
   const zone = storyZones.find((item) => item.id === progress.activeZoneId) ?? storyZones[0];
@@ -186,6 +199,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
       if (introTimer.current) window.clearTimeout(introTimer.current);
       if (celebrationTimer.current) window.clearTimeout(celebrationTimer.current);
       if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+      if (introFilmArrivalTimer.current) window.clearTimeout(introFilmArrivalTimer.current);
     },
     [],
   );
@@ -399,6 +413,25 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
     );
   }
 
+  function beginIntroFilmTransition() {
+    setIntroFilmReceiving(true);
+  }
+
+  function finishIntroFilm() {
+    window.sessionStorage.setItem(INTRO_FILM_SESSION_KEY, "true");
+    setIntroFilmVisible(false);
+    introFilmArrivalTimer.current = window.setTimeout(() => {
+      setIntroFilmReceiving(false);
+      introWaxButton.current?.focus({ preventScroll: true });
+    }, 260);
+  }
+
+  function replayIntroFilm() {
+    setIntroFilmReceiving(false);
+    setIntroFilmKey((value) => value + 1);
+    setIntroFilmVisible(true);
+  }
+
   useEffect(() => {
     if (!hydrated || progress.phase !== "map") return;
     const timer = window.setTimeout(() => void warmPhotoMatcher(), 350);
@@ -492,6 +525,15 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
         data-music-state={music.muted ? "muted" : music.started ? "playing" : "ready"}
         onClick={music.toggle}
       ><i aria-hidden="true">♪</i></button>
+      {progress.phase === "intro" && !introFilmVisible && !introOpening && (
+        <button className="intro-film-replay" type="button" aria-label="重看片头" onClick={replayIntroFilm}>
+          <i aria-hidden="true" />
+        </button>
+      )}
+
+      {introFilmVisible && progress.phase === "intro" && (
+        <IntroFilm key={introFilmKey} onTransitionStart={beginIntroFilmTransition} onComplete={finishIntroFilm} />
+      )}
 
       <AnimatePresence>
         {celebration && <CelebrationLayer key={celebration.id} kind={celebration.kind} label={celebration.label} />}
@@ -499,7 +541,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
 
       <AnimatePresence mode="sync" initial={false}>
         {progress.phase === "intro" && (
-          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }}>
+          <motion.section className={`intro-screen ${introOpening ? "is-opening" : ""} ${introFilmReceiving ? "is-cinematic-receiving" : ""}`} key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }}>
             <div className="intro-map-lines" />
 
             <div className="sealed-letter opening-letter">
@@ -517,7 +559,7 @@ export function ExplorationApp({ storageNamespace = "formal", storyZones = forma
                   <span className={deviceStatus.offlineReady ? "ready" : "pending"}>{deviceStatus.offlineReady ? "猫头鹰缓存中" : "正在缓存"}</span>
                 </div>
               </div>
-              <button className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "打开信封 · 接收探索地图"}</b></button>
+              <button ref={introWaxButton} className="wax-button intro-wax-trigger" disabled={introOpening} onClick={openAtlas} aria-label="开启地图"><span><i/></span><b>{introOpening ? "信使已送达 · 地图正在显影" : "打开信封 · 接收探索地图"}</b></button>
               <div className="envelope-wind-fold" aria-hidden="true" />
             </div>
             <footer>FROM XXVIII TO XXIX · 2026 BIRTHDAY EDITION</footer>
