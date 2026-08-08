@@ -190,11 +190,11 @@ test("automatically arrives after two accurate nearby location samples", async (
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.32742, longitude: 120.18396, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.32694, longitude: 120.1852, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.3274763, longitude: 120.1840469, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.326913, longitude: 120.18552, accuracy: 14 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.3274765, longitude: 120.184047, accuracy: 13 });
+  await context.setGeolocation({ latitude: 30.3269132, longitude: 120.1855202, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await expect(page.locator("[data-celebration='arrival']")).toBeVisible();
   await expect(page.locator(".arrival-rune-seal")).toBeVisible();
@@ -209,6 +209,13 @@ test("automatically arrives after two accurate nearby location samples", async (
   ).toBe("pawTrailLifecycle");
   await expect(page.locator(".paw-trail").first()).toHaveCSS("animation-duration", "9s");
   await expect(page.locator(".you-marker")).toBeVisible();
+  await expect(page.locator("[data-celebration='arrival']")).toHaveCount(0, { timeout: 3_000 });
+  await page.getByRole("button", { name: "开启照片复刻" }).click();
+  await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toHaveAttribute(
+    "src",
+    "/references/sound-official-v1.jpg",
+  );
+  await expect(page.locator(".reference-pending")).toHaveCount(0);
 });
 
 test("moves outside the suggested first-route start and lets the live compass override walking course", async ({ page, context, baseURL }) => {
@@ -491,13 +498,19 @@ test("keeps the map immersive with a collapsible floating quest card", async ({ 
   await expect(page.locator(".quest-clue")).toHaveCount(0);
   expect(await map.evaluate((element) => getComputedStyle(element).position)).toBe("relative");
   expect(await card.evaluate((element) => getComputedStyle(element).position)).toBe("absolute");
-  const [mapBox, viewport] = await Promise.all([map.boundingBox(), page.evaluate(() => innerWidth)]);
+  const [mapBox, cardBox, viewport] = await Promise.all([
+    map.boundingBox(),
+    card.boundingBox(),
+    page.evaluate(() => innerWidth),
+  ]);
   expect(mapBox!.width / viewport).toBeGreaterThan(0.98);
+  expect(cardBox!.x).toBeLessThan(viewport / 2);
+  await expect(page.locator(".map-tools")).toHaveCSS("right", "20px");
 
   await page.getByRole("button", { name: "查看线索" }).click();
   await expect(card).toHaveClass(/is-expanded/);
   await expect(page.locator(".quest-clue")).toBeVisible();
-  await map.click({ position: { x: 110, y: 260 } });
+  await map.click({ position: { x: 700, y: 260 } });
   await expect(card).toHaveClass(/is-collapsed/);
 
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
@@ -543,11 +556,11 @@ test("restores the current unlocked checkpoint after a refresh", async ({ page, 
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
   await page.getByRole("button", { name: "飞行扫帚已抵达，开始探索" }).click();
-  await context.setGeolocation({ latitude: 30.32742, longitude: 120.18396, accuracy: 16 });
+  await context.setGeolocation({ latitude: 30.32694, longitude: 120.1852, accuracy: 16 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.3274763, longitude: 120.1840469, accuracy: 14 });
+  await context.setGeolocation({ latitude: 30.326913, longitude: 120.18552, accuracy: 14 });
   await page.waitForTimeout(100);
-  await context.setGeolocation({ latitude: 30.3274765, longitude: 120.184047, accuracy: 13 });
+  await context.setGeolocation({ latitude: 30.3269132, longitude: 120.1855202, accuracy: 13 });
   await expect(page.getByRole("button", { name: "开启照片复刻" })).toBeVisible();
   await page.reload();
   await expect(page.locator(".topbar b")).toHaveText("Jingwei · Sound District");
@@ -896,7 +909,7 @@ test("shows the bicycle reference photo, scores an uploaded recreation, and stor
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas-formal-reference-set-v1");
+      const request = indexedDB.open("exploration-atlas-formal-field-sound-v1");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();
@@ -980,6 +993,7 @@ test("stores the complete atlas and local vision model for offline use", async (
       "mediapipe/wasm/vision_wasm_internal.wasm",
       "workers/photo-score.js",
       "references/motion-official-v1.jpg",
+      "references/sound-official-v1.jpg",
       "references/scent-official-v1.jpg",
       "references/sparkle-official-v1.jpg",
       "references/taste-official-v1.jpg",

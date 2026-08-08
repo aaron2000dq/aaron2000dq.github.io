@@ -30,7 +30,7 @@ const storageNamespace =
     ? `fulltest-${runNamespace || "default"}`
     : runNamespace
       ? `formal-${runNamespace}`
-      : "formal-reference-set-v1";
+      : "formal-field-sound-v1";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

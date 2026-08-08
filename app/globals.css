@@ -484,13 +484,13 @@ h1, h2, h3, blockquote, .display-type {
 .map-subtitle { fill: #583a27; font-family: var(--font-body); font-size: 6.5px; letter-spacing: .05em; }
 .wax-dot circle { fill: #6e302c; }.wax-dot path { fill: none; stroke: #ead29d; stroke-width: 2; }
 .exploration-screen .map-cartouche { opacity: 0; }
-.map-tools { position: absolute; z-index: 15; left: max(20px, env(safe-area-inset-left)); top: max(82px, calc(env(safe-area-inset-top) + 72px)); display: flex; flex-direction: column; box-shadow: 0 6px 18px #2b180e66; }
+.map-tools { position: absolute; z-index: 15; right: max(20px, env(safe-area-inset-right)); left: auto; top: max(82px, calc(env(safe-area-inset-top) + 72px)); display: flex; flex-direction: column; box-shadow: 0 6px 18px #2b180e66; }
 .map-illustration-loading { position: absolute; z-index: 4; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: #40291b; background: radial-gradient(circle, #d7b77aee, #a8784be8); letter-spacing: .08em; }
 .map-illustration-loading .ink-loader { width: 42px; height: 42px; }
 .map-illustration-fallback { position: absolute; z-index: 4; left: 50%; bottom: 18px; transform: translateX(-50%); padding: 7px 12px; background: #2d2018db; color: #ead6a7; font-size: 10px; }
 .map-tools button { width: 34px; height: 34px; border: 1px solid #61452f; background: #ddc28ad9; }
 .map-fog-local { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 30% 50%, transparent 0 20%, #e7d4af77 45%, #e7d4afcc 78%); animation: fogPulse 5s ease-in-out infinite alternate; }
-.quest-card { position: absolute; z-index: 16; top: max(82px, calc(env(safe-area-inset-top) + 72px)); right: max(22px, env(safe-area-inset-right)); width: 292px; max-height: calc(100dvh - 174px); background-color: #c6a36bf2; background-image: radial-gradient(circle at 34% 18%, #eed8a6f7 0%, #d2af72f4 47%, #a87649f0 100%), repeating-radial-gradient(circle at 20% 30%, #4a2d1812 0 1px, transparent 1px 5px); border: 1px solid #8d633b; padding: 28px 24px 22px; box-shadow: inset 0 0 52px #5c351d80, 0 16px 42px #0d0806b3; overflow: auto; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: width .3s cubic-bezier(.22, 1, .36, 1), padding .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease; will-change: width, padding; }
+.quest-card { position: absolute; z-index: 16; top: max(82px, calc(env(safe-area-inset-top) + 72px)); left: max(22px, env(safe-area-inset-left)); right: auto; width: 292px; max-height: calc(100dvh - 174px); background-color: #c6a36bf2; background-image: radial-gradient(circle at 34% 18%, #eed8a6f7 0%, #d2af72f4 47%, #a87649f0 100%), repeating-radial-gradient(circle at 20% 30%, #4a2d1812 0 1px, transparent 1px 5px); border: 1px solid #8d633b; padding: 28px 24px 22px; box-shadow: inset 0 0 52px #5c351d80, 0 16px 42px #0d0806b3; overflow: auto; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: width .3s cubic-bezier(.22, 1, .36, 1), padding .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease; will-change: width, padding; }
 .quest-card::before { content: ""; position: absolute; inset: 8px; border: 1px solid #7c5738; pointer-events: none; }
 .quest-card::after { content: "✦  ✧  ✦"; position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: #70482e99; font-size: 9px; letter-spacing: .34em; pointer-events: none; }
 .quest-card.is-collapsed { width: 248px; padding: 50px 20px 18px; box-shadow: inset 0 0 38px #5c351d70, 0 12px 30px #0d08068f; }
@@ -758,7 +758,7 @@ h1, h2, h3, blockquote, .display-type {
 }
 .quest-card::before { inset: 8px; border: 3px double #7b5435a8; clip-path: inherit; }
 .quest-card::after { content: "✦  CARTOGRAPHER'S FIELD NOTE  ✦"; top: auto; bottom: 7px; width: 100%; color: #6240298c; font-size: 6px; letter-spacing: .22em; text-align: center; }
-.quest-card.is-collapsed { width: 258px; padding: 52px 21px 20px; }
+.quest-card.is-collapsed { width: 220px; padding: 52px 18px 20px; }
 .quest-medallion { position: absolute; z-index: 1; left: 16px; top: 13px; width: 56px; height: 56px; background: url('/assets/magic/cartographer-medallion-v2.png') center/contain no-repeat; filter: drop-shadow(0 4px 5px #3a201480) drop-shadow(0 0 3px #f2d28d70); animation: medallionBreathe 5.8s ease-in-out infinite; }
 .quest-medallion .quest-number,
 .floating-quest-card .quest-medallion .quest-number { position: absolute; inset: 0; display: grid; place-items: center; color: #f2dda9; font: 700 12px/1 var(--font-inscription); text-shadow: 0 1px 4px #080403, 0 0 4px #080403; }

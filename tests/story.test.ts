@@ -63,6 +63,11 @@ describe("formal story route", () => {
     expect(photoCheckpoints.every((checkpoint) => checkpoint.passScore === 55)).toBe(true);
   });
 
+  it("uses the field-shot storefront reference for the vinyl task", () => {
+    expect(zones[0].checkpoints[0].referenceImage)
+      .toBe("/references/sound-official-v1.jpg");
+  });
+
   it("uses one new illustrated map for each of the three formal walking areas", () => {
     expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
       "/assets/maps/jingwei-sound-v3.jpg",
@@ -76,10 +81,10 @@ describe("formal story route", () => {
     expect(bicycleZone?.checkpoints[0].referenceImage).toBe("/references/motion-official-v1.jpg");
   });
 
-  it("keeps every active goal clear of the floating quest panel", () => {
+  it("keeps every active goal clear of the collapsed left quest panel", () => {
     for (const zone of zones) {
       for (const checkpoint of zone.checkpoints) {
-        expect(checkpoint.mapPoint.x).toBeLessThanOrEqual(590);
+        expect(checkpoint.mapPoint.x).toBeGreaterThanOrEqual(260);
       }
     }
   });

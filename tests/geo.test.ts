@@ -16,6 +16,7 @@ import { rehearsalZones } from "../src/config/rehearsal";
 import { zones } from "../src/config/story";
 
 const bicycleZone = zones.find((zone) => zone.id === "motion-district")!;
+const soundZone = zones.find((zone) => zone.id === "sound-district")!;
 
 describe("geographic matching", () => {
   const route = [
@@ -180,9 +181,35 @@ describe("geographic matching", () => {
     expect(smoothed.timestamp).toBe(2);
     expect(smoothed.heading).toBe(180);
   });
+
+  it("keeps movement near Lingxiang inside the visible map instead of clamping it", () => {
+    const checkpoint = soundZone.checkpoints[0];
+    const west = projectPositionToMap(
+      { latitude: 30.326913, longitude: 120.18542 },
+      soundZone,
+      checkpoint,
+    );
+    const east = projectPositionToMap(
+      { latitude: 30.326913, longitude: 120.18552 },
+      soundZone,
+      checkpoint,
+    );
+    expect(east.x - west.x).toBeGreaterThan(15);
+    expect(east.x).toBeGreaterThan(100);
+    expect(east.x).toBeLessThan(700);
+  });
 });
 
 describe("offline coordinate preparation", () => {
+  it("uses the field-captured WGS-84 storefront point for Lingxiang", () => {
+    const storefront = { latitude: 30.326913, longitude: 120.18552 };
+    expect(haversineDistance(soundZone.checkpoints[0].location, storefront)).toBeLessThan(0.5);
+    expect(haversineDistance(soundZone.checkpoints[0].location, {
+      latitude: 30.3274763,
+      longitude: 120.1840469,
+    })).toBeGreaterThan(150);
+  });
+
   it("reproduces the known local Fuli reference within the geofence margin", () => {
     const converted = gcj02ToWgs84Approx({ latitude: 30.272938, longitude: 119.994665 });
     const osmReference = { latitude: 30.27548, longitude: 119.9901 };
