@@ -30,7 +30,7 @@ const storageNamespace =
     ? `fulltest-${runNamespace || "default"}`
     : runNamespace
       ? `formal-${runNamespace}`
-      : "formal-ruich-goal-v1";
+      : "formal-reference-set-v1";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -47,6 +47,22 @@ describe("formal story route", () => {
     expect(zones[2].mysterySubtitle).toContain("三枚坐标");
   });
 
+  it("ships the three field-shot references in third-map order", () => {
+    expect(zones[2].checkpoints.slice(0, 3).map((item) => item.referenceImage))
+      .toEqual([
+        "/references/scent-official-v1.jpg",
+        "/references/sparkle-official-v1.jpg",
+        "/references/taste-official-v1.jpg",
+      ]);
+  });
+
+  it("uses a daylight-tolerant pass score for every formal photo task", () => {
+    const photoCheckpoints = zones
+      .flatMap((zone) => zone.checkpoints)
+      .filter((checkpoint) => checkpoint.giftType !== "love");
+    expect(photoCheckpoints.every((checkpoint) => checkpoint.passScore === 55)).toBe(true);
+  });
+
   it("uses one new illustrated map for each of the three formal walking areas", () => {
     expect(zones.map((zone) => zone.illustratedMapAsset)).toEqual([
       "/assets/maps/jingwei-sound-v3.jpg",

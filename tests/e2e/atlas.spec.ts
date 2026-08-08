@@ -602,6 +602,40 @@ test("places the fifth formal goal at RUICH T1 and unlocks there", async ({ page
   await expect(page.getByText("坐标已回应")).toBeVisible();
 });
 
+test("shows the official Aesop field photo on the first third-map task", async ({ page }) => {
+  await page.goto("/?run=e2e-third-map-reference");
+  await expect(page.getByRole("heading", { name: "Exploration Atlas" })).toBeVisible();
+  await page.waitForTimeout(250);
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("exploration-atlas-formal-e2e-third-map-reference");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("state", "readwrite");
+        transaction.objectStore("state").put({
+          activeZoneId: "exploration-main",
+          activeCheckpointId: "aesop-scent",
+          completedCheckpointIds: ["vinyl-sound", "liv-motion"],
+          photoAttempts: {},
+          capturedPhotoIds: [],
+          phase: "map",
+          zoneStarted: true,
+          arrivedCheckpointIds: ["aesop-scent"],
+        }, "progress");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      };
+    });
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "开启照片复刻" }).click();
+  await expect(page.getByAltText("制图人预先拍摄的模特参考照片")).toHaveAttribute(
+    "src",
+    "/references/scent-official-v1.jpg",
+  );
+  await expect(page.locator(".reference-pending")).toHaveCount(0);
+});
+
 test("isolates a named formal preview run from previously saved formal progress", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "开启地图" }).click();
@@ -862,7 +896,7 @@ test("shows the bicycle reference photo, scores an uploaded recreation, and stor
 
   const photoCount = await page.evaluate(async () => {
     return new Promise<number>((resolve, reject) => {
-      const request = indexedDB.open("exploration-atlas-formal-ruich-goal-v1");
+      const request = indexedDB.open("exploration-atlas-formal-reference-set-v1");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const count = request.result.transaction("photos").objectStore("photos").count();
@@ -946,6 +980,9 @@ test("stores the complete atlas and local vision model for offline use", async (
       "mediapipe/wasm/vision_wasm_internal.wasm",
       "workers/photo-score.js",
       "references/motion-official-v1.jpg",
+      "references/scent-official-v1.jpg",
+      "references/sparkle-official-v1.jpg",
+      "references/taste-official-v1.jpg",
       "assets/magic/parchment-cinematic-v1.jpg",
       "assets/magic/arcane-fog-field-v1.jpg",
       "assets/magic/rune-seal-burst-v1.png",

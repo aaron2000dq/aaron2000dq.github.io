@@ -92,7 +92,12 @@ export function CameraChallenge({
     setPhotoError("");
     const startedAt = performance.now();
     try {
-      const match = await scorePhoto(reference, capture, checkpoint.matchMode);
+      const match = await scorePhoto(
+        reference,
+        capture,
+        checkpoint.matchMode,
+        checkpoint.passScore,
+      );
       const remainingCeremonyMs = Math.max(0, 1_250 - (performance.now() - startedAt));
       if (remainingCeremonyMs > 0) {
         await new Promise((resolve) => window.setTimeout(resolve, remainingCeremonyMs));

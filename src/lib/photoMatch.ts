@@ -188,6 +188,7 @@ export async function scorePhoto(
   referenceSrc: string,
   captureSrc: string,
   mode: MatchMode,
+  passScore = 72,
 ): Promise<MatchResult> {
   const [reference, capture] = await Promise.all([
     loadImage(referenceSrc),
@@ -208,10 +209,11 @@ export async function scorePhoto(
       (pose ?? 0) * poseWeight +
       scene.subjectScore * subjectWeight,
   );
+  const closeScore = Math.max(35, passScore - 13);
   const message =
-    score >= 72
+    score >= passScore
       ? "画面与记忆重合，坐标已经回应。"
-      : score >= 55
+      : score >= closeScore
         ? "非常接近，再调整一点构图或姿势。"
         : "让背景线条与半透明参考图靠得更近。";
 

@@ -56,7 +56,7 @@ const motionZone: ExplorationZone = {
         unlockRadiusM: 30,
         referenceImage: "/references/motion-official-v1.jpg",
         matchMode: "pose-scene",
-        passScore: 72,
+        passScore: 55,
         clue:
           "有些礼物会被你带走，有些却会反过来带着你。沿着这一页的脚印，它的咒语是让你的出发更加轻盈。",
         unlockCopy:
@@ -112,7 +112,7 @@ const soundZone: ExplorationZone = {
         unlockRadiusM: 30,
         referenceImage: "/references/sound.svg",
         matchMode: "pose-scene",
-        passScore: 72,
+        passScore: 55,
         clue:
           "有些时刻没有消失，只是藏进一圈又一圈的纹路。沿墨迹找到它，它的咒语是保留下记忆在某一刻的声音。",
         unlockCopy:
@@ -173,9 +173,9 @@ const mainZone: ExplorationZone = {
         giftType: "scent",
         location: { latitude: 30.2552323, longitude: 120.2099383 },
         unlockRadiusM: 30,
-        referenceImage: "/references/scent.svg",
+        referenceImage: "/references/scent-official-v1.jpg",
         matchMode: "pose-scene",
-        passScore: 72,
+        passScore: 55,
         clue:
           "它有神奇的魔法，看不见也摸不着；顺着风吹来的方向，它的咒语是让路过的人都快乐。",
         unlockCopy:
@@ -192,9 +192,9 @@ const mainZone: ExplorationZone = {
         giftType: "sparkle",
         location: { latitude: 30.253989, longitude: 120.2110951 },
         unlockRadiusM: 30,
-        referenceImage: "/references/sparkle.svg",
+        referenceImage: "/references/sparkle-official-v1.jpg",
         matchMode: "pose-scene",
-        passScore: 72,
+        passScore: 55,
         clue:
           "这一页不留给世界，你只需要留给自己；它的咒语是在你抬起手的时候，留下一点属于你的光芒。",
         unlockCopy:
@@ -211,9 +211,9 @@ const mainZone: ExplorationZone = {
         giftType: "taste",
         location: { latitude: 30.2509232654, longitude: 120.2078163859 },
         unlockRadiusM: 30,
-        referenceImage: "/references/taste.svg",
+        referenceImage: "/references/taste-official-v1.jpg",
         matchMode: "scene-only",
-        passScore: 70,
+        passScore: 55,
         clue:
           "地面上的四页已经写完。最后一枚坐标不藏在脚边，请抬起头，去往今晚比城市更接近天空的地方。",
         unlockCopy:
